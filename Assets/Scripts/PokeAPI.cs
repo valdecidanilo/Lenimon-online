@@ -1,23 +1,21 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PokeAPI : MonoBehaviour
+public static class PokeAPI
 {
-    public void GetPokemon(string pokemonName, Action<Pokemon> onSuccess)
+    public static void GetPokemonData(string pokemonName, Action<PokemonData> onSuccess)
     {
         string route = $"https://pokeapi.co/api/v2/pokemon/{pokemonName.ToLower()}";
         WebConnection.GetRequest(route, onSuccess);
     }
 
-    public void GetPokemon(int index, Action<Pokemon> onSuccess)
+    public static void GetPokemonData(int index, Action<PokemonData> onSuccess)
     {
         string route = $"https://pokeapi.co/api/v2/pokemon/{index}";
         WebConnection.GetRequest(route, onSuccess);
     }
 
-    public void GetSprite(Pokemon pokemon, Action<Sprite> onSuccess, bool backSprite = false)
+    public static void GetSprite(PokemonData pokemon, Action<Sprite> onSuccess, bool backSprite = false)
     {
         GetTexture(pokemon, (txt) =>
         {
@@ -28,7 +26,7 @@ public class PokeAPI : MonoBehaviour
         }, backSprite);
     }
 
-    public void GetTexture(Pokemon pokemon, Action<Texture2D> onSuccess, bool backSprite = false)
+    public static void GetTexture(PokemonData pokemon, Action<Texture2D> onSuccess, bool backSprite = false)
     {
         string route = backSprite ? pokemon.sprites.back_default : pokemon.sprites.front_default;
         WebConnection.GetTexture(route, onSuccess);

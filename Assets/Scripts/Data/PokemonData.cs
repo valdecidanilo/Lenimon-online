@@ -4,15 +4,9 @@ using System.Collections.Generic;
 
 public class Ability
 {
-    [JsonProperty("ability")] public AbilityReference reference { get; set; }
+    [JsonProperty("ability")] public ApiReference reference { get; set; }
     [JsonProperty("is_hidden")] public bool hidden { get; set; }
     public int slot { get; set; }
-}
-
-public class AbilityReference
-{
-    public string name { get; set; }
-    public string url { get; set; }
 }
 
 public class Cries
@@ -21,22 +15,10 @@ public class Cries
     public string legacy { get; set; }
 }
 
-public class Form
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
-
 public class GameIndex
 {
     public int game_index { get; set; }
-    public Version version { get; set; }
-}
-
-public class Generation
-{
-    public string name { get; set; }
-    public string url { get; set; }
+    public ApiReference version { get; set; }
 }
 
 public class GenerationI
@@ -104,32 +86,14 @@ public class GenerationViii
 
 public class HeldItem
 {
-    public ItemReference item { get; set; }
+    public ApiReference item { get; set; }
     public List<VersionItemDetail> version_details { get; set; }
 }
 
-public class ItemReference
+public class MoveData
 {
-    public string name { get; set; }
-    public string url { get; set; }
-}
-
-public class Move
-{
-    public MoveReference move { get; set; }
+    public ApiReference move { get; set; }
     public List<VersionGroupDetail> version_group_details { get; set; }
-}
-
-public class MoveReference
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
-
-public class MoveLearnMethod
-{
-    public string name { get; set; }
-    public string url { get; set; }
 }
 
 public class Other
@@ -145,53 +109,54 @@ public class Other
 public class PastAbility
 {
     public List<Ability> abilities { get; set; }
-    public Generation generation { get; set; }
+    public ApiReference generation { get; set; }
 }
 
 public class PastType
 {
-    public Generation generation { get; set; }
+    public ApiReference generation { get; set; }
     public List<TypePokemon> types { get; set; }
 }
 
-public class Pokemon
+public class PokemonData
 {
     public List<Ability> abilities { get; set; }
     public int base_experience { get; set; }
     public Cries cries { get; set; }
-    public List<Form> forms { get; set; }
+    public List<ApiReference> forms { get; set; }
     public List<GameIndex> game_indices { get; set; }
     public int height { get; set; }
     public List<HeldItem> held_items { get; set; }
     public int id { get; set; }
     public bool is_default { get; set; }
     public string location_area_encounters { get; set; }
-    public List<Move> moves { get; set; }
+    public List<MoveData> moves { get; set; }
     public string name { get; set; }
     public int order { get; set; }
     public List<PastAbility> past_abilities { get; set; }
     public List<PastType> past_types { get; set; }
-    public Species species { get; set; }
+    public ApiReference species { get; set; }
     public Sprites sprites { get; set; }
     public List<Stat> stats { get; set; }
     public List<TypePokemon> types { get; set; }
     public int weight { get; set; }
-}
 
-public class Species
-{
-    public string name { get; set; }
-    public string url { get; set; }
+    public int hpStat => stats[0].base_stat;
+    public int atkStat => stats[1].base_stat;
+    public int defStat => stats[2].base_stat;
+    public int sAtkStat => stats[3].base_stat;
+    public int sDefStat => stats[4].base_stat;
+    public int spdStat => stats[5].base_stat;
 }
 
 public class Stat
 {
     public int base_stat { get; set; }
     public int effort { get; set; }
-    public StatReference stat { get; set; }
+    public ApiReference stat { get; set; }
 }
 
-public class StatReference
+public class ApiReference
 {
     public string name { get; set; }
     public string url { get; set; }
@@ -200,63 +165,45 @@ public class StatReference
 public class TypePokemon
 {
     public int slot { get; set; }
-    public TypeReference type { get; set; }
-}
-
-public class TypeReference
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
-
-public class Version
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
-
-public class VersionGroup
-{
-    public string name { get; set; }
-    public string url { get; set; }
+    public ApiReference type { get; set; }
 }
 
 public class VersionGroupDetail
 {
     public int level_learned_at { get; set; }
-    public MoveLearnMethod move_learn_method { get; set; }
+    public ApiReference move_learn_method { get; set; }
     public int? order { get; set; }
-    public VersionGroup version_group { get; set; }
+    public ApiReference version_group { get; set; }
 }
 public class VersionItemDetail
 {
     public int rarity {  get; set; }
-    public Version version { get; set; }
+    public ApiReference version { get; set; }
 }
 
 public class Versions
 {
     [JsonProperty("generation-i")]
-    public GenerationI generationi { get; set; }
+    public GenerationI generation1 { get; set; }
 
     [JsonProperty("generation-ii")]
-    public GenerationIi generationii { get; set; }
+    public GenerationIi generation2 { get; set; }
 
     [JsonProperty("generation-iii")]
-    public GenerationIii generationiii { get; set; }
+    public GenerationIii generation3 { get; set; }
 
     [JsonProperty("generation-iv")]
-    public GenerationIv generationiv { get; set; }
+    public GenerationIv generation4 { get; set; }
 
     [JsonProperty("generation-v")]
-    public GenerationV generationv { get; set; }
+    public GenerationV generation5 { get; set; }
 
     [JsonProperty("generation-vi")]
-    public GenerationVi generationvi { get; set; }
+    public GenerationVi generation6 { get; set; }
 
     [JsonProperty("generation-vii")]
-    public GenerationVii generationvii { get; set; }
+    public GenerationVii generation7 { get; set; }
 
     [JsonProperty("generation-viii")]
-    public GenerationViii generationviii { get; set; }
+    public GenerationViii generation8 { get; set; }
 }

@@ -44,6 +44,7 @@ public class WebConnection : MonoBehaviour
         if (request.result == UnityWebRequest.Result.Success)
         {
             Texture2D data = DownloadHandlerTexture.GetContent(request);
+            data.filterMode = FilterMode.Point;
             onSuccess?.Invoke(data);
         }
     }

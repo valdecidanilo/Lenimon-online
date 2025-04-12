@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 64aa42aebb197a5428a949f708d5753a
+guid: 8adbcb6861bcade4ba04ff66a36d7c1a
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,13 +123,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: overlay_hp_0
+      name: MissingNo_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 8
-        width: 96
-        height: 4
+        y: 123
+        width: 78
+        height: 152
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -137,50 +137,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0c1797ad733a01c43a03e6314fee537d
-      internalID: -873948548
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: overlay_hp_1
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 4
-        width: 96
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: afc80befdadaace47bb3ba3accf4c3e0
-      internalID: -45398888
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: overlay_hp_2
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 96
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 815347db3ecde874e895bb16015bbcb7
-      internalID: -916651187
+      spriteID: ab28d3b3d6f6d1744a525e295efc754a
+      internalID: 1200070702
       vertices: []
       indices: 
       edges: []
@@ -196,9 +154,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      overlay_hp_0: -873948548
-      overlay_hp_1: -45398888
-      overlay_hp_2: -916651187
+      MissingNo_0: 1200070702
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
