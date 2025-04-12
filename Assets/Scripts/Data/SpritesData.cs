@@ -8,77 +8,71 @@ public class Icons
     public string front_female { get; set; }
 }
 
-public class Sprites
+public class Sprites : SpriteTypes
 {
-    public string back_default { get; set; }
-    public string back_female { get; set; }
-    public string back_shiny { get; set; }
-    public string back_shiny_female { get; set; }
-    public string front_default { get; set; }
-    public string front_female { get; set; }
-    public string front_shiny { get; set; }
-    public string front_shiny_female { get; set; }
     public Other other { get; set; }
     public Versions versions { get; set; }
 }
 
-public class SpriteTypes
+public class SpriteTypes : Icons
 {
     public string back_default { get; set; }
     public string back_female { get; set; }
     public string back_shiny { get; set; }
-    public string back_gray { get; set; }
-    public string back_transparent { get; set; }
     public string back_shiny_female { get; set; }
-    public string back_shiny_transparent { get; set; }
-    public string front_default { get; set; }
-    public string front_female { get; set; }
     public string front_shiny { get; set; }
     public string front_shiny_female { get; set; }
+}
+
+public class FullSpriteTypes : SpriteTypes
+{
+    public string back_gray { get; set; }
+    public string back_transparent { get; set; }
+    public string back_shiny_transparent { get; set; }
     public string front_gray { get; set; }
     public string front_transparent { get; set; }
     public string front_shiny_transparent { get; set; }
 }
 
-public class BlackWhite : SpriteTypes
+public class BlackWhite : FullSpriteTypes
 {
-    public AnimatedSprite animated { get; set; }
+    public FullSpriteTypes animated { get; set; }
 }
 
 //generations
 public class Generation1
 {
     [JsonProperty("red-blue")]
-    public SpriteTypes redblue { get; set; }
-    public SpriteTypes yellow { get; set; }
+    public FullSpriteTypes redblue { get; set; }
+    public FullSpriteTypes yellow { get; set; }
 }
 
 public class Generation2
 {
-    public SpriteTypes gold { get; set; }
-    public SpriteTypes silver { get; set; }
-    public SpriteTypes crystal { get; set; }
+    public FullSpriteTypes gold { get; set; }
+    public FullSpriteTypes silver { get; set; }
+    public FullSpriteTypes crystal { get; set; }
 }
 
 public class Generation3
 {
-    public SpriteTypes emerald { get; set; }
+    public FullSpriteTypes emerald { get; set; }
 
     [JsonProperty("firered-leafgreen")]
-    public SpriteTypes fireredleafgreen { get; set; }
+    public FullSpriteTypes fireredleafgreen { get; set; }
 
     [JsonProperty("ruby-sapphire")]
-    public SpriteTypes rubysapphire { get; set; }
+    public FullSpriteTypes rubysapphire { get; set; }
 }
 
 public class Generation4
 {
     [JsonProperty("diamond-pearl")]
-    public SpriteTypes diamondpearl { get; set; }
+    public FullSpriteTypes diamondpearl { get; set; }
 
     [JsonProperty("heartgold-soulsilver")]
-    public SpriteTypes heartgoldsoulsilver { get; set; }
-    public SpriteTypes platinum { get; set; }
+    public FullSpriteTypes heartgoldsoulsilver { get; set; }
+    public FullSpriteTypes platinum { get; set; }
 }
 
 public class Generation5
@@ -90,10 +84,10 @@ public class Generation5
 public class Generation6
 {
     [JsonProperty("omegaruby-alphasapphire")]
-    public SpriteTypes omegarubyalphasapphire { get; set; }
+    public FullSpriteTypes omegarubyalphasapphire { get; set; }
 
     [JsonProperty("x-y")]
-    public SpriteTypes xy { get; set; }
+    public FullSpriteTypes xy { get; set; }
 }
 
 public class Generation7
@@ -101,7 +95,7 @@ public class Generation7
     public Icons icons { get; set; }
 
     [JsonProperty("ultra-sun-ultra-moon")]
-    public SpriteTypes ultrasunultramoon { get; set; }
+    public FullSpriteTypes ultrasunultramoon { get; set; }
 }
 
 public class Generation8
@@ -145,18 +139,6 @@ public class Other
     [JsonProperty("official-artwork")]
     public OfficialArtwork officialartwork { get; set; }
     public Showdown showdown { get; set; }
-}
-
-public class AnimatedSprite
-{
-    public string back_default { get; set; }
-    public string back_female { get; set; }
-    public string back_shiny { get; set; }
-    public string back_shiny_female { get; set; }
-    public string front_default { get; set; }
-    public string front_female { get; set; }
-    public string front_shiny { get; set; }
-    public string front_shiny_female { get; set; }
 }
 
 public class OfficialArtwork
