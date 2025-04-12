@@ -34,16 +34,7 @@ public class Gen1Sprites
 }
 
 //2
-public class Silver
-{
-    public string back_default { get; set; }
-    public string back_shiny { get; set; }
-    public string front_default { get; set; }
-    public string front_shiny { get; set; }
-    public string front_transparent { get; set; }
-}
-
-public class Gold
+public class Gen2Sprites
 {
     public string back_default { get; set; }
     public string back_shiny { get; set; }
@@ -65,7 +56,7 @@ public class Crystal
 }
 
 //3
-public class RubySapphire
+public class Gen3Sprites
 {
     public string back_default { get; set; }
     public string back_shiny { get; set; }
@@ -79,40 +70,8 @@ public class Emerald
     public string front_shiny { get; set; }
 }
 
-public class FireredLeafgreen
-{
-    public string back_default { get; set; }
-    public string back_shiny { get; set; }
-    public string front_default { get; set; }
-    public string front_shiny { get; set; }
-}
-
 //4
-public class DiamondPearl
-{
-    public string back_default { get; set; }
-    public string back_female { get; set; }
-    public string back_shiny { get; set; }
-    public string back_shiny_female { get; set; }
-    public string front_default { get; set; }
-    public string front_female { get; set; }
-    public string front_shiny { get; set; }
-    public string front_shiny_female { get; set; }
-}
-
-public class Platinum
-{
-    public string back_default { get; set; }
-    public string back_female { get; set; }
-    public string back_shiny { get; set; }
-    public string back_shiny_female { get; set; }
-    public string front_default { get; set; }
-    public string front_female { get; set; }
-    public string front_shiny { get; set; }
-    public string front_shiny_female { get; set; }
-}
-
-public class HeartgoldSoulsilver
+public class Gen4Sprites
 {
     public string back_default { get; set; }
     public string back_female { get; set; }
@@ -139,15 +98,7 @@ public class BlackWhite
 }
 
 //6
-public class XY
-{
-    public string front_default { get; set; }
-    public string front_female { get; set; }
-    public string front_shiny { get; set; }
-    public string front_shiny_female { get; set; }
-}
-
-public class OmegarubyAlphasapphire
+public class Gen6Sprites
 {
     public string front_default { get; set; }
     public string front_female { get; set; }
@@ -174,9 +125,9 @@ public class GenerationI
 
 public class GenerationIi
 {
+    public Gen2Sprites gold { get; set; }
+    public Gen2Sprites silver { get; set; }
     public Crystal crystal { get; set; }
-    public Gold gold { get; set; }
-    public Silver silver { get; set; }
 }
 
 public class GenerationIii
@@ -184,20 +135,20 @@ public class GenerationIii
     public Emerald emerald { get; set; }
 
     [JsonProperty("firered-leafgreen")]
-    public FireredLeafgreen fireredleafgreen { get; set; }
+    public Gen3Sprites fireredleafgreen { get; set; }
 
     [JsonProperty("ruby-sapphire")]
-    public RubySapphire rubysapphire { get; set; }
+    public Gen3Sprites rubysapphire { get; set; }
 }
 
 public class GenerationIv
 {
     [JsonProperty("diamond-pearl")]
-    public DiamondPearl diamondpearl { get; set; }
+    public Gen4Sprites diamondpearl { get; set; }
 
     [JsonProperty("heartgold-soulsilver")]
-    public HeartgoldSoulsilver heartgoldsoulsilver { get; set; }
-    public Platinum platinum { get; set; }
+    public Gen4Sprites heartgoldsoulsilver { get; set; }
+    public Gen4Sprites platinum { get; set; }
 }
 
 public class GenerationV
@@ -209,10 +160,10 @@ public class GenerationV
 public class GenerationVi
 {
     [JsonProperty("omegaruby-alphasapphire")]
-    public OmegarubyAlphasapphire omegarubyalphasapphire { get; set; }
+    public Gen6Sprites omegarubyalphasapphire { get; set; }
 
     [JsonProperty("x-y")]
-    public XY xy { get; set; }
+    public Gen6Sprites xy { get; set; }
 }
 
 public class GenerationVii
