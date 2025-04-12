@@ -22,159 +22,89 @@ public class Sprites
     public Versions versions { get; set; }
 }
 
-//1
-public class Gen1Sprites
+public class SpriteTypes
 {
     public string back_default { get; set; }
+    public string back_female { get; set; }
+    public string back_shiny { get; set; }
     public string back_gray { get; set; }
     public string back_transparent { get; set; }
+    public string back_shiny_female { get; set; }
+    public string back_shiny_transparent { get; set; }
     public string front_default { get; set; }
+    public string front_female { get; set; }
+    public string front_shiny { get; set; }
+    public string front_shiny_female { get; set; }
     public string front_gray { get; set; }
     public string front_transparent { get; set; }
-}
-
-//2
-public class Gen2Sprites
-{
-    public string back_default { get; set; }
-    public string back_shiny { get; set; }
-    public string front_default { get; set; }
-    public string front_shiny { get; set; }
-    public string front_transparent { get; set; }
-}
-
-public class Crystal
-{
-    public string back_default { get; set; }
-    public string back_shiny { get; set; }
-    public string back_shiny_transparent { get; set; }
-    public string back_transparent { get; set; }
-    public string front_default { get; set; }
-    public string front_shiny { get; set; }
     public string front_shiny_transparent { get; set; }
-    public string front_transparent { get; set; }
 }
 
-//3
-public class Gen3Sprites
-{
-    public string back_default { get; set; }
-    public string back_shiny { get; set; }
-    public string front_default { get; set; }
-    public string front_shiny { get; set; }
-}
-
-public class Emerald
-{
-    public string front_default { get; set; }
-    public string front_shiny { get; set; }
-}
-
-//4
-public class Gen4Sprites
-{
-    public string back_default { get; set; }
-    public string back_female { get; set; }
-    public string back_shiny { get; set; }
-    public string back_shiny_female { get; set; }
-    public string front_default { get; set; }
-    public string front_female { get; set; }
-    public string front_shiny { get; set; }
-    public string front_shiny_female { get; set; }
-}
-
-//5
-public class BlackWhite
+public class BlackWhite : SpriteTypes
 {
     public AnimatedSprite animated { get; set; }
-    public string back_default { get; set; }
-    public string back_female { get; set; }
-    public string back_shiny { get; set; }
-    public string back_shiny_female { get; set; }
-    public string front_default { get; set; }
-    public string front_female { get; set; }
-    public string front_shiny { get; set; }
-    public string front_shiny_female { get; set; }
-}
-
-//6
-public class Gen6Sprites
-{
-    public string front_default { get; set; }
-    public string front_female { get; set; }
-    public string front_shiny { get; set; }
-    public string front_shiny_female { get; set; }
-}
-
-//7
-public class UltraSunUltraMoon
-{
-    public string front_default { get; set; }
-    public object front_female { get; set; }
-    public string front_shiny { get; set; }
-    public object front_shiny_female { get; set; }
 }
 
 //generations
-public class GenerationI
+public class Generation1
 {
     [JsonProperty("red-blue")]
-    public Gen1Sprites redblue { get; set; }
-    public Gen1Sprites yellow { get; set; }
+    public SpriteTypes redblue { get; set; }
+    public SpriteTypes yellow { get; set; }
 }
 
-public class GenerationIi
+public class Generation2
 {
-    public Gen2Sprites gold { get; set; }
-    public Gen2Sprites silver { get; set; }
-    public Crystal crystal { get; set; }
+    public SpriteTypes gold { get; set; }
+    public SpriteTypes silver { get; set; }
+    public SpriteTypes crystal { get; set; }
 }
 
-public class GenerationIii
+public class Generation3
 {
-    public Emerald emerald { get; set; }
+    public SpriteTypes emerald { get; set; }
 
     [JsonProperty("firered-leafgreen")]
-    public Gen3Sprites fireredleafgreen { get; set; }
+    public SpriteTypes fireredleafgreen { get; set; }
 
     [JsonProperty("ruby-sapphire")]
-    public Gen3Sprites rubysapphire { get; set; }
+    public SpriteTypes rubysapphire { get; set; }
 }
 
-public class GenerationIv
+public class Generation4
 {
     [JsonProperty("diamond-pearl")]
-    public Gen4Sprites diamondpearl { get; set; }
+    public SpriteTypes diamondpearl { get; set; }
 
     [JsonProperty("heartgold-soulsilver")]
-    public Gen4Sprites heartgoldsoulsilver { get; set; }
-    public Gen4Sprites platinum { get; set; }
+    public SpriteTypes heartgoldsoulsilver { get; set; }
+    public SpriteTypes platinum { get; set; }
 }
 
-public class GenerationV
+public class Generation5
 {
     [JsonProperty("black-white")]
     public BlackWhite blackwhite { get; set; }
 }
 
-public class GenerationVi
+public class Generation6
 {
     [JsonProperty("omegaruby-alphasapphire")]
-    public Gen6Sprites omegarubyalphasapphire { get; set; }
+    public SpriteTypes omegarubyalphasapphire { get; set; }
 
     [JsonProperty("x-y")]
-    public Gen6Sprites xy { get; set; }
+    public SpriteTypes xy { get; set; }
 }
 
-public class GenerationVii
+public class Generation7
 {
     public Icons icons { get; set; }
 
     [JsonProperty("ultra-sun-ultra-moon")]
-    public UltraSunUltraMoon ultrasunultramoon { get; set; }
+    public SpriteTypes ultrasunultramoon { get; set; }
 }
 
-public class GenerationViii
+public class Generation8
 {
     public Icons icons { get; set; }
 }
@@ -183,28 +113,28 @@ public class GenerationViii
 public class Versions
 {
     [JsonProperty("generation-i")]
-    public GenerationI gen1 { get; set; }
+    public Generation1 gen1 { get; set; }
 
     [JsonProperty("generation-ii")]
-    public GenerationIi gen2 { get; set; }
+    public Generation2 gen2 { get; set; }
 
     [JsonProperty("generation-iii")]
-    public GenerationIii gen3 { get; set; }
+    public Generation3 gen3 { get; set; }
 
     [JsonProperty("generation-iv")]
-    public GenerationIv gen4 { get; set; }
+    public Generation4 gen4 { get; set; }
 
     [JsonProperty("generation-v")]
-    public GenerationV gen5 { get; set; }
+    public Generation5 gen5 { get; set; }
 
     [JsonProperty("generation-vi")]
-    public GenerationVi gen6 { get; set; }
+    public Generation6 gen6 { get; set; }
 
     [JsonProperty("generation-vii")]
-    public GenerationVii gen7 { get; set; }
+    public Generation7 gen7 { get; set; }
 
     [JsonProperty("generation-viii")]
-    public GenerationViii gen8 { get; set; }
+    public Generation8 gen8 { get; set; }
 }
 
 public class Other

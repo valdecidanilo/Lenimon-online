@@ -67,12 +67,12 @@ public class TestScript : MonoBehaviour
         StringBuilder sprites = new();
         sprites.Append($"gen1: {pokemon.data.sprites.versions.gen1.redblue.front_default != null}\n");
         sprites.Append($"gen2: {pokemon.data.sprites.versions.gen2.gold.front_default != null}\n");
-        sprites.Append($"gen3:  {pokemon.data.sprites.versions.gen3.rubysapphire.front_default != null}\n");
-        sprites.Append($"gen4:  {pokemon.data.sprites.versions.gen4.diamondpearl.front_default != null}\n");
-        sprites.Append($"gen5:  {pokemon.data.sprites.versions.gen5.blackwhite.front_default != null}\n");
-        sprites.Append($"gen6:   {pokemon.data.sprites.versions.gen6.xy.front_default != null}\n");
-        sprites.Append($"gen7:   {pokemon.data.sprites.versions.gen7.ultrasunultramoon.front_default != null}\n");
-        sprites.Append($"gen8:   {pokemon.data.sprites.versions.gen8.icons.front_default != null}\n");
+        sprites.Append($"gen3: {pokemon.data.sprites.versions.gen3.rubysapphire.front_default != null}\n");
+        sprites.Append($"gen4: {pokemon.data.sprites.versions.gen4.diamondpearl.front_default != null}\n");
+        sprites.Append($"gen5: {pokemon.data.sprites.versions.gen5.blackwhite.front_default != null}\n");
+        sprites.Append($"gen6: {pokemon.data.sprites.versions.gen6.xy.front_default != null}\n");
+        sprites.Append($"gen7: {pokemon.data.sprites.versions.gen7.ultrasunultramoon.front_default != null}\n");
+        sprites.Append($"gen8: {pokemon.data.sprites.versions.gen8.icons.front_default != null}\n");
 
         Debug.Log($"{pokemon.name}\n{type.ToString()}\n{abilities.ToString()}\n\n{sprites.ToString()}");
     }
