@@ -21,69 +21,6 @@ public class GameIndex
     public ApiReference version { get; set; }
 }
 
-public class GenerationI
-{
-    [JsonProperty("red-blue")]
-    public RedBlue redblue { get; set; }
-    public Yellow yellow { get; set; }
-}
-
-public class GenerationIi
-{
-    public Crystal crystal { get; set; }
-    public Gold gold { get; set; }
-    public Silver silver { get; set; }
-}
-
-public class GenerationIii
-{
-    public Emerald emerald { get; set; }
-
-    [JsonProperty("firered-leafgreen")]
-    public FireredLeafgreen fireredleafgreen { get; set; }
-
-    [JsonProperty("ruby-sapphire")]
-    public RubySapphire rubysapphire { get; set; }
-}
-
-public class GenerationIv
-{
-    [JsonProperty("diamond-pearl")]
-    public DiamondPearl diamondpearl { get; set; }
-
-    [JsonProperty("heartgold-soulsilver")]
-    public HeartgoldSoulsilver heartgoldsoulsilver { get; set; }
-    public Platinum platinum { get; set; }
-}
-
-public class GenerationV
-{
-    [JsonProperty("black-white")]
-    public BlackWhite blackwhite { get; set; }
-}
-
-public class GenerationVi
-{
-    [JsonProperty("omegaruby-alphasapphire")]
-    public OmegarubyAlphasapphire omegarubyalphasapphire { get; set; }
-
-    [JsonProperty("x-y")]
-    public XY xy { get; set; }
-}
-
-public class GenerationVii
-{
-    public Icons icons { get; set; }
-
-    [JsonProperty("ultra-sun-ultra-moon")]
-    public UltraSunUltraMoon ultrasunultramoon { get; set; }
-}
-
-public class GenerationViii
-{
-    public Icons icons { get; set; }
-}
-
 public class HeldItem
 {
     public ApiReference item { get; set; }
@@ -94,16 +31,6 @@ public class MoveData
 {
     public ApiReference move { get; set; }
     public List<VersionGroupDetail> version_group_details { get; set; }
-}
-
-public class Other
-{
-    public DreamWorld dream_world { get; set; }
-    public Home home { get; set; }
-
-    [JsonProperty("official-artwork")]
-    public OfficialArtwork officialartwork { get; set; }
-    public Showdown showdown { get; set; }
 }
 
 public class PastAbility
@@ -179,31 +106,4 @@ public class VersionItemDetail
 {
     public int rarity {  get; set; }
     public ApiReference version { get; set; }
-}
-
-public class Versions
-{
-    [JsonProperty("generation-i")]
-    public GenerationI generation1 { get; set; }
-
-    [JsonProperty("generation-ii")]
-    public GenerationIi generation2 { get; set; }
-
-    [JsonProperty("generation-iii")]
-    public GenerationIii generation3 { get; set; }
-
-    [JsonProperty("generation-iv")]
-    public GenerationIv generation4 { get; set; }
-
-    [JsonProperty("generation-v")]
-    public GenerationV generation5 { get; set; }
-
-    [JsonProperty("generation-vi")]
-    public GenerationVi generation6 { get; set; }
-
-    [JsonProperty("generation-vii")]
-    public GenerationVii generation7 { get; set; }
-
-    [JsonProperty("generation-viii")]
-    public GenerationViii generation8 { get; set; }
 }
