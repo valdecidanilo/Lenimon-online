@@ -14,6 +14,13 @@ public class TestScript : MonoBehaviour
 
     private void Awake()
     {
+        WebConnection.GetRequest<MoveData>($"https://pokeapi.co/api/v2/move/leer", (data) =>
+        {
+            WebConnection.GetRequest<MoveTypeData>(data.typeOfMove.url, (type) =>
+            {
+                Debug.Log($"{data.name} => {type.id}");
+            });
+        });
         loaded = new(2);
         loaded.onCompleted += StartBattle;
 

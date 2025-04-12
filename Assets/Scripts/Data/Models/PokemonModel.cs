@@ -42,7 +42,7 @@ public class Pokemon
     //MetaData
     public Sprite frontSprite { get; private set; }
     public Sprite backSprite { get; private set; }
-    public MoveData[] moves;
+    public MoveReference[] moves;
 
     Checklist dataChecklist;
     public Action onDoneLoading;
@@ -114,7 +114,7 @@ public class Pokemon
 
     private void GetRandomMoves()
     {
-        MoveData[] newMoves = new MoveData[4];
+        MoveReference[] newMoves = new MoveReference[4];
 
         for (int i = 0; i < newMoves.Length; i++)
         {

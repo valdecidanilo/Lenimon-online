@@ -27,7 +27,7 @@ public class HeldItem
     public List<VersionItemDetail> version_details { get; set; }
 }
 
-public class MoveData
+public class MoveReference
 {
     public ApiReference move { get; set; }
     public List<VersionGroupDetail> version_group_details { get; set; }
@@ -57,7 +57,7 @@ public class PokemonData
     public int id { get; set; }
     public bool is_default { get; set; }
     public string location_area_encounters { get; set; }
-    public List<MoveData> moves { get; set; }
+    public List<MoveReference> moves { get; set; }
     public string name { get; set; }
     public int order { get; set; }
     public List<PastAbility> past_abilities { get; set; }
