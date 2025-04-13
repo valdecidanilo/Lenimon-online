@@ -133,7 +133,7 @@ public class Pokemon
                 break;
             }
         }
-        Debug.Log($"{name} has {possibleMoves.Count} possible moves");
+
         if(possibleMoves.Count < 4)
         {
             int difference = 4 - possibleMoves.Count;
