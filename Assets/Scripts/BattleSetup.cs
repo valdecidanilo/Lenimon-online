@@ -61,10 +61,12 @@ public class BattleSetup : MonoBehaviour
     {
         for (int i = 0; i < moves.Length; i++)
         {
-            moves[i].text = pokemon.moves[i]?.move.name ?? "-";
+            moves[i].text = pokemon.moves[i]?.name ?? "-";
         }
 
         //first selected
-        
+        moveType.text = pokemon.moves[0].moveType;
+        int ppAmount = pokemon.moves[0].pp;
+        movePp.text = $"{ppAmount}/{ppAmount}";
     }
 }

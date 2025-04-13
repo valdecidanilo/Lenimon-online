@@ -27,12 +27,6 @@ public class HeldItem
     public List<VersionItemDetail> version_details { get; set; }
 }
 
-public class MoveReference
-{
-    public ApiReference move { get; set; }
-    public List<VersionGroupDetail> version_group_details { get; set; }
-}
-
 public class PastAbility
 {
     public List<Ability> abilities { get; set; }
@@ -93,14 +87,6 @@ public class TypePokemon
 {
     public int slot { get; set; }
     public ApiReference type { get; set; }
-}
-
-public class VersionGroupDetail
-{
-    public int level_learned_at { get; set; }
-    public ApiReference move_learn_method { get; set; }
-    public int? order { get; set; }
-    public ApiReference version_group { get; set; }
 }
 public class VersionItemDetail
 {

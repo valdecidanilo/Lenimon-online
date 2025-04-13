@@ -8,21 +8,16 @@ public class TestScript : MonoBehaviour
 {
     [SerializeField] BattleSetup battle;
 
+    MoveDatabase moveDatabase;
     private Checklist loaded;
     Pokemon ally = null;
     Pokemon enemy = null;
 
     private void Awake()
     {
-        WebConnection.GetRequest<MoveData>($"https://pokeapi.co/api/v2/move/leer", (data) =>
-        {
-            WebConnection.GetRequest<MoveTypeData>(data.typeOfMove.url, (type) =>
-            {
-                Debug.Log($"{data.name} => {type.id}");
-            });
-        });
         loaded = new(2);
         loaded.onCompleted += StartBattle;
+        moveDatabase = Resources.Load<MoveDatabase>("MoveDatabase");
 
         PokeAPI.GetPokemonData("eevee", SetEnemy);
         PokeAPI.GetPokemonData("cyndaquil", SetAlly);
@@ -30,7 +25,7 @@ public class TestScript : MonoBehaviour
 
     private void SetAlly(PokemonData pokemon)
     {
-        Pokemon.GetLoadedPokemon(pokemon, Random.Range(0, 100), (pokemon) =>
+        Pokemon.GetLoadedPokemon(pokemon, Random.Range(1, 100), (pokemon) =>
         {
             ally = pokemon;
             CheckPokemon(ally);
@@ -40,7 +35,7 @@ public class TestScript : MonoBehaviour
 
     private void SetEnemy(PokemonData pokemon)
     {
-        Pokemon.GetLoadedPokemon(pokemon, Random.Range(0, 100), (pokemon) =>
+        Pokemon.GetLoadedPokemon(pokemon, Random.Range(1, 100), (pokemon) =>
         {
             enemy = pokemon;
             CheckPokemon(enemy);
@@ -51,6 +46,7 @@ public class TestScript : MonoBehaviour
     private void StartBattle()
     {
         battle.SetupBattle(ally, enemy);
+        moveDatabase.SetDirty();
     }
 
     private void CheckPokemon(Pokemon pokemon)

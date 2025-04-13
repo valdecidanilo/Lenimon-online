@@ -31,4 +31,16 @@ public static class PokeAPI
         string route = backSprite ? pokemon.sprites.back_default : pokemon.sprites.front_default;
         WebConnection.GetTexture(route, onSuccess);
     }
+
+    public static void GetMove(string name, Action<MoveData> onSuccess)
+    {
+        WebConnection.GetRequest<MoveData>($"https://pokeapi.co/api/v2/move/{name}", (data) =>
+        {
+            WebConnection.GetRequest<MoveTypeData>(data.typeOfMove.url, (type) =>
+            {
+                data.moveTypeData = type;
+                onSuccess?.Invoke(data);
+            });
+        });
+    }
 }
