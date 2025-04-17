@@ -1,12 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class TestScript : MonoBehaviour
 {
     [SerializeField] BattleSetup battle;
+    [SerializeField] private GameObject loadingScreen;
 
     MoveDatabase moveDatabase;
     private Checklist loaded;
@@ -19,8 +23,13 @@ public class TestScript : MonoBehaviour
         loaded.onCompleted += StartBattle;
         moveDatabase = Resources.Load<MoveDatabase>("MoveDatabase");
 
-        PokeAPI.GetPokemonData("eevee", SetEnemy);
-        PokeAPI.GetPokemonData("cyndaquil", SetAlly);
+        PokeAPI.GetPokemonData(Random.Range(1, 152), SetEnemy);
+        PokeAPI.GetPokemonData(Random.Range(1, 152), SetAlly);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space)) SceneManager.LoadScene(0);
     }
 
     private void SetAlly(PokemonData pokemon)
@@ -45,12 +54,14 @@ public class TestScript : MonoBehaviour
 
     private void StartBattle()
     {
+        loadingScreen.SetActive(false);
         battle.SetupBattle(ally, enemy);
         moveDatabase.SetDirty();
     }
 
     private void CheckPokemon(Pokemon pokemon)
     {
+        return;
         StringBuilder type = new();
         for (int i = 0; i < pokemon.data.types.Count; i++)
         {

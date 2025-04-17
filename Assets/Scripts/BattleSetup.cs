@@ -61,7 +61,7 @@ public class BattleSetup : MonoBehaviour
     {
         for (int i = 0; i < moves.Length; i++)
         {
-            moves[i].text = pokemon.moves[i]?.name ?? "-";
+            moves[i].text = pokemon.moves[i]?.name.Replace("-", " ") ?? "-";
         }
 
         //first selected

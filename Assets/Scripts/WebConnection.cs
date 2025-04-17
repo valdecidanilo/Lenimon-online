@@ -13,6 +13,7 @@ public class WebConnection : MonoBehaviour
     public static void Setup()
     {
         instance = new GameObject("WebConnection").AddComponent<WebConnection>();
+        DontDestroyOnLoad(instance.gameObject);
     }
 
     public static void GetRequest<T>(string route, Action<T> onSuccess) =>
