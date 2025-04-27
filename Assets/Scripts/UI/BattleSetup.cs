@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,9 +27,16 @@ public class BattleSetup : MonoBehaviour
 
     [Header("Battle Menu")]
     [SerializeField] private GameObject battleMenu;
+    [SerializeField] private ContextSelection battleChoice;
 
     [Header("Moves Menu")]
     [SerializeField] private FightMenu fightMenu;
+
+    private void Awake()
+    {
+        battleChoice.onItemPick += OnChoicePick;
+        fightMenu.onReturn += OpenChoiceMenu;
+    }
 
     public void SetupBattle(Pokemon ally, Pokemon enemy)
     {
@@ -48,8 +56,39 @@ public class BattleSetup : MonoBehaviour
         hp.fillAmount = 1;
         xp.fillAmount = Random.Range(0, 1);
 
-        battleMenu.SetActive(false); 
+        OpenChoiceMenu();
+    }
+
+    private void OnChoicePick(int choice)
+    {
+        switch (choice)
+        {
+            case 0:
+                OpenBattleScene();
+                break;
+            case 2:
+                Debug.Log("pokemon choice");
+                break;
+            default:
+                Debug.Log("choice not found");
+                break;
+        }
+    }
+
+    private void OpenChoiceMenu()
+    {
+        //disable other windows
+        fightMenu.gameObject.SetActive(false);
+
+        //open window
+        battleMenu.SetActive(true);
+        battleChoice.Focus();
+    }
+
+    private void OpenBattleScene()
+    {
+        battleMenu.SetActive(false);
         fightMenu.gameObject.SetActive(true);
-        fightMenu.SetMoves(ally);
+        fightMenu.SetMoves(allyPokemon);
     }
 }

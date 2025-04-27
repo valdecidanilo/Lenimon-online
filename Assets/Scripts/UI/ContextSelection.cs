@@ -10,20 +10,30 @@ public class ContextSelection : MonoBehaviour
     [SerializeField] private Vector2 arrowOffset;
     [Space, SerializeField] private List<SelectionItem> selectionItems;
 
-    private SelectionItem selected;
+    private int selectedId;
 
-    public Action<int> onSubmit;
+    public Action<int> onItemPick;
     public Action<int> onSelect;
 
     private void Awake()
     {
-        selectionItems[0].OnSelect(null);
         for (int i = 0; i < selectionItems.Count; i++)
         {
             selectionItems[i].onSelected += OnSelect;
+            selectionItems[i].onPick += OnItemPick;
         }
 
-        selected = selectionItems[0];
+        selectedId = 0;
+    }
+
+    public void Focus()
+    {
+        selectionItems[selectedId].OnSelect(null);
+    }
+
+    private void OnItemPick()
+    {
+        onItemPick?.Invoke(selectedId);
     }
 
     private void OnSelect(SelectionItem item)
@@ -37,7 +47,7 @@ public class ContextSelection : MonoBehaviour
         arrow.anchorMin = item.rectTransform.anchorMin;
         arrow.anchoredPosition = anchor;
 
-        selected = item;
-        onSelect?.Invoke(selectionItems.IndexOf(selected));
+        selectedId = selectionItems.IndexOf(item);
+        onSelect?.Invoke(selectedId);
     }
 }

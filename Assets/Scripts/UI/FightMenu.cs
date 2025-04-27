@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class FightMenu : MonoBehaviour
 {
@@ -12,9 +12,17 @@ public class FightMenu : MonoBehaviour
 
     private Pokemon pokemon;
 
+    public Action onReturn;
+
     private void Awake()
     {
         movesSelection.onSelect += OnSelectionChanged;
+    }
+
+    private void Update()
+    {
+        if (InputSystem.actions.FindAction("UI/Cancel").WasPressedThisFrame())
+            onReturn?.Invoke();
     }
 
     public void SetMoves(Pokemon pokemon)
@@ -27,6 +35,7 @@ public class FightMenu : MonoBehaviour
 
         //first selected
         UpdateMoveData(pokemon.moves[0]);
+        movesSelection.Focus();
     }
 
     private void OnSelectionChanged(int id)

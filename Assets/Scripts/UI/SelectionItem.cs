@@ -9,15 +9,15 @@ public class SelectionItem : MonoBehaviour, IPointerEnterHandler, ISelectHandler
 
     private RectTransform _rectTransform;
 
-    public RectTransform rectTransform
-    {
-        get
-        {
-            if(!_rectTransform) _rectTransform = (RectTransform) transform;
-            return _rectTransform;
-        }
-    }
+    public RectTransform rectTransform => _rectTransform ??= (RectTransform)transform;
     public Action<SelectionItem> onSelected;
+    public Action onPick;
+
+    private void Awake()
+    {
+        button.onClick.AddListener(() => onPick?.Invoke());
+    }
+
 
     public void OnPointerEnter(PointerEventData eventData)
     {
