@@ -28,10 +28,7 @@ public class BattleSetup : MonoBehaviour
     [SerializeField] private GameObject battleMenu;
 
     [Header("Moves Menu")]
-    [SerializeField] private GameObject movesMenu;
-    [SerializeField] private TMP_Text moveType;
-    [SerializeField] private TMP_Text movePp;
-    [SerializeField] private TMP_Text[] moves;
+    [SerializeField] private FightMenu fightMenu;
 
     public void SetupBattle(Pokemon ally, Pokemon enemy)
     {
@@ -52,21 +49,7 @@ public class BattleSetup : MonoBehaviour
         xp.fillAmount = Random.Range(0, 1);
 
         battleMenu.SetActive(false); 
-        movesMenu.SetActive(true);
-
-        SetMoves(ally);
-    }
-
-    private void SetMoves(Pokemon pokemon)
-    {
-        for (int i = 0; i < moves.Length; i++)
-        {
-            moves[i].text = pokemon.moves[i]?.name.Replace("-", " ") ?? "-";
-        }
-
-        //first selected
-        moveType.text = pokemon.moves[0].moveType;
-        int ppAmount = pokemon.moves[0].pp;
-        movePp.text = $"{ppAmount}/{ppAmount}";
+        fightMenu.gameObject.SetActive(true);
+        fightMenu.SetMoves(ally);
     }
 }
