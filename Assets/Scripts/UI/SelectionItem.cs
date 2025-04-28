@@ -18,11 +18,10 @@ public class SelectionItem : MonoBehaviour, IPointerEnterHandler, ISelectHandler
         button.onClick.AddListener(() => onPick?.Invoke());
     }
 
-
     public void OnPointerEnter(PointerEventData eventData)
     {
         button.Select();
-        onSelected?.Invoke(this);
+        OnSelected();
     }
 
     public void OnSelect(BaseEventData eventData)
@@ -33,6 +32,8 @@ public class SelectionItem : MonoBehaviour, IPointerEnterHandler, ISelectHandler
             return;
         }
 
-        onSelected?.Invoke(this);
+        OnSelected();
     }
+
+    private void OnSelected() => onSelected?.Invoke(this);
 }

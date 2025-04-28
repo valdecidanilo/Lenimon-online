@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5351668410648486187}
   - component: {fileID: 1494051846641249318}
   - component: {fileID: 8514276262030804593}
+  - component: {fileID: 5644601197159097575}
   m_Layer: 5
   m_Name: Pokeball
   m_TagString: Untagged
@@ -75,6 +76,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5644601197159097575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1465225674086712247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a54221153e7b2eb4787a654849681ca8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  context: {fileID: 0}
+  targetItem: {fileID: 3451669316322335337}
+  image: {fileID: 8514276262030804593}
+  normalSprite: {fileID: 21300000, guid: b15f8959b9761b74585194c0fafd783d, type: 3}
+  selectedSprite: {fileID: 21300000, guid: 88c1117431221be4fa5c7b5e936f334e, type: 3}
 --- !u!1 &2056355428747443501
 GameObject:
   m_ObjectHideFlags: 0
@@ -87,6 +105,9 @@ GameObject:
   - component: {fileID: 1353651995465888432}
   - component: {fileID: 4721834885475005950}
   - component: {fileID: 5134277973783453559}
+  - component: {fileID: 3451669316322335337}
+  - component: {fileID: 3289026105055727386}
+  - component: {fileID: 3663545684781797206}
   m_Layer: 5
   m_Name: AltPokemon
   m_TagString: Untagged
@@ -202,6 +223,62 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3451669316322335337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056355428747443501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c86ce77be52b9d646bc221780773f0ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 5134277973783453559}
+--- !u!114 &3289026105055727386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056355428747443501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a697210c309de24f8d1ee8de60f6880, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectionItem: {fileID: 3663545684781797206}
+  maleIcon: {fileID: 21300000, guid: b7b1377e1eaa0114ab8bbaf8c2d40896, type: 3}
+  femaleIcon: {fileID: 21300000, guid: 13127d3d156d67c4fb14dde95279e3a1, type: 3}
+  nickname: {fileID: 2835147514194871476}
+  level: {fileID: 5877638698948333086}
+  hp: {fileID: 5569790494497746316}
+  hpBar: {fileID: 1935311967517744776}
+  icon: {fileID: 8217951217044277181}
+  gender: {fileID: 6492420819240048758}
+--- !u!114 &3663545684781797206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056355428747443501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa0950dfe310e264a9ef13fb2d99ed18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  context: {fileID: 0}
+  targetItem: {fileID: 3451669316322335337}
+  image: {fileID: 4721834885475005950}
+  normalSprite: {fileID: 21300000, guid: 7989c42330774c14da189e76e54fb97b, type: 3}
+  selectedSprite: {fileID: 21300000, guid: ecc87e5294780fe4382960735d243846, type: 3}
+  currentState: 0
+  normalSwap: {fileID: 21300000, guid: 4462775186b5d29478cc3e1eb0d65f98, type: 3}
+  selectedSwap: {fileID: 21300000, guid: 3d849a86c16a2d4458cfec240a671072, type: 3}
+  normalFaint: {fileID: 21300000, guid: fc4d41e0a83cdfe44ac8c53bc1dab03a, type: 3}
+  selectedFaint: {fileID: 21300000, guid: a935cbc5af8f1c040a20eb91485320c8, type: 3}
 --- !u!1 &2931387767628109175
 GameObject:
   m_ObjectHideFlags: 0
@@ -371,8 +448,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -532.23, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: -518.8, y: 19.685}
+  m_SizeDelta: {x: 164.33, y: 164.3315}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6230954539575688881
 CanvasRenderer:
@@ -404,7 +481,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: b56d05ca97252f742a160ee5f4c65391, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1

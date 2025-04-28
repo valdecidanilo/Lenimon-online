@@ -40,12 +40,21 @@ public class Pokemon
     private float nSpd = 1;
     #endregion
 
+    //Battle Stats
+    public int b_hp { get; private set; }
+    public int b_atk { get; private set; }
+    public int b_def { get; private set; }
+    public int b_sAtk { get; private set; }
+    public int b_sDef { get; private set; }
+    public int b_spd { get; private set; }
+    
     //MetaData
     public Sprite frontSprite { get; private set; }
     public Sprite backSprite { get; private set; }
+    public Sprite icon { get; private set; }
     public MoveModel[] moves;
 
-    Checklist dataChecklist;
+    private Checklist dataChecklist;
     public Action onDoneLoading;
 
     public Pokemon(PokemonData pokemonData, int lv = 1)
@@ -63,8 +72,15 @@ public class Pokemon
 
         moves = new MoveModel[4];
         LevelUp(Mathf.Max(lv, 1));//minimum level is 1
+        
+        b_hp = hp;
+        b_atk = atk;
+        b_def = def;
+        b_sAtk = sAtk;
+        b_sDef = sDef;
+        b_spd = spd;
 
-        dataChecklist = new(6);
+        dataChecklist = new(0);
         dataChecklist.onCompleted += () => onDoneLoading?.Invoke();
     }
 
@@ -83,16 +99,25 @@ public class Pokemon
 
     public void LoadRequiredData()
     {
+        dataChecklist.AddStep();
         PokeAPI.GetSprite(data, (sprite) =>
         {
             frontSprite = sprite;
             dataChecklist.FinishStep();
         });
+        dataChecklist.AddStep();
         PokeAPI.GetSprite(data, (sprite) =>
         {
             backSprite = sprite;
             dataChecklist.FinishStep();
         }, true);
+        dataChecklist.AddStep();
+        PokeAPI.GetIcon(data, (sprite) =>
+        {
+            icon = sprite;
+            dataChecklist.FinishStep();
+        });
+
 
         GetRandomMoves();
     }
@@ -134,19 +159,11 @@ public class Pokemon
             }
         }
 
-        if(possibleMoves.Count < 4)
-        {
-            int difference = 4 - possibleMoves.Count;
-            for (int i = 0; i < difference; i++)
-            {
-                dataChecklist.FinishStep();
-            }
-        }
-
         MoveReference[] newMoves = new MoveReference[4];
         int moveAmount = Mathf.Min(possibleMoves.Count, 4);
         for (int i = 0; i < moveAmount; i++)
         {
+            dataChecklist.AddStep();
             int moveId = Random.Range(0, possibleMoves.Count);
             newMoves[i] = possibleMoves[moveId];
             possibleMoves.RemoveAt(moveId);

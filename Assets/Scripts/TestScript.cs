@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -29,7 +30,8 @@ public class TestScript : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space)) SceneManager.LoadScene(0);
+        if (Keyboard.current.spaceKey.wasPressedThisFrame) SceneManager.LoadScene(0);
+        
     }
 
     private void SetAlly(PokemonData pokemon)

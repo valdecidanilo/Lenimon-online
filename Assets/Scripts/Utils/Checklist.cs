@@ -15,6 +15,8 @@ public class Checklist
         requiredSteps = stepsNeeded;
     }
 
+    public void AddStep(int amount = 1) => requiredSteps += amount;
+
     public void FinishStep(int stepAmount = 1)
     {
         currentSteps += stepAmount;

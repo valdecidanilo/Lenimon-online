@@ -1,16 +1,19 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ContextSelection : MonoBehaviour
 {
-
     [SerializeField] private RectTransform arrow;
     [SerializeField] private Vector2 arrowOffset;
     [Space, SerializeField] private List<SelectionItem> selectionItems;
 
     private int selectedId;
+
+    public SelectionItem currentSelected => selectionItems[selectedId];
+
+    public int itemCount => selectionItems.Count;
+    public SelectionItem this[int id] => selectionItems[id];
 
     public Action<int> onItemPick;
     public Action<int> onSelect;
@@ -28,7 +31,13 @@ public class ContextSelection : MonoBehaviour
 
     public void Focus()
     {
-        selectionItems[selectedId].OnSelect(null);
+        currentSelected.OnSelect(null);
+    }
+
+    public void Select(int id)
+    {
+        selectedId = id;
+        Focus();
     }
 
     private void OnItemPick()
@@ -39,8 +48,6 @@ public class ContextSelection : MonoBehaviour
     private void OnSelect(SelectionItem item)
     {
         //Debug.Log($"{item.name} selected");
-
-        Rect rect = item.rectTransform.rect;
         Vector2 anchor = item.rectTransform.anchoredPosition + arrowOffset;
 
         arrow.anchorMax = item.rectTransform.anchorMax;

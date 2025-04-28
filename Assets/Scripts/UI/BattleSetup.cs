@@ -32,10 +32,14 @@ public class BattleSetup : MonoBehaviour
     [Header("Moves Menu")]
     [SerializeField] private FightMenu fightMenu;
 
+    [Header("Party Menu")]
+    [SerializeField] private PartyMenu partyChoice;
+
     private void Awake()
     {
         battleChoice.onItemPick += OnChoicePick;
         fightMenu.onReturn += OpenChoiceMenu;
+        partyChoice.onReturn += OpenChoiceMenu;
     }
 
     public void SetupBattle(Pokemon ally, Pokemon enemy)
@@ -66,8 +70,14 @@ public class BattleSetup : MonoBehaviour
             case 0:
                 OpenBattleScene();
                 break;
+            case 1:
+                OpenBag();
+                break;
             case 2:
-                Debug.Log("pokemon choice");
+                OpenParty();
+                break;
+            case 3:
+                Run();
                 break;
             default:
                 Debug.Log("choice not found");
@@ -79,6 +89,7 @@ public class BattleSetup : MonoBehaviour
     {
         //disable other windows
         fightMenu.gameObject.SetActive(false);
+        partyChoice.gameObject.SetActive(false);
 
         //open window
         battleMenu.SetActive(true);
@@ -88,7 +99,22 @@ public class BattleSetup : MonoBehaviour
     private void OpenBattleScene()
     {
         battleMenu.SetActive(false);
-        fightMenu.gameObject.SetActive(true);
-        fightMenu.SetMoves(allyPokemon);
+        fightMenu.OpenMenu(allyPokemon);
+    }
+
+    private void OpenBag()
+    {
+        
+    }
+
+    private void OpenParty()
+    {
+        battleMenu.SetActive(false);
+        partyChoice.OpenMenu(new[] { allyPokemon });
+    }
+
+    private void Run()
+    {
+        
     }
 }

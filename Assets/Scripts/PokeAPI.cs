@@ -26,6 +26,24 @@ public static class PokeAPI
         }, backSprite);
     }
 
+    public static void GetIcon(PokemonData pokemon, Action<Sprite> onSuccess)
+    {
+        string route = pokemon.sprites.versions.gen7.icons.front_default;
+        if(string.IsNullOrEmpty(route)) return;
+        route = string.IsNullOrEmpty(pokemon.sprites.versions.gen8.icons.front_default)
+            ? route
+            : pokemon.sprites.versions.gen8.icons.front_default;
+        if(string.IsNullOrEmpty(route)) return;
+        
+        WebConnection.GetTexture(route, (txt) =>
+        {
+            Rect rect = new(0, 0, txt.width, txt.height);
+            Vector2 pivot = Vector2.one / 2f;
+            Sprite sprite = Sprite.Create(txt, rect, pivot);
+            onSuccess?.Invoke(sprite);
+        });
+    }
+
     public static void GetTexture(PokemonData pokemon, Action<Texture2D> onSuccess, bool backSprite = false)
     {
         string route = backSprite ? pokemon.sprites.back_default : pokemon.sprites.front_default;
