@@ -67,7 +67,7 @@ public class TestScript : MonoBehaviour
 
     private void GetPokemon(int pokemonId, int level, Action<Pokemon> onFinished)
     {
-        PokeAPI.GetPokemonData("giratina-origin", (data) =>
+        PokeAPI.GetPokemonData(pokemonId, (data) =>
         {
             Pokemon.GetLoadedPokemon(data, level, onFinished);
         });
