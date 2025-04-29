@@ -83,21 +83,21 @@ public class Pokemon
         PokeAPI.GetSprite(data, (sprite) =>
         {
             frontSprite = sprite;
-            Logger.Log("Front sprite done loading", LogFlags.PokemonBuild);
+            Logger.Log($"{name} Front sprite done loading", LogFlags.PokemonBuild);
             dataChecklist.FinishStep();
         });
         dataChecklist.AddStep();
         PokeAPI.GetSprite(data, (sprite) =>
         {
             backSprite = sprite;
-            Logger.Log("Back sprite done loading", LogFlags.PokemonBuild);
+            Logger.Log($"{name} Back sprite done loading", LogFlags.PokemonBuild);
             dataChecklist.FinishStep();
         }, true);
         dataChecklist.AddStep();
         PokeAPI.GetIcon(data, (sprite) =>
         {
             icon = sprite;
-            Logger.Log("Icon done loading", LogFlags.PokemonBuild);
+            Logger.Log($"{name} Icon done loading", LogFlags.PokemonBuild);
             dataChecklist.FinishStep();
         });
 
@@ -169,7 +169,7 @@ public class Pokemon
 
             if (loadedMoves.isDone)
             {
-                Logger.Log("Moves done loading", LogFlags.PokemonBuild);
+                Logger.Log($"{name} Moves done loading", LogFlags.PokemonBuild);
                 dataChecklist.FinishStep();
                 return;
             }
@@ -196,7 +196,7 @@ public class Pokemon
                 gender = randomGender < data.genderRate ? Gender.Female : Gender.Male;
             }
 
-            Logger.Log($"Gender done loading: {gender}", LogFlags.PokemonBuild);
+            Logger.Log($"{name} Gender done loading: {gender}", LogFlags.PokemonBuild);
             dataChecklist.FinishStep();
         });
     }

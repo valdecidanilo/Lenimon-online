@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using LenixSO.Logger;
 using Logger = LenixSO.Logger.Logger;
+using UnityEditor.PackageManager.Requests;
 
 public class WebConnection : MonoBehaviour
 {
@@ -38,7 +39,7 @@ public class WebConnection : MonoBehaviour
         }
         else
         {
-            Logger.LogError($"REQUEST ERROR: {request.error}", LogFlags.Response);
+            HandleError(request.responseCode, request.error, Get(route, onSuccess));
         }
     }
 
@@ -50,9 +51,34 @@ public class WebConnection : MonoBehaviour
 
         if (request.result == UnityWebRequest.Result.Success)
         {
+            Logger.Log($"{route} response: Texture found", LogFlags.Response);
             Texture2D data = DownloadHandlerTexture.GetContent(request);
             data.filterMode = FilterMode.Point;
             onSuccess?.Invoke(data);
+        }
+        else
+        {
+            HandleError(request.responseCode, request.error, DownloadTexture(route, onSuccess));
+        }
+    }
+
+    private static IEnumerator DelayedCoroutine(float delay, IEnumerator coroutine)
+    {
+        yield return new WaitForSeconds(delay);
+        yield return coroutine;
+    }
+
+    private static void HandleError(long code, string message, IEnumerator coroutine)
+    {
+        switch (code)
+        {
+            case 429:
+                Logger.LogWarning("Too many requests, retrying", LogFlags.Response);
+                instance.StartCoroutine(DelayedCoroutine(1, coroutine));
+                break;
+            default:
+                Logger.LogError($"REQUEST ERROR: {message}", LogFlags.Response);
+                break;
         }
     }
 }
