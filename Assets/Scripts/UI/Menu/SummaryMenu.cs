@@ -7,6 +7,10 @@ using Logger = LenixSO.Logger.Logger;
 
 public class SummaryMenu : ContextMenu<Pokemon>
 {
+    //All sceens: front sprite, nickname/name, lv, gender, pokeball?
+    //Screen 1: 
+
+    private Pokemon pokemon;
     private InputAction navigateAction;
 
     protected override void Awake()
