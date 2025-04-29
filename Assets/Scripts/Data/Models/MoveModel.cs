@@ -14,7 +14,7 @@ public class MoveModel
 
     public MoveModel(MoveData data)
     {
-        name = data.name;
+        name = data.name.Replace("-", " ");
         id = data.id;
         moveType = data.type.name;
         power = data.power ?? 0;

@@ -1,69 +1,92 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+using LenixSO.Logger;
 using Random = UnityEngine.Random;
+using Logger = LenixSO.Logger.Logger;
 
 public class TestScript : MonoBehaviour
 {
-    [SerializeField] BattleSetup battle;
+    private const int maxPokemonId = 1025;
+
+    [SerializeField] private BattleSetup battle;
     [SerializeField] private GameObject loadingScreen;
 
-    MoveDatabase moveDatabase;
-    private Checklist loaded;
-    Pokemon ally = null;
-    Pokemon enemy = null;
+    private MoveDatabase moveDatabase;
+
+    Pokemon[] allyParty;
+    Pokemon[] enemyParty;
 
     private void Awake()
     {
-        loaded = new(2);
-        loaded.onCompleted += StartBattle;
         moveDatabase = Resources.Load<MoveDatabase>("MoveDatabase");
+        GenerateParties();
+    }
 
-        PokeAPI.GetPokemonData(Random.Range(1, 152), SetEnemy);
-        PokeAPI.GetPokemonData(Random.Range(1, 152), SetAlly);
+    private void GenerateParties()
+    {
+        //get encounter level
+        int encounterLevel = Random.Range(1, 101);
+
+        //generate ally party
+        int partySize = Random.Range(1, 7);
+        int partyLevel = Mathf.Min(100, encounterLevel + (6 - partySize));
+        allyParty = new Pokemon[partySize];
+        Checklist alliesLoaded = new(partySize);
+
+        alliesLoaded.onCompleted += () =>
+        {
+            partySize = Random.Range(1, 7);
+            partyLevel = Mathf.Min(100, encounterLevel + (6 - partySize));
+            enemyParty = new Pokemon[partySize];
+
+            Checklist opponentLoaded = new(partySize);
+            opponentLoaded.onCompleted += StartBattle;
+            Logger.Log($"setup enemy party ({partySize} pokemons)", LogFlags.Game);
+            SetupParty(enemyParty, opponentLoaded);
+        };
+
+        Logger.Log($"setup ally party ({partySize} pokemons)", LogFlags.Game);
+        SetupParty(allyParty, alliesLoaded);
+
+        void SetupParty(Pokemon[] party, Checklist loaded)
+        {
+            if (loaded.isDone) return;
+            int pokemonId = Random.Range(1, maxPokemonId + 1);
+            GetPokemon(pokemonId, partyLevel, (pokemon) =>
+            {
+                CheckPokemon(pokemon);
+                party[loaded.currentSteps] = pokemon;
+                loaded.FinishStep();
+                SetupParty(party, loaded);
+            });
+        }
+    }
+
+    private void GetPokemon(int pokemonId, int level, Action<Pokemon> onFinished)
+    {
+        PokeAPI.GetPokemonData("giratina-origin", (data) =>
+        {
+            Pokemon.GetLoadedPokemon(data, level, onFinished);
+        });
     }
 
     private void Update()
     {
         if (Keyboard.current.spaceKey.wasPressedThisFrame) SceneManager.LoadScene(0);
-        
-    }
-
-    private void SetAlly(PokemonData pokemon)
-    {
-        Pokemon.GetLoadedPokemon(pokemon, Random.Range(1, 100), (pokemon) =>
-        {
-            ally = pokemon;
-            CheckPokemon(ally);
-            loaded.FinishStep();
-        });
-    }
-
-    private void SetEnemy(PokemonData pokemon)
-    {
-        Pokemon.GetLoadedPokemon(pokemon, Random.Range(1, 100), (pokemon) =>
-        {
-            enemy = pokemon;
-            CheckPokemon(enemy);
-            loaded.FinishStep();
-        });
     }
 
     private void StartBattle()
     {
         loadingScreen.SetActive(false);
-        battle.SetupBattle(ally, enemy);
-        moveDatabase.SetDirty();
+        battle.SetupBattle(allyParty, enemyParty);
     }
 
     private void CheckPokemon(Pokemon pokemon)
     {
-        return;
+        StringBuilder finalLog = new();
         StringBuilder type = new();
         for (int i = 0; i < pokemon.data.types.Count; i++)
         {
@@ -80,16 +103,10 @@ public class TestScript : MonoBehaviour
             if (i < pokemon.data.abilities.Count - 1) abilities.Append(" | ");
         }
 
-        StringBuilder sprites = new();
-        sprites.Append($"gen1: {pokemon.data.sprites.versions.gen1.redblue.front_default != null}\n");
-        sprites.Append($"gen2: {pokemon.data.sprites.versions.gen2.gold.front_default != null}\n");
-        sprites.Append($"gen3: {pokemon.data.sprites.versions.gen3.rubysapphire.front_default != null}\n");
-        sprites.Append($"gen4: {pokemon.data.sprites.versions.gen4.diamondpearl.front_default != null}\n");
-        sprites.Append($"gen5: {pokemon.data.sprites.versions.gen5.blackwhite.front_default != null}\n");
-        sprites.Append($"gen6: {pokemon.data.sprites.versions.gen6.xy.front_default != null}\n");
-        sprites.Append($"gen7: {pokemon.data.sprites.versions.gen7.ultrasunultramoon.front_default != null}\n");
-        sprites.Append($"gen8: {pokemon.data.sprites.versions.gen8.icons.front_default != null}\n");
+        finalLog.Append($"{pokemon.gender} {pokemon.name} (no.{pokemon.id}) -> Lv{pokemon.level}");
+        finalLog.Append($"\n{type.ToString()}");
+        finalLog.Append($"\n{abilities.ToString()}");
 
-        Debug.Log($"{pokemon.name}\n{type.ToString()}\n{abilities.ToString()}\n\n{sprites.ToString()}");
+        Logger.Log(finalLog.ToString(), LogFlags.DataCheck);
     }
 }

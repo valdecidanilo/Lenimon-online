@@ -1,9 +1,10 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using LenixSO.Logger;
+using Logger = LenixSO.Logger.Logger;
 
 public class WebConnection : MonoBehaviour
 {
@@ -19,26 +20,31 @@ public class WebConnection : MonoBehaviour
     public static void GetRequest<T>(string route, Action<T> onSuccess) =>
         instance.StartCoroutine(Get(route, onSuccess));
 
+    public static void GetTexture(string route, Action<Texture2D> onSuccess) =>
+        instance.StartCoroutine(DownloadTexture(route, onSuccess));
+
     private static IEnumerator Get<T>(string route, Action<T> onSuccess)
     {
+        Logger.Log($"Request to: \n{route}", LogFlags.Request);
         UnityWebRequest request = UnityWebRequest.Get(route);
         yield return request.SendWebRequest();
 
         //Debug.Log($"Request[{route}]: {request.result}");
         if (request.result == UnityWebRequest.Result.Success)
         {
-            //Debug.Log($"Raw:\n{request.downloadHandler.text}");
+            Logger.Log($"{route} response:\n{request.downloadHandler.text}", LogFlags.Response);
             T data = JsonConvert.DeserializeObject<T>(request.downloadHandler.text);
             onSuccess?.Invoke(data);
         }
-
+        else
+        {
+            Logger.LogError($"REQUEST ERROR: {request.error}", LogFlags.Response);
+        }
     }
-
-    public static void GetTexture(string route, Action<Texture2D> onSuccess) =>
-        instance.StartCoroutine(DownloadTexture(route, onSuccess));
 
     private static IEnumerator DownloadTexture(string route, Action<Texture2D> onSuccess)
     {
+        Logger.Log($"Request to: \n{route}", LogFlags.Request);
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(route);
         yield return request.SendWebRequest();
 

@@ -20,7 +20,7 @@ public class FightMenu : ContextMenu<Pokemon>
         pokemon = data;
         for (int i = 0; i < moves.Length; i++)
         {
-            moves[i].text = pokemon.moves[i]?.name.Replace("-", " ") ?? "-";
+            moves[i].text = pokemon.moves[i]?.name ?? "-";
         }
 
         //first selected

@@ -1,4 +1,3 @@
-// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
@@ -19,24 +18,6 @@ public class GameIndex
 {
     public int game_index { get; set; }
     public ApiReference version { get; set; }
-}
-
-public class HeldItem
-{
-    public ApiReference item { get; set; }
-    public List<VersionItemDetail> version_details { get; set; }
-}
-
-public class PastAbility
-{
-    public List<Ability> abilities { get; set; }
-    public ApiReference generation { get; set; }
-}
-
-public class PastType
-{
-    public ApiReference generation { get; set; }
-    public List<TypePokemon> types { get; set; }
 }
 
 public class PokemonData
@@ -62,12 +43,24 @@ public class PokemonData
     public List<TypePokemon> types { get; set; }
     public int weight { get; set; }
 
-    public int hpStat => stats[0].base_stat;
-    public int atkStat => stats[1].base_stat;
-    public int defStat => stats[2].base_stat;
-    public int sAtkStat => stats[3].base_stat;
-    public int sDefStat => stats[4].base_stat;
-    public int spdStat => stats[5].base_stat;
+    public int hpStat => stats[(int)StatType.hp].base_stat;
+    public int atkStat => stats[(int)StatType.atk].base_stat;
+    public int defStat => stats[(int)StatType.def].base_stat;
+    public int sAtkStat => stats[(int)StatType.sAtk].base_stat;
+    public int sDefStat => stats[(int)StatType.sDef].base_stat;
+    public int spdStat => stats[(int)StatType.spd].base_stat;
+}
+
+public enum StatType
+{
+    hp = 0,
+    atk = 1,
+    def = 2,
+    sAtk = 3,
+    sDef = 4,
+    spd = 5,
+    acc = 6,
+    eva = 7
 }
 
 public class Stat
@@ -88,8 +81,31 @@ public class TypePokemon
     public int slot { get; set; }
     public ApiReference type { get; set; }
 }
-public class VersionItemDetail
+
+public class Species
 {
-    public int rarity {  get; set; }
-    public ApiReference version { get; set; }
+    [JsonProperty("base_happiness")] public int baseHapiness;
+    [JsonProperty("capture_rate")] public int captureRate;
+    [JsonProperty("gender_rate")] public int genderRate;
+    [JsonProperty("hatch_counter")] public int hatchCounter;
+    [JsonProperty("is_baby")] public bool isBaby;
+    [JsonProperty("is_legendary")] public bool isLegendary;
+    [JsonProperty("is_mythical")] public bool isMythical;
+
+    //references
+    [JsonProperty("evolution_chain")] public ApiReference evolutionChain;
+    [JsonProperty("egg_groups")] public List<ApiReference> eggGroup;
+    [JsonProperty("")] public ApiReference evolvesFrom;
+    [JsonProperty("growth_rate")] public ApiReference growthRate;
+    public ApiReference color;
+    public ApiReference habitat;
+}
+public class EvolutionChain
+{
+
+}
+
+public class Evolution
+{
+
 }

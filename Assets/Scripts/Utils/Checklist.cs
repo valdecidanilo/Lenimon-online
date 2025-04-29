@@ -5,8 +5,9 @@ public class Checklist
     public int requiredSteps { get; private set; }
     public int currentSteps { get; private set; }
 
-    public float percentDone => (float)currentSteps / currentSteps;
+    public float percentDone => (float)currentSteps / requiredSteps;
     public bool isDone => currentSteps >= requiredSteps;
+    public event Action<float> onProgress;
     public event Action onCompleted;
 
     public Checklist(int stepsNeeded)
@@ -21,7 +22,7 @@ public class Checklist
     {
         currentSteps += stepAmount;
         currentSteps = Math.Min(currentSteps, requiredSteps);
-
+        onProgress?.Invoke(percentDone);
         if (isDone) onCompleted?.Invoke();
     }
 

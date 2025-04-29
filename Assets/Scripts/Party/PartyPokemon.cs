@@ -26,7 +26,7 @@ public class PartyPokemon : MonoBehaviour
     {
         gameObject.SetActive(pokemon != null);
         if(pokemon == null) return;
-        selectionItem.currentState = pokemon.b_hp == 0 ? 
+        selectionItem.currentState = pokemon.battleStats[StatType.hp] == 0 ? 
             PokemonSelectionItem.PokemonState.Faint :
             PokemonSelectionItem.PokemonState.Normal;
     }
@@ -37,9 +37,18 @@ public class PartyPokemon : MonoBehaviour
 
         nickname.text = pokemon.name;
         level.text = pokemon.level.ToString();
-        hp.text = $"{pokemon.b_hp}/{pokemon.hp}";
-        hpBar.fillAmount = (float)pokemon.b_hp / pokemon.hp;
+        hp.text = $"{pokemon.battleStats[StatType.hp]}/{pokemon.stats[StatType.hp]}";
+        hpBar.fillAmount = (float)pokemon.battleStats[StatType.hp] / pokemon.stats[StatType.hp];
         icon.sprite = pokemon.icon;
-        //gender
+        gender.gameObject.SetActive(newPokemon.gender != Gender.NonBinary);
+        switch (newPokemon.gender)
+        {
+            case Gender.Male:
+                gender.sprite = maleIcon;
+                break;
+            case Gender.Female:
+                gender.sprite = femaleIcon;
+                break;
+        }
     }
 }

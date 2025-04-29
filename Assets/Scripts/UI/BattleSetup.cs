@@ -7,16 +7,23 @@ using UnityEngine.UI;
 
 public class BattleSetup : MonoBehaviour
 {
+    [Header("References")]
+    [SerializeField] Sprite male;
+    [SerializeField] Sprite female;
+
     //Enemy
     private Pokemon enemyPokemon;
+    private Pokemon[] enemyParty;
     [Header("Enemy")]
     [SerializeField] private Image enemyImage;
     [SerializeField] private TMP_Text enemyName;
     [SerializeField] private TMP_Text enemyLevel;
     [SerializeField] private Image enemyHp;
+    [SerializeField] private Image enemyGender;
 
     //Ally
     private Pokemon allyPokemon;
+    private Pokemon[] allyParty;
     [Header("Ally")]
     [SerializeField] private Image pokemonImage;
     [SerializeField] private TMP_Text pokemonName;
@@ -24,6 +31,7 @@ public class BattleSetup : MonoBehaviour
     [SerializeField] private Image hp;
     [SerializeField] private TMP_Text hpValue;
     [SerializeField] private Image xp;
+    [SerializeField] private Image gender;
 
     [Header("Battle Menu")]
     [SerializeField] private GameObject battleMenu;
@@ -42,23 +50,45 @@ public class BattleSetup : MonoBehaviour
         partyChoice.onReturn += OpenChoiceMenu;
     }
 
-    public void SetupBattle(Pokemon ally, Pokemon enemy)
+    public void SetupBattle(Pokemon[] allies, Pokemon[] enemies)
     {
         //setup enemy
-        enemyPokemon = enemy;
-        enemyImage.sprite = enemy.frontSprite;
-        enemyName.text = enemy.name;
-        enemyLevel.text = $"Lv{enemy.level}";
+        enemyParty = enemies;
+        enemyPokemon = enemies[0];
+        enemyImage.sprite = enemyPokemon.frontSprite;
+        enemyName.text = enemyPokemon.name;
+        enemyLevel.text = $"Lv{enemyPokemon.level}";
         enemyHp.fillAmount = 1;
+        enemyGender.gameObject.SetActive(enemyPokemon.gender != Gender.NonBinary);
+        switch (enemyPokemon.gender)
+        {
+            case Gender.Male:
+                enemyGender.sprite = male;
+                break;
+            case Gender.Female:
+                enemyGender.sprite = female;
+                break;
+        }
 
         //setup ally
-        allyPokemon = ally;
-        pokemonImage.sprite = ally.backSprite;
-        pokemonName.text = ally.name;
-        level.text = $"Lv{ally.level}";
-        hpValue.text = $"{allyPokemon.hp}/{allyPokemon.hp}";
+        allyParty = allies;
+        allyPokemon = allies[0];
+        pokemonImage.sprite = allyPokemon.backSprite;
+        pokemonName.text = allyPokemon.name;
+        level.text = $"Lv{allyPokemon.level}";
+        hpValue.text = $"{allyPokemon.stats[StatType.hp]}/{allyPokemon.stats[StatType.hp]}";
         hp.fillAmount = 1;
         xp.fillAmount = Random.Range(0, 1);
+        gender.gameObject.SetActive(allyPokemon.gender != Gender.NonBinary);
+        switch (allyPokemon.gender)
+        {
+            case Gender.Male:
+                gender.sprite = male;
+                break;
+            case Gender.Female:
+                gender.sprite = female;
+                break;
+        }
 
         OpenChoiceMenu();
     }
@@ -110,7 +140,7 @@ public class BattleSetup : MonoBehaviour
     private void OpenParty()
     {
         battleMenu.SetActive(false);
-        partyChoice.OpenMenu(new[] { allyPokemon });
+        partyChoice.OpenMenu(allyParty);
     }
 
     private void Run()

@@ -56,7 +56,6 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     private void OnPick(int id)
     {
         if (id == contextSelection.itemCount - 1) ReturnCall();
-        
     }
 
     public override void CloseMenu()
