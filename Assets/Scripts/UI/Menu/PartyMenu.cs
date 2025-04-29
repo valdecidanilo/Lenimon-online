@@ -14,7 +14,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     private Pokemon[] party;
 
     public event Action<Pokemon> onChangePokemon;
-    public event Action onSummaryCall;
+    public event Action<Pokemon> onSummaryCall;
     public event Action onItemCall;
 
 
@@ -112,7 +112,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         switch (id)
         {
             case 0:
-                onSummaryCall?.Invoke();
+                onSummaryCall?.Invoke(party[contextSelection.selectedId]);
                 break;
             case 1:
                 //chose pokemon

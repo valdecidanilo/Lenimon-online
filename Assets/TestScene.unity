@@ -417,6 +417,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 5821470966959753730}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1313677552 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5308728254472905752, guid: 781e30ce65bb0bb4f8809f48aa01b13b,
+    type: 3}
+  m_PrefabInstance: {fileID: 5821470966959753730}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc57bccd0e14b7a4f9e88b8f5f206afb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1369083907
 GameObject:
   m_ObjectHideFlags: 0
@@ -1262,6 +1274,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Battle
       objectReference: {fileID: 0}
+    - target: {fileID: 8413978157765691681, guid: c2126e8e9132d3c40a13af94551c1ab9,
+        type: 3}
+      propertyPath: summary
+      value: 
+      objectReference: {fileID: 1313677552}
     - target: {fileID: 8413978157765691681, guid: c2126e8e9132d3c40a13af94551c1ab9,
         type: 3}
       propertyPath: partyChoice

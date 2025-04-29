@@ -7,7 +7,21 @@ using UnityEngine.UI;
 
 public class BattleSetup : MonoBehaviour
 {
-    [Header("References")]
+    [Header("Battle Menu")]
+    [SerializeField] private GameObject battleMenu;
+    [SerializeField] private ContextSelection battleChoice;
+
+    [Header("Moves Menu")]
+    [SerializeField] private FightMenu fightMenu;
+
+    [Header("Party Menu")]
+    [SerializeField] private PartyMenu partyChoice;
+
+    [Header("Summary Menu")]
+    [SerializeField] private SummaryMenu summary;
+
+    #region Battle Visuals
+    [Space(10),Header("References")]
     [SerializeField] Sprite male;
     [SerializeField] Sprite female;
 
@@ -32,16 +46,7 @@ public class BattleSetup : MonoBehaviour
     [SerializeField] private TMP_Text hpValue;
     [SerializeField] private Image xp;
     [SerializeField] private Image gender;
-
-    [Header("Battle Menu")]
-    [SerializeField] private GameObject battleMenu;
-    [SerializeField] private ContextSelection battleChoice;
-
-    [Header("Moves Menu")]
-    [SerializeField] private FightMenu fightMenu;
-
-    [Header("Party Menu")]
-    [SerializeField] private PartyMenu partyChoice;
+    #endregion
 
     private void Awake()
     {
@@ -49,6 +54,7 @@ public class BattleSetup : MonoBehaviour
         fightMenu.onReturn += OpenChoiceMenu;
         partyChoice.onReturn += OpenChoiceMenu;
         partyChoice.onChangePokemon += OnAllyChanged;
+        partyChoice.onSummaryCall += OpenPokemonSummary;
     }
 
     public void SetupBattle(Pokemon[] allies, Pokemon[] enemies)
@@ -136,8 +142,9 @@ public class BattleSetup : MonoBehaviour
     private void OpenChoiceMenu()
     {
         //disable other windows
-        fightMenu.gameObject.SetActive(false);
-        partyChoice.gameObject.SetActive(false);
+        fightMenu.CloseMenu();
+        partyChoice.CloseMenu();
+        summary.CloseMenu();
 
         //open window
         battleMenu.SetActive(true);
@@ -159,6 +166,11 @@ public class BattleSetup : MonoBehaviour
     {
         battleMenu.SetActive(false);
         partyChoice.OpenMenu(allyParty);
+    }
+
+    private void OpenPokemonSummary(Pokemon pokemon)
+    {
+        summary.OpenMenu(pokemon);
     }
 
     private void Run()
