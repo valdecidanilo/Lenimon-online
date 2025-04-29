@@ -6,13 +6,20 @@ public abstract class ContextMenu<T> : MonoBehaviour
 {
     [SerializeField] protected ContextSelection contextSelection;
 
+    protected InputAction cancelAction;
+
     public Action onReturn;
+
+    protected virtual void Awake()
+    {
+        cancelAction = InputSystem.actions.FindAction("UI/Cancel");
+    }
 
     public abstract void OpenMenu(T data);
     
     protected virtual void Update()
     {
-        if (InputSystem.actions.FindAction("UI/Cancel").WasPressedThisFrame())
+        if (cancelAction.WasPressedThisFrame())
             ReturnCall();
     }
 

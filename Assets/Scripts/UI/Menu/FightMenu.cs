@@ -9,8 +9,9 @@ public class FightMenu : ContextMenu<Pokemon>
 
     private Pokemon pokemon;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         contextSelection.onSelect += OnSelectionChanged;
     }
 

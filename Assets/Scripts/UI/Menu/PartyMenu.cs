@@ -80,8 +80,9 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         #endregion
     }
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         contextSelection.onItemPick += OnPickPokemon;
         pokemonOptions.onItemPick += OnPickOption;
     }
