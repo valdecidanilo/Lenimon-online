@@ -48,31 +48,25 @@ public class BattleSetup : MonoBehaviour
         battleChoice.onItemPick += OnChoicePick;
         fightMenu.onReturn += OpenChoiceMenu;
         partyChoice.onReturn += OpenChoiceMenu;
+        partyChoice.onChangePokemon += OnAllyChanged;
     }
 
     public void SetupBattle(Pokemon[] allies, Pokemon[] enemies)
     {
         //setup enemy
         enemyParty = enemies;
-        enemyPokemon = enemies[0];
-        enemyImage.sprite = enemyPokemon.frontSprite;
-        enemyName.text = enemyPokemon.name;
-        enemyLevel.text = $"Lv{enemyPokemon.level}";
-        enemyHp.fillAmount = 1;
-        enemyGender.gameObject.SetActive(enemyPokemon.gender != Gender.NonBinary);
-        switch (enemyPokemon.gender)
-        {
-            case Gender.Male:
-                enemyGender.sprite = male;
-                break;
-            case Gender.Female:
-                enemyGender.sprite = female;
-                break;
-        }
+        SetupEnemy(enemyParty[0]);
 
         //setup ally
         allyParty = allies;
-        allyPokemon = allies[0];
+        SetupAlly(allyParty[0]);
+
+        OpenChoiceMenu();
+    }
+
+    private void SetupAlly(Pokemon ally)
+    {
+        allyPokemon = ally;
         pokemonImage.sprite = allyPokemon.backSprite;
         pokemonName.text = allyPokemon.name;
         level.text = $"Lv{allyPokemon.level}";
@@ -89,10 +83,34 @@ public class BattleSetup : MonoBehaviour
                 gender.sprite = female;
                 break;
         }
+    }
 
+    private void SetupEnemy(Pokemon enemy)
+    {
+        enemyPokemon = enemy;
+        enemyImage.sprite = enemyPokemon.frontSprite;
+        enemyName.text = enemyPokemon.name;
+        enemyLevel.text = $"Lv{enemyPokemon.level}";
+        enemyHp.fillAmount = 1;
+        enemyGender.gameObject.SetActive(enemyPokemon.gender != Gender.NonBinary);
+        switch (enemyPokemon.gender)
+        {
+            case Gender.Male:
+                enemyGender.sprite = male;
+                break;
+            case Gender.Female:
+                enemyGender.sprite = female;
+                break;
+        }
+    }
+
+    private void OnAllyChanged(Pokemon newAlly)
+    {
+        SetupAlly(newAlly);
         OpenChoiceMenu();
     }
 
+    #region Window Changes
     private void OnChoicePick(int choice)
     {
         switch (choice)
@@ -147,4 +165,5 @@ public class BattleSetup : MonoBehaviour
     {
         
     }
+    #endregion
 }

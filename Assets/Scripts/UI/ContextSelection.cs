@@ -8,7 +8,7 @@ public class ContextSelection : MonoBehaviour
     [SerializeField] private Vector2 arrowOffset;
     [Space, SerializeField] private List<SelectionItem> selectionItems;
 
-    private int selectedId;
+    public int selectedId {  get; private set; }
 
     public SelectionItem currentSelected => selectionItems[selectedId];
 
