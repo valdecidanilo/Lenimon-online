@@ -8,7 +8,9 @@ using Logger = LenixSO.Logger.Logger;
 public class SummaryMenu : ContextMenu<Pokemon>
 {
     //All sceens: front sprite, nickname/name, lv, gender, pokeball?
-    //Screen 1: 
+    //Screen 1: type, ability/description, nature/met lv/ route
+    //Screen 2: stats, item, xp
+    //Screen 3: moves/descr
 
     private Pokemon pokemon;
     private InputAction navigateAction;
