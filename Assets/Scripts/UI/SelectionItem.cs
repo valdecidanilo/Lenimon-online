@@ -9,6 +9,8 @@ public class SelectionItem : MonoBehaviour, IPointerEnterHandler, ISelectHandler
 
     private RectTransform _rectTransform;
 
+    public Selectable selectable => button;
+
     public RectTransform rectTransform => _rectTransform ??= (RectTransform)transform;
     public Action<SelectionItem> onSelected;
     public Action onPick;

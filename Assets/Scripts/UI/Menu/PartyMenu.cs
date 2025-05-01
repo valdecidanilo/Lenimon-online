@@ -12,23 +12,24 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     [SerializeField] private ContextSelection pokemonOptions;
 
     private Pokemon[] party;
+    private PartyPokemon[] instances;
 
     public event Action<Pokemon> onChangePokemon;
     public event Action<Pokemon> onSummaryCall;
     public event Action onItemCall;
 
-
     private void SetupNavigation(Pokemon[] pokemons)
     {
         #region Pokemon Navigation
-        Selectable backButton = contextSelection[contextSelection.itemCount-1].GetComponent<Selectable>();
+        Selectable backButton = contextSelection[contextSelection.itemCount-1].selectable;
+        if (instances == null) GetPartyPokemon();
         List<Selectable> navigationItems = new(pokemons.Length);
         for (int i = 0; i < pokemons.Length; i++)
         {
-            PartyPokemon item = contextSelection[i].GetComponent<PartyPokemon>();
+            PartyPokemon item = instances[i];
             item.SetupPokemon(pokemons[i]);
 
-            Selectable selectable = item.GetComponent<Selectable>();
+            Selectable selectable = contextSelection[i].selectable;
             navigationItems.Add(selectable);
             Navigation navigation = selectable.navigation;
             navigation.mode = Navigation.Mode.Explicit;
@@ -61,7 +62,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         navigationItems = new(pokemonOptions.itemCount);
         for (int i = 0; i < pokemonOptions.itemCount; i++)
         {
-            Selectable selectable = pokemonOptions[i].GetComponent<Selectable>();
+            Selectable selectable = pokemonOptions[i].selectable;
             navigationItems.Add(selectable);
             Navigation navigation = selectable.navigation;
             navigation.mode = Navigation.Mode.Explicit;
@@ -80,9 +81,19 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         #endregion
     }
 
+    private void GetPartyPokemon()
+    {
+        instances = new PartyPokemon[contextSelection.itemCount - 1];
+        for (int i = 0; i < instances.Length; i++)
+        {
+            instances[i] = contextSelection[i].GetComponent<PartyPokemon>();
+        }
+    }
+
     protected override void Awake()
     {
         base.Awake();
+        if (instances == null) GetPartyPokemon();
         contextSelection.onItemPick += OnPickPokemon;
         pokemonOptions.onItemPick += OnPickOption;
     }
