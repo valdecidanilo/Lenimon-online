@@ -38,12 +38,13 @@ public class TestScript : MonoBehaviour
 
         alliesLoaded.onCompleted += () =>
         {
+            //load enemies
             partySize = Random.Range(1, 7);
             partyLevel = Mathf.Min(100, encounterLevel + (6 - partySize));
             enemyParty = new Pokemon[partySize];
 
             Checklist opponentLoaded = new(partySize);
-            opponentLoaded.onCompleted += StartBattle;
+            opponentLoaded.onProgress += (p) => { if (opponentLoaded.currentSteps == 1) StartBattle(); };
             Logger.Log($"setup enemy party ({partySize} pokemons)", LogFlags.Game);
             SetupParty(enemyParty, opponentLoaded);
         };
