@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class PastAbility
 {
-    public List<Ability> abilities { get; set; }
+    public List<AbilityReference> abilities { get; set; }
     public ApiReference generation { get; set; }
 }
 

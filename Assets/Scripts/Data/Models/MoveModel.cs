@@ -12,6 +12,8 @@ public class MoveModel
     public int priority;
     public MoveType typeOfMove;
 
+    public readonly int maxPP;
+
     public MoveModel(MoveData data)
     {
         name = data.name.Replace("-", " ");
@@ -20,6 +22,7 @@ public class MoveModel
         power = data.power ?? 0;
         accuracy = data.accuracy ?? 0;
         pp = data.pp;
+        maxPP = pp;
         priority = data.priority;
         typeOfMove = data.moveTypeData.id;
     }

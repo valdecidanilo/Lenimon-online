@@ -79,27 +79,37 @@ public static class PokeAPI
         WebConnection.GetTexture(route, onSuccess);
     }
 
-    public static void GetMove(string name, Action<MoveData> onSuccess)
+    public static void GetMove(string route, Action<MoveData> onSuccess)
     {
-        string route = $"https://pokeapi.co/api/v2/move/{name}";
         Logger.Log($"move route: {route}", LogFlags.API);
-        WebConnection.GetRequest<MoveData>(route, (data) =>
+        if (PokeDatabase.moves.TryGetValue(route, out var move)) SetMoveType(move);
+        else WebConnection.GetRequest<MoveData>(route, SetMoveType);
+
+        void SetMoveType(MoveData move)
         {
-            Logger.Log($"move type route: {data.typeOfMove.url}", LogFlags.API);
-            if (PokeDatabase.moveTypes.ContainsKey(data.typeOfMove.url))
+            PokeDatabase.moves[route] = move;
+            Logger.Log($"move type route: {move.typeOfMove.url}", LogFlags.API);
+            if (PokeDatabase.moveTypes.TryGetValue(move.typeOfMove.url, out var moveType)) ReturnMove(moveType);
+            else WebConnection.GetRequest<MoveTypeData>(move.typeOfMove.url, ReturnMove);
+
+            void ReturnMove(MoveTypeData moveType)
             {
-                data.moveTypeData = PokeDatabase.moveTypes[data.typeOfMove.url];
-                onSuccess?.Invoke(data);
+                PokeDatabase.moveTypes[move.typeOfMove.url] = moveType;
+                move.moveTypeData = moveType;
+                onSuccess?.Invoke(move);
             }
-            else
-            {
-                WebConnection.GetRequest<MoveTypeData>(data.typeOfMove.url, (type) =>
-                {
-                    PokeDatabase.moveTypes[data.typeOfMove.url] = type;
-                    data.moveTypeData = type;
-                    onSuccess?.Invoke(data);
-                });
-            }
-        });
+        }
+    }
+
+    public static void GetAbility(string route, Action<AbilityData> onSuccess)
+    {
+        if (PokeDatabase.abilities.TryGetValue(route, out var ability)) ReturnAbility(ability);
+        else WebConnection.GetRequest<AbilityData>(route, ReturnAbility);
+
+        void ReturnAbility(AbilityData ability)
+        {
+            PokeDatabase.abilities[route] = ability;
+            onSuccess?.Invoke(ability);
+        }
     }
 }

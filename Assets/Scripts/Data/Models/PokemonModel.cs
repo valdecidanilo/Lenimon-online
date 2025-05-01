@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Logger = LenixSO.Logger.Logger;
+using System.Globalization;
 
 public class Pokemon
 {
@@ -26,15 +27,17 @@ public class Pokemon
     public Sprite frontSprite { get; private set; }
     public Sprite backSprite { get; private set; }
     public Sprite icon { get; private set; }
+    public AbilityData ability;
     public MoveModel[] moves;
 
+    //Data loading
     private Checklist dataChecklist;
     public Action onDoneLoading;
 
     public Pokemon(PokemonData pokemonData, int lv = 1)
     {
         data = pokemonData;
-        name = pokemonData.name;
+        name = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(pokemonData.name);
         int formId = name.IndexOf('-');
         if (formId > 0)
         {
@@ -79,29 +82,10 @@ public class Pokemon
 
     public void LoadRequiredData()
     {
-        dataChecklist.AddStep();
-        PokeAPI.GetSprite(data, (sprite) =>
-        {
-            frontSprite = sprite;
-            Logger.Log($"{name} Front sprite done loading", LogFlags.PokemonBuild);
-            dataChecklist.FinishStep();
-        });
-        dataChecklist.AddStep();
-        PokeAPI.GetSprite(data, (sprite) =>
-        {
-            backSprite = sprite;
-            Logger.Log($"{name} Back sprite done loading", LogFlags.PokemonBuild);
-            dataChecklist.FinishStep();
-        }, true);
-        dataChecklist.AddStep();
-        PokeAPI.GetIcon(data, (sprite) =>
-        {
-            icon = sprite;
-            Logger.Log($"{name} Icon done loading", LogFlags.PokemonBuild);
-            dataChecklist.FinishStep();
-        });
-
+        LoadSprites();
         GetGender();
+        GetAbility();
+        GetNature();
         GetRandomMoves();
     }
 
@@ -132,7 +116,29 @@ public class Pokemon
     }
 
 
-    #region Generators
+    #region Data Load
+    private void LoadSprites()
+    {
+        dataChecklist.AddStep(3);
+        PokeAPI.GetSprite(data, (sprite) =>
+        {
+            frontSprite = sprite;
+            Logger.Log($"{name} Front sprite done loading", LogFlags.PokemonBuild);
+            dataChecklist.FinishStep();
+        });
+        PokeAPI.GetSprite(data, (sprite) =>
+        {
+            backSprite = sprite;
+            Logger.Log($"{name} Back sprite done loading", LogFlags.PokemonBuild);
+            dataChecklist.FinishStep();
+        }, true);
+        PokeAPI.GetIcon(data, (sprite) =>
+        {
+            icon = sprite;
+            Logger.Log($"{name} Icon done loading", LogFlags.PokemonBuild);
+            dataChecklist.FinishStep();
+        });
+    }
     private void GetRandomMoves()
     {
         List<MoveReference> possibleMoves = new(data.moves.Count);
@@ -159,7 +165,7 @@ public class Pokemon
         int moveId = Random.Range(0, possibleMoves.Count);
         newMoves[loadedMoves.currentSteps] = possibleMoves[moveId];
         possibleMoves.RemoveAt(moveId);
-        PokeAPI.GetMove(newMoves[loadedMoves.currentSteps].move.name, LoadMove);
+        PokeAPI.GetMove(newMoves[loadedMoves.currentSteps].move.url, LoadMove);
 
         void LoadMove(MoveData data)
         {
@@ -176,10 +182,9 @@ public class Pokemon
             moveId = Random.Range(0, possibleMoves.Count);
             newMoves[loadedMoves.currentSteps] = possibleMoves[moveId];
             possibleMoves.RemoveAt(moveId);
-            PokeAPI.GetMove(newMoves[loadedMoves.currentSteps].move.name, LoadMove);
+            PokeAPI.GetMove(newMoves[loadedMoves.currentSteps].move.url, LoadMove);
         }
     }
-
     private void GetGender()
     {
         dataChecklist.AddStep();
@@ -199,6 +204,31 @@ public class Pokemon
             Logger.Log($"{name} Gender done loading: {gender}", LogFlags.PokemonBuild);
             dataChecklist.FinishStep();
         });
+    }
+    private void GetAbility()
+    {
+        int abilityId = Random.Range(0, data.abilities.Count);
+        PokeAPI.GetAbility(data.abilities[abilityId].reference.url, (abilityData) =>
+        {
+            ability = abilityData;
+            ability.abilityName = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(ability.name.Replace("-", " "));
+            //get flavorText
+            for (int i = 0; i < ability.flavorTexts.Count; i++)
+            {
+                FlavorText flavorText = ability.flavorTexts[i];
+                if(flavorText.language.name == "en")
+                {
+                    if(string.IsNullOrEmpty(ability.flavorText) || flavorText.text.Length < ability.flavorText.Length)
+                        ability.flavorText = flavorText.text;
+                }
+            }
+
+            ability.flavorText = ability.flavorText.Replace("\n", " ");
+        });
+    }
+    private void GetNature()
+    {
+
     }
     #endregion
 }

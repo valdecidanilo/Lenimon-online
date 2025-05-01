@@ -1,10 +1,8 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-public class MoveData
+public class MoveData : ApiData
 {
-    public int id;
-    public string name;
     public int? power;
     public int? accuracy;
     public int pp;

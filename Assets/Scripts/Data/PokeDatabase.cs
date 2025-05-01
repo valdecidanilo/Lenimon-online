@@ -6,13 +6,21 @@ using UnityEngine.UI;
 
 public static class PokeDatabase
 {
+    #region Database
     //api database
+    public static Dictionary<string, MoveData> moves = new();
     public static Dictionary<string, MoveTypeData> moveTypes = new();
+    public static Dictionary<string, AbilityData> abilities = new();
+    #endregion
 
+    #region Resources
     //resources database
     public const string maleIcon = "maleIcon";
     public const string femaleIcon = "femaleIcon";
+    #endregion
 
+
+    #region Utilities
     //Utility methods
     public static void SetGenderSprite(Image image, Gender gender)
     {
@@ -26,4 +34,5 @@ public static class PokeDatabase
         };
         AAAsset<Sprite>.LoadAsset(genderIcon, (sprite) => image.sprite = sprite);
     }
+    #endregion
 }

@@ -1,11 +1,23 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-public class Ability
+public class AbilityReference
 {
     [JsonProperty("ability")] public ApiReference reference { get; set; }
     [JsonProperty("is_hidden")] public bool hidden { get; set; }
     public int slot { get; set; }
+}
+public class AbilityData : ApiData
+{
+    [JsonProperty("flavor_text_entries")] public List<FlavorText> flavorTexts { get; set; }
+
+    public string abilityName;
+    public string flavorText;
+}
+public class FlavorText
+{
+    [JsonProperty("flavor_text")] public string text { get; set; }
+    public ApiReference language { get; set; }
 }
 
 public class Cries
@@ -14,26 +26,18 @@ public class Cries
     public string legacy { get; set; }
 }
 
-public class GameIndex
+public class PokemonData : ApiData
 {
-    public int game_index { get; set; }
-    public ApiReference version { get; set; }
-}
-
-public class PokemonData
-{
-    public List<Ability> abilities { get; set; }
+    public List<AbilityReference> abilities { get; set; }
     public int base_experience { get; set; }
     public Cries cries { get; set; }
     public List<ApiReference> forms { get; set; }
     public List<GameIndex> game_indices { get; set; }
     public int height { get; set; }
     public List<HeldItem> held_items { get; set; }
-    public int id { get; set; }
     public bool is_default { get; set; }
     public string location_area_encounters { get; set; }
     public List<MoveReference> moves { get; set; }
-    public string name { get; set; }
     public int order { get; set; }
     public List<PastAbility> past_abilities { get; set; }
     public List<PastType> past_types { get; set; }
@@ -70,12 +74,6 @@ public class Stat
     public ApiReference stat { get; set; }
 }
 
-public class ApiReference
-{
-    public string name { get; set; }
-    public string url { get; set; }
-}
-
 public class TypePokemon
 {
     public int slot { get; set; }
@@ -100,6 +98,7 @@ public class Species
     public ApiReference color;
     public ApiReference habitat;
 }
+
 public class EvolutionChain
 {
 

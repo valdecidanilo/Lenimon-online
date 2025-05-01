@@ -97,7 +97,7 @@ public class TestScript : MonoBehaviour
         StringBuilder abilities = new();
         for (int i = 0; i < pokemon.data.abilities.Count; i++)
         {
-            Ability ability = pokemon.data.abilities[i];
+            AbilityReference ability = pokemon.data.abilities[i];
             abilities.Append($"{ability.reference.name}");
             if (ability.hidden) abilities.Append("(H)");
             if (i < pokemon.data.abilities.Count - 1) abilities.Append(" | ");

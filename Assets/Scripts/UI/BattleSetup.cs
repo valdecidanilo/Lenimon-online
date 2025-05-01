@@ -52,6 +52,7 @@ public class BattleSetup : MonoBehaviour
         partyChoice.onReturn += OpenChoiceMenu;
         partyChoice.onChangePokemon += OnAllyChanged;
         partyChoice.onSummaryCall += OpenPokemonSummary;
+        summary.onReturn += summary.CloseMenu;
     }
 
     public void SetupBattle(Pokemon[] allies, Pokemon[] enemies)
