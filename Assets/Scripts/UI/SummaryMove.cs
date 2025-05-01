@@ -12,7 +12,9 @@ public class SummaryMove : MonoBehaviour
 
     public void SetupMove(MoveModel move)
     {
-        name.text = move.name;
-        pp.text = $"pp{move.pp}/{move.maxPP}";
+        type.gameObject.SetActive(move != null);
+        if (move != null) type.sprite = PokeDatabase.typeSprites[move.moveType];
+        name.text = move?.name ?? "-";
+        pp.text = move == null ? "--" : $"pp{move.pp}/{move.maxPP}";
     }
 }

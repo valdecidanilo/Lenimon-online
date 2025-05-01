@@ -21,6 +21,7 @@ public class TestScript : MonoBehaviour
 
     private void Awake()
     {
+        PokeDatabase.PreloadAssets();
         moveDatabase = Resources.Load<MoveDatabase>("MoveDatabase");
         GenerateParties();
     }
