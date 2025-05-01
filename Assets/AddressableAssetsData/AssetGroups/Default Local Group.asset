@@ -1,0 +1,160 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: 
+  m_GroupName: Default Local Group
+  m_Data:
+    m_SerializedData: []
+  m_GUID: ea06406c0c2760d42b2af4829c76e18d
+  m_SerializeEntries:
+  - m_GUID: 01a0ae6a5b1d81d46ae2b51c19a3f2f3
+    m_Address: icon_ball_FRIENDBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 06da24bab2dfb514687a7d2991f76a32
+    m_Address: icon_ball_DREAMBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 07923f9c7e3adce4db7cfdf67b28d77d
+    m_Address: icon_ball_SAFARIBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 161170b2bb5ca5447b099607420186f8
+    m_Address: icon_ball_REPEATBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ebdbde1128ba5942a316e7e9480af8c
+    m_Address: icon_ball_SPORTBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 217fa9b0ea8b94843b34e272c32a949d
+    m_Address: icon_ball_LUREBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 24d39204dcc52ee45905e3edc72ef95a
+    m_Address: icon_ball_HEALBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 27cd08a353cdee648bdbc7e73e944783
+    m_Address: icon_ball_LOVEBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d391ad045ae0c7409c57a752920705b
+    m_Address: icon_pokerus
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a4599f608f77b0429c39898c026c5ba
+    m_Address: icon_ball_NESTBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 472cf1f2e2394de4eb206a3ec7d082d4
+    m_Address: icon_ball_FASTBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 473b4479b98f7664c9a9618a3ab5b8f0
+    m_Address: icon_ball_NETBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d7e2c86181decf49b926b7bba4d9f6f
+    m_Address: icon_ball_CHERISHBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 757350902a967544c8e9f89fbc77b9ea
+    m_Address: icon_ball_DIVEBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8346e879ac9e4e140885b3e13afc73f5
+    m_Address: icon_ball_DUSKBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 83c41089ff5b02a469fe2115743c2d36
+    m_Address: icon_ball_TIMERBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8fc39299ad454374fb2a86da75403441
+    m_Address: icon_ball_ULTRABALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93e1f2e5bb0654b41bd1362d12421320
+    m_Address: icon_ball_POKEBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9821107363384e64382b6c1bbb13ffa0
+    m_Address: icon_ball_PREMIERBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ac78cc66195113249b8e1fdb519ac2c9
+    m_Address: icon_ball_MASTERBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7e06776b69686745bdad70fc957f123
+    m_Address: icon_ball_QUICKBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b8760a966dce55a4d92592fcd355b13d
+    m_Address: icon_ball_LUXURYBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c45c6d82602edab4d8a1dffece37545c
+    m_Address: icon_ball_MOONBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c90e8e1ec0dbda44e919144fe3863c03
+    m_Address: icon_ball_BEASTBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d173c317be857924088e6bfdaf51bd3a
+    m_Address: icon_ball_GREATBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f23e95c7b8fe57348a0a71b60d6c5d90
+    m_Address: icon_ball_HEAVYBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f7884013b546db94c9689e1d1166f10d
+    m_Address: icon_ball_LEVELBALL
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 62f97c58022ab014cbd3b8d6bd7dc536, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4c840dabd5a27e646bba2810a9acafea, type: 2}
+    - {fileID: 11400000, guid: 73f73eba6cc6dc24e9e9f0fd8e69ea8b, type: 2}

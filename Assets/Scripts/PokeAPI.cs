@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using AddressableAsyncInstances;
 using LenixSO.Logger;
 using Logger = LenixSO.Logger.Logger;
 
@@ -23,19 +24,18 @@ public static class PokeAPI
     {
         GetTexture(pokemon, (txt) =>
         {
-            Sprite sprite;
             if (txt != null)
             {
                 Rect rect = new(0, 0, txt.width, txt.height);
                 Vector2 pivot = Vector2.one / 2f;
-                sprite = Sprite.Create(txt, rect, pivot);
+                Sprite sprite = Sprite.Create(txt, rect, pivot);
+                onSuccess?.Invoke(sprite);
+                return;
             }
-            else
-            {
-                string sufix = backSprite ? "Back" : "Front";
-                sprite = Resources.Load<Sprite>($"MissingNo{sufix}");
-            }
-            onSuccess?.Invoke(sprite);
+
+            string sufix = backSprite ? "Back" : "Front";
+            AAAsset<Sprite>.LoadAsset($"MissingNo{sufix}", onSuccess);
+
         }, backSprite);
     }
 
@@ -48,8 +48,11 @@ public static class PokeAPI
         hasIcon = !string.IsNullOrEmpty(route);
         if (!hasIcon)
         {
-            Logger.LogError("No icons found", LogFlags.API);
-            onSuccess?.Invoke(Resources.Load<Sprite>($"MissingNoIcon"));
+            AAAsset<Sprite>.LoadAsset("MissingNoIcon", (sprite) =>
+            {
+                Logger.LogError("No icons found", LogFlags.API);
+                onSuccess?.Invoke(sprite);
+            });
             return;
         }
 
@@ -83,23 +86,20 @@ public static class PokeAPI
         WebConnection.GetRequest<MoveData>(route, (data) =>
         {
             Logger.Log($"move type route: {data.typeOfMove.url}", LogFlags.API);
-            if (moveTypes.ContainsKey(data.typeOfMove.url))
+            if (PokeDatabase.moveTypes.ContainsKey(data.typeOfMove.url))
             {
-                data.moveTypeData = moveTypes[data.typeOfMove.url];
+                data.moveTypeData = PokeDatabase.moveTypes[data.typeOfMove.url];
                 onSuccess?.Invoke(data);
             }
             else
             {
                 WebConnection.GetRequest<MoveTypeData>(data.typeOfMove.url, (type) =>
                 {
-                    moveTypes[data.typeOfMove.url] = type;
+                    PokeDatabase.moveTypes[data.typeOfMove.url] = type;
                     data.moveTypeData = type;
                     onSuccess?.Invoke(data);
                 });
             }
         });
     }
-
-    //cashe
-    private static Dictionary<string, MoveTypeData> moveTypes = new();
 }

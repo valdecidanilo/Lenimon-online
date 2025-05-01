@@ -21,9 +21,6 @@ public class BattleSetup : MonoBehaviour
     [SerializeField] private SummaryMenu summary;
 
     #region Battle Visuals
-    [Space(10),Header("References")]
-    [SerializeField] Sprite male;
-    [SerializeField] Sprite female;
 
     //Enemy
     private Pokemon enemyPokemon;
@@ -79,16 +76,8 @@ public class BattleSetup : MonoBehaviour
         hpValue.text = $"{allyPokemon.stats[StatType.hp]}/{allyPokemon.stats[StatType.hp]}";
         hp.fillAmount = 1;
         xp.fillAmount = Random.Range(0, 1);
-        gender.gameObject.SetActive(allyPokemon.gender != Gender.NonBinary);
-        switch (allyPokemon.gender)
-        {
-            case Gender.Male:
-                gender.sprite = male;
-                break;
-            case Gender.Female:
-                gender.sprite = female;
-                break;
-        }
+
+        PokeDatabase.SetGenderSprite(gender, allyPokemon.gender);
     }
 
     private void SetupEnemy(Pokemon enemy)
@@ -98,16 +87,8 @@ public class BattleSetup : MonoBehaviour
         enemyName.text = enemyPokemon.name;
         enemyLevel.text = $"Lv{enemyPokemon.level}";
         enemyHp.fillAmount = 1;
-        enemyGender.gameObject.SetActive(enemyPokemon.gender != Gender.NonBinary);
-        switch (enemyPokemon.gender)
-        {
-            case Gender.Male:
-                enemyGender.sprite = male;
-                break;
-            case Gender.Female:
-                enemyGender.sprite = female;
-                break;
-        }
+
+        PokeDatabase.SetGenderSprite(gender, enemyPokemon.gender);
     }
 
     private void OnAllyChanged(Pokemon newAlly)

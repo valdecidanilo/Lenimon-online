@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using AddressableAsyncInstances;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -8,8 +7,6 @@ using UnityEngine.UI;
 public class PartyPokemon : MonoBehaviour
 {
     [SerializeField] private PokemonSelectionItem selectionItem;
-    [SerializeField] private Sprite maleIcon;
-    [SerializeField] private Sprite femaleIcon;
 
     [FormerlySerializedAs("pokemonName")]
     [Header("Data Reference")] 
@@ -36,19 +33,10 @@ public class PartyPokemon : MonoBehaviour
         pokemon = newPokemon;
 
         nickname.text = pokemon.name;
-        level.text = pokemon.level.ToString();
+        level.text = $"Lv{pokemon.level}";
         hp.text = $"{pokemon.battleStats[StatType.hp]}/{pokemon.stats[StatType.hp]}";
         hpBar.fillAmount = (float)pokemon.battleStats[StatType.hp] / pokemon.stats[StatType.hp];
         icon.sprite = pokemon.icon;
-        gender.gameObject.SetActive(newPokemon.gender != Gender.NonBinary);
-        switch (newPokemon.gender)
-        {
-            case Gender.Male:
-                gender.sprite = maleIcon;
-                break;
-            case Gender.Female:
-                gender.sprite = femaleIcon;
-                break;
-        }
+        PokeDatabase.SetGenderSprite(gender, pokemon.gender);
     }
 }
