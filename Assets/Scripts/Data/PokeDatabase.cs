@@ -38,6 +38,7 @@ public static class PokeDatabase
         "rock",
         "steel",
         "unknown",
+        "water",
     };
     #endregion
 
