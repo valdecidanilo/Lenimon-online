@@ -17,3 +17,9 @@ public class GameIndex
     public int game_index { get; set; }
     public ApiReference version { get; set; }
 }
+
+public class FlavorText
+{
+    [JsonProperty("flavor_text")] public string text { get; set; }
+    public ApiReference language { get; set; }
+}

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Logger = LenixSO.Logger.Logger;
 
@@ -48,7 +49,7 @@ public class SummaryMenu : ContextMenu<Pokemon>
     [Header("Screen 3")]
     [SerializeField] private GameObject selectMove;
     [SerializeField] private TMP_Text power;
-    [SerializeField] private TMP_Text pp;
+    [SerializeField] private TMP_Text accuracy;
     [SerializeField] private TMP_Text description;
     private SummaryMove[] moves;
     #endregion
@@ -66,6 +67,8 @@ public class SummaryMenu : ContextMenu<Pokemon>
         base.Awake();
         navigateAction = InputSystem.actions.FindAction("UI/Navigate");
         confirmAction = InputSystem.actions.FindAction("UI/Submit");
+
+        contextSelection.onSelect += OnMoveSelect;
     }
 
     public override void OpenMenu(Pokemon target)
@@ -107,42 +110,79 @@ public class SummaryMenu : ContextMenu<Pokemon>
         spd.text = $"{target.stats.spd}";
         //xp, next lv, and bar
         //set screen 3
+        power.text = "-";
+        accuracy.text = "-";
+        description.text = "-";
         for (int i = 0; i < moves.Length; i++)
             moves[i].SetupMove(target.moves[i]);
 
         gameObject.SetActive(true);
+        UpdateScreen();
     }
 
     protected override void Update()
     {
         base.Update();
         if(navigateAction.WasPressedThisFrame()) ChangeScreen(navigateAction.ReadValue<Vector2>());
-        if(confirmAction.WasPressedThisFrame()) MoveDetails();
+        if(confirmAction.WasPressedThisFrame()) OpenMoveDetails();
     }
 
     private void ChangeScreen(Vector2 direction)
     {
-        currentScreen = (currentScreen + screenCount + Mathf.FloorToInt(direction.x)) % screenCount;
+        if(selectMove.activeSelf) return;
+        UpdateScreen((currentScreen + screenCount + Mathf.FloorToInt(direction.x)) % screenCount);
+    }
 
+    private void UpdateScreen(int screenId = 0)
+    {
+        if(screenId >= screens.Length) return;
+        currentScreen = screenId;
         for (int i = 0; i < screens.Length; i++)
             screens[i].SetActive(currentScreen == i);
     }
 
-    private void MoveDetails()
+    private void OpenMoveDetails()
     {
         if(currentScreen != 2) return;
 
+        if (selectMove.activeSelf &&
+            contextSelection.selectedId == contextSelection.itemCount - 1)
+        {
+            ExitMoveSelection();
+            return;
+        }
         selectMove.SetActive(true);
         contextSelection.Select(0);
     }
 
+    private void OnMoveSelect(int id)
+    {
+        MoveModel move = id < 4 ? pokemon.moves[id] : null;
+        power.text = move is { power: > 0 } ? $"{move.power}" : "-";
+        accuracy.text = move is { accuracy: > 0 } ? $"{move.accuracy}" : "-";
+        description.text = move != null ? $"{move.description}" : "-";
+    }
+
+    private void ExitMoveSelection()
+    {
+        power.text = "-";
+        accuracy.text = "-";
+        description.text = "-";
+        selectMove.SetActive(false);
+        contextSelection.ReleaseSelection();
+    }
+
     protected override void ReturnCall()
     {
-        base.ReturnCall();
+        if (selectMove.activeSelf)
+            ExitMoveSelection();
+        else
+            base.ReturnCall();
     }
 
     public override void CloseMenu()
     {
+        selectMove.SetActive(false);
         gameObject.SetActive(false);
     }
 }

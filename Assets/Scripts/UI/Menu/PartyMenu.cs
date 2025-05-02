@@ -121,6 +121,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
 
     private void OnPickOption(int id)
     {
+        ReturnCall();
         switch (id)
         {
             case 0:
@@ -128,7 +129,6 @@ public class PartyMenu : ContextMenu<Pokemon[]>
                 break;
             case 1:
                 //chose pokemon
-                ReturnCall();
                 onChangePokemon?.Invoke(party[contextSelection.selectedId]);
                 break;
             case 2:
@@ -136,9 +136,6 @@ public class PartyMenu : ContextMenu<Pokemon[]>
                 break;
             case 3:
                 onItemCall?.Invoke();
-                break;
-            case 4:
-                ReturnCall();
                 break;
         }
     }

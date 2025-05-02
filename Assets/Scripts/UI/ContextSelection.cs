@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ContextSelection : MonoBehaviour
 {
@@ -38,6 +39,11 @@ public class ContextSelection : MonoBehaviour
     {
         selectedId = id;
         Focus();
+    }
+
+    public void ReleaseSelection()
+    {
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
     private void OnItemPick()

@@ -14,11 +14,6 @@ public class AbilityData : ApiData
     public string abilityName;
     public string flavorText;
 }
-public class FlavorText
-{
-    [JsonProperty("flavor_text")] public string text { get; set; }
-    public ApiReference language { get; set; }
-}
 
 public class Cries
 {

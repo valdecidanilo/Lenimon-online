@@ -112,4 +112,21 @@ public static class PokeAPI
             onSuccess?.Invoke(ability);
         }
     }
+    
+    //helpers
+    public static string SmallestFlavorText(List<FlavorText> entries, string language = "en")
+    {
+        string text = null;
+        for (int i = 0; i < entries.Count; i++)
+        {
+            FlavorText flavorText = entries[i];
+            if(flavorText.language.name == language)
+            {
+                if(string.IsNullOrEmpty(text) || flavorText.text.Length < text.Length)
+                    text = flavorText.text;
+            }
+        }
+
+        return text;
+    }
 }

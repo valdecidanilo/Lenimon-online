@@ -10,6 +10,7 @@ public class MoveData : ApiData
     [JsonProperty("effect_chance")] public int? effectChance;
     [JsonProperty("damage_class")] public ApiReference typeOfMove;
     public ApiReference type;
+    [JsonProperty("flavor_text_entries")] public List<FlavorText> flavorTexts;
 
     //Not included in the api
     public MoveTypeData moveTypeData;

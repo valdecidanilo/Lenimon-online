@@ -212,18 +212,7 @@ public class Pokemon
         {
             ability = abilityData;
             ability.abilityName = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(ability.name.Replace("-", " "));
-            //get flavorText
-            for (int i = 0; i < ability.flavorTexts.Count; i++)
-            {
-                FlavorText flavorText = ability.flavorTexts[i];
-                if(flavorText.language.name == "en")
-                {
-                    if(string.IsNullOrEmpty(ability.flavorText) || flavorText.text.Length < ability.flavorText.Length)
-                        ability.flavorText = flavorText.text;
-                }
-            }
-
-            ability.flavorText = ability.flavorText.Replace("\n", " ");
+            ability.flavorText = PokeAPI.SmallestFlavorText(ability.flavorTexts).Replace("\n", " ");
         });
     }
     private void GetNature()

@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class BattleSetup : MonoBehaviour
 {
@@ -19,6 +22,8 @@ public class BattleSetup : MonoBehaviour
 
     [Header("Summary Menu")]
     [SerializeField] private SummaryMenu summary;
+
+    private bool summaryFromParty;
 
     #region Battle Visuals
 
@@ -51,8 +56,25 @@ public class BattleSetup : MonoBehaviour
         fightMenu.onReturn += OpenChoiceMenu;
         partyChoice.onReturn += OpenChoiceMenu;
         partyChoice.onChangePokemon += OnAllyChanged;
-        partyChoice.onSummaryCall += OpenPokemonSummary;
-        summary.onReturn += summary.CloseMenu;
+        partyChoice.onSummaryCall += (pkm)=>
+        {
+            summaryFromParty = true;
+            OpenPokemonSummary(pkm);
+        };
+        summary.onReturn += ()=>
+        {
+            summary.CloseMenu();
+            if(summaryFromParty)
+                OpenParty();
+            else
+                OpenChoiceMenu();
+            summaryFromParty = false;
+        };
+    }
+
+    private void Update()
+    {
+        if(Keyboard.current.tabKey.wasPressedThisFrame) OpenPokemonSummary(enemyPokemon);
     }
 
     public void SetupBattle(Pokemon[] allies, Pokemon[] enemies)
@@ -130,7 +152,7 @@ public class BattleSetup : MonoBehaviour
 
         //open window
         battleMenu.SetActive(true);
-        battleChoice.Focus();
+        battleChoice.Select(0);
     }
 
     private void OpenBattleScene()
@@ -146,12 +168,14 @@ public class BattleSetup : MonoBehaviour
 
     private void OpenParty()
     {
-        battleMenu.SetActive(false);
+        battleChoice.ReleaseSelection();
         partyChoice.OpenMenu(allyParty);
     }
 
     private void OpenPokemonSummary(Pokemon pokemon)
     {
+        battleChoice.ReleaseSelection();
+        partyChoice.CloseMenu();
         summary.OpenMenu(pokemon);
     }
 
