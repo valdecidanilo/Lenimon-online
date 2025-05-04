@@ -114,9 +114,12 @@ public class BattleSetup : MonoBehaviour
         PokeDatabase.SetGenderSprite(gender, enemyPokemon.gender);
     }
 
-    private void OnAllyChanged(Pokemon newAlly)
+    private void OnAllyChanged(int newAlly)
     {
-        SetupAlly(newAlly);
+        Pokemon cashe = allyParty[newAlly];
+        allyParty[newAlly] = allyParty[0];
+        allyParty[0] = cashe;
+        SetupAlly(allyParty[0]);
         OpenChoiceMenu();
     }
 
