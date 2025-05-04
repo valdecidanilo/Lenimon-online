@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using LenixSO.Logger;
+using Logger = LenixSO.Logger.Logger;
 
 public static class PokeDatabase
 {
@@ -12,6 +14,7 @@ public static class PokeDatabase
     public static Dictionary<string, MoveTypeData> moveTypes = new();
     public static Dictionary<string, AbilityData> abilities = new();
     public static Dictionary<string, ItemData> items = new();
+    public static Dictionary<string, Stats> natures = new();
     #endregion
 
     //resources database
@@ -48,7 +51,7 @@ public static class PokeDatabase
     public static Sprite femaleIcon;
     public static Dictionary<string, Sprite> typeSprites = new();
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void PreloadAssets()
     {
         //gender sprites
@@ -61,6 +64,21 @@ public static class PokeDatabase
             string typeKey = types[i];
             AAAsset<Sprite>.LoadAsset($"type[{typeKey}]", (sprite) => typeSprites[typeKey] = sprite);
         }
+
+        WebConnection.GetRequest<Natures>("https://pokeapi.co/api/v2/nature", (data) =>
+        {
+            for (int i = 0; i < data.results.Count; i++)
+            {
+                string name = data.results[i].name;
+                Stats nature = new(100, 100, 100, 100, 100, 100, 100, 100);
+                int decreaseId = (i / 5) + 1;
+                int increaseId = (i % 5) + 1;
+                nature[(StatType)increaseId] += 10;
+                nature[(StatType)decreaseId] -= 10;
+                Logger.Log($"{name} => +{(StatType)increaseId}; -{(StatType)decreaseId}", LogFlags.DataCheck);
+                natures[name] = nature;
+            }
+        });
     }
 
     public static void SetGenderSprite(Image image, Gender gender)
@@ -74,4 +92,9 @@ public static class PokeDatabase
         };
     }
     #endregion
+
+    public struct Natures
+    {
+        public List<ApiReference> results;
+    }
 }
