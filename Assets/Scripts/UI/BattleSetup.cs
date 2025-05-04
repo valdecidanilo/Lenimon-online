@@ -24,6 +24,7 @@ public class BattleSetup : MonoBehaviour
     [SerializeField] private SummaryMenu summary;
 
     private bool summaryFromParty;
+    private int summaryPokemonId;
 
     #region Battle Visuals
 
@@ -56,10 +57,17 @@ public class BattleSetup : MonoBehaviour
         fightMenu.onReturn += OpenChoiceMenu;
         partyChoice.onReturn += OpenChoiceMenu;
         partyChoice.onChangePokemon += OnAllyChanged;
-        partyChoice.onSummaryCall += (pkm)=>
+        partyChoice.onSummaryCall += (id)=>
         {
+            summaryPokemonId = id;
             summaryFromParty = true;
-            OpenPokemonSummary(pkm);
+            OpenPokemonSummary(allyParty[id]);
+        };
+        summary.onShiftPokemon += (delta) =>
+        {
+            if (delta == 0 || !summaryFromParty) return;
+            summaryPokemonId = (summaryPokemonId + delta + allyParty.Length) % allyParty.Length;
+            OpenPokemonSummary(allyParty[summaryPokemonId]);
         };
         summary.onReturn += ()=>
         {

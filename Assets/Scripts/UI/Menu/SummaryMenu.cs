@@ -1,4 +1,5 @@
 using LenixSO.Logger;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -7,6 +8,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Logger = LenixSO.Logger.Logger;
+using Random = UnityEngine.Random;
 
 public class SummaryMenu : ContextMenu<Pokemon>
 {
@@ -54,6 +56,8 @@ public class SummaryMenu : ContextMenu<Pokemon>
     [SerializeField] private TMP_Text description;
     private SummaryMove[] moves;
     #endregion
+
+    public event Action<int> onShiftPokemon;
 
     private const int screenCount = 3;
     private Sprite emptyIcon;
@@ -137,6 +141,7 @@ public class SummaryMenu : ContextMenu<Pokemon>
     {
         if(selectMove.activeSelf) return;
         UpdateScreen((currentScreen + screenCount + Mathf.FloorToInt(direction.x)) % screenCount);
+        onShiftPokemon?.Invoke(Mathf.FloorToInt(direction.y));
     }
 
     private void UpdateScreen(int screenId = 0)
