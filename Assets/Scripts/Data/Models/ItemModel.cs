@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class ItemModel : ApiData
 {
-    public int id => itemData.id;
-    public string name;
     public int cost => itemData.cost;
 
     public readonly string effect;
@@ -18,6 +16,7 @@ public class ItemModel : ApiData
     public ItemModel(ItemData data)
     {
         itemData = data;
+        id = itemData.id;
         name = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(data.name.Replace("-", " "));
         effect = PokeAPI.SmallestFlavorText(data.flavorTexts);
     }
