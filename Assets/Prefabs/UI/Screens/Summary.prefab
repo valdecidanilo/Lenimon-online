@@ -1193,6 +1193,7 @@ MonoBehaviour:
   abilityName: {fileID: 5653190315399519575}
   abilityDesc: {fileID: 3736222124523113275}
   memo: {fileID: 6694952435842708055}
+  itemImage: {fileID: 102327830908194580}
   item: {fileID: 7351902195700192132}
   hp: {fileID: 7620480093293757323}
   atk: {fileID: 7283329578391460270}
@@ -2220,8 +2221,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 308.99, y: 271}
-  m_SizeDelta: {x: 786.41, y: 87.852}
+  m_AnchoredPosition: {x: 306.58252, y: 271}
+  m_SizeDelta: {x: 759.3447, y: 87.852}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6725276046002900355
 CanvasRenderer:
@@ -2278,12 +2279,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 97.94
-  m_fontSizeBase: 97.94
+  m_fontSize: 87.85
+  m_fontSizeBase: 98
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 98
   m_fontStyle: 16
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512

@@ -51,7 +51,7 @@ public class LearningDetail
         "egg" => MoveLearnMethod.Egg,
         "tutor" => MoveLearnMethod.Tutor,
         "machine" => MoveLearnMethod.TM,
-        _ => MoveLearnMethod.Unknow
+        _ => MoveLearnMethod.Unknown
     };
 }
 public enum MoveLearnMethod
@@ -60,5 +60,5 @@ public enum MoveLearnMethod
     Egg = 2,
     Tutor = 3,
     TM = 4,
-    Unknow = 999,
+    Unknown = 999,
 }

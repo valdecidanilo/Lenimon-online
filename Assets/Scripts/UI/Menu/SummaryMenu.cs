@@ -33,6 +33,7 @@ public class SummaryMenu : ContextMenu<Pokemon>
     //Screen 2: stats, item, xp
     #region Screen 2
     [Header("Screen 2")]
+    [SerializeField] private Image itemImage;
     [SerializeField] private TMP_Text item;
     [SerializeField] private TMP_Text hp;
     [SerializeField] private TMP_Text atk;
@@ -55,6 +56,7 @@ public class SummaryMenu : ContextMenu<Pokemon>
     #endregion
 
     private const int screenCount = 3;
+    private Sprite emptyIcon;
 
     private Pokemon pokemon;
     private int currentScreen = 0;
@@ -73,6 +75,7 @@ public class SummaryMenu : ContextMenu<Pokemon>
 
     public override void OpenMenu(Pokemon target)
     {
+        emptyIcon ??= itemImage.sprite;
         if(moves == null)
         {
             moves = new SummaryMove[4];
@@ -98,10 +101,13 @@ public class SummaryMenu : ContextMenu<Pokemon>
         }
         abilityName.text = target.ability.abilityName;
         abilityDesc.text = target.ability.flavorText;
+        //nature
         memo.text = $"<color=red>NATURE</color> nature,\nmet at Lv<color=red>{Random.Range(1, target.level + 1)}</color>," +
             $"\n<color=red>ROUTE {Random.Range(1, 200)}</color>.";
         //set screen 2
         //item
+        itemImage.sprite = target.heldItem?.sprite ?? emptyIcon;
+        item.text = target.heldItem?.name ?? "NONE";
         hp.text = $"{target.battleStats.hp}/{target.stats.hp}";
         atk.text = $"{target.stats.atk}";
         def.text = $"{target.stats.def}";

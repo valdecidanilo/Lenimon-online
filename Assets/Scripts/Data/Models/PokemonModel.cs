@@ -6,11 +6,9 @@ using Random = UnityEngine.Random;
 using Logger = LenixSO.Logger.Logger;
 using System.Globalization;
 
-public class Pokemon
+public class Pokemon : ApiData
 {
     public PokemonData data { get; private set; }
-    public string name;
-    public int id { get; private set; }
     public Gender gender { get; private set; }
 
     #region Stats
@@ -29,6 +27,7 @@ public class Pokemon
     public Sprite icon { get; private set; }
     public AbilityData ability;
     public MoveModel[] moves;
+    public ItemModel heldItem;
 
     //Data loading
     private Checklist dataChecklist;
@@ -37,7 +36,7 @@ public class Pokemon
     public Pokemon(PokemonData pokemonData, int lv = 1)
     {
         data = pokemonData;
-        name = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(pokemonData.name);
+        name = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(pokemonData.species.name);
         int formId = name.IndexOf('-');
         if (formId > 0)
         {
@@ -87,6 +86,7 @@ public class Pokemon
         GetAbility();
         GetNature();
         GetRandomMoves();
+        GetHeldItem();
     }
 
     public void LevelUp(int amount)
@@ -218,6 +218,32 @@ public class Pokemon
     private void GetNature()
     {
 
+    }
+    private void GetHeldItem()
+    {
+        int rand = Random.Range(0, 100);
+        int itemCheck = 0;
+        string itemRoute = string.Empty;
+
+        for (int i = 0; i < data.held_items.Count; i++)
+        {
+            HeldItem item = data.held_items[i];
+            int rarity = item.version_details[0].rarity;
+            itemCheck += rarity;
+            if (itemCheck <= rand) continue;
+            itemRoute = item.item.url;
+            Logger.Log($"{name} has a item:\n{item.item.name}[{i}] ({rarity} rarity) => {itemCheck} | {rand}", LogFlags.DataCheck);
+            break;
+        }
+        if (!string.IsNullOrEmpty(itemRoute))
+        {
+            dataChecklist.AddStep();
+            PokeAPI.GetItem(itemRoute, (item) =>
+            {
+                heldItem = item;
+                dataChecklist.FinishStep();
+            });
+        }
     }
     #endregion
 }

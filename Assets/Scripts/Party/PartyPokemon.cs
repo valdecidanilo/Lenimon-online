@@ -16,6 +16,7 @@ public class PartyPokemon : MonoBehaviour
     [SerializeField] private Image hpBar;
     [SerializeField] private Image icon;
     [SerializeField] private Image gender;
+    [SerializeField] private GameObject itemIcon;
 
     public Pokemon pokemon { get; private set; }
     
@@ -38,5 +39,6 @@ public class PartyPokemon : MonoBehaviour
         hpBar.fillAmount = (float)pokemon.battleStats[StatType.hp] / pokemon.stats[StatType.hp];
         icon.sprite = pokemon.icon;
         PokeDatabase.SetGenderSprite(gender, pokemon.gender);
+        itemIcon.SetActive(newPokemon.heldItem != null);
     }
 }

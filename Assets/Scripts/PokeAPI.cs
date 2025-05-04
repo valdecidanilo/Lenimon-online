@@ -113,6 +113,23 @@ public static class PokeAPI
         }
     }
     
+    public static void GetItem(string route, Action<ItemModel> onSuccess)
+    {
+        WebConnection.GetRequest<ItemData>(route, (data) =>
+        {
+            ItemModel item = new(data);
+            WebConnection.GetTexture(data.sprite.defaultIcon, (txt) =>
+            {
+                Rect rect = new(0, 0, txt.width, txt.height);
+                Vector2 pivot = Vector2.one / 2f;
+                Sprite sprite = Sprite.Create(txt, rect, pivot);
+                item.sprite = sprite;
+                onSuccess?.Invoke(item);
+            });
+
+        });
+    }
+
     //helpers
     public static string SmallestFlavorText(List<FlavorText> entries, string language = "en")
     {

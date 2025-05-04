@@ -366,14 +366,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectionItem: {fileID: 7749280771937015459}
-  maleIcon: {fileID: 21300000, guid: b7b1377e1eaa0114ab8bbaf8c2d40896, type: 3}
-  femaleIcon: {fileID: 21300000, guid: 13127d3d156d67c4fb14dde95279e3a1, type: 3}
   nickname: {fileID: 3300337428364261844}
   level: {fileID: 1697219609057985005}
   hp: {fileID: 7461968805721673978}
   hpBar: {fileID: 506128816275470025}
   icon: {fileID: 2780575751288177265}
   gender: {fileID: 6897796354689944829}
+  itemIcon: {fileID: 156658507753169123}
 --- !u!114 &7749280771937015459
 MonoBehaviour:
   m_ObjectHideFlags: 0

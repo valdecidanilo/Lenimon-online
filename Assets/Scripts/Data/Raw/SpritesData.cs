@@ -2,6 +2,11 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
+public class ItemSprite
+{
+    [JsonProperty("default")] public string defaultIcon;
+}
+
 public class Icons
 {
     public string front_default { get; set; }

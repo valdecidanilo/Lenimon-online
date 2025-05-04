@@ -23,3 +23,10 @@ public class FlavorText
     [JsonProperty("flavor_text")] public string text { get; set; }
     public ApiReference language { get; set; }
 }
+
+public class EffectText
+{
+    [JsonProperty("effect")] public string text { get; set; }
+    [JsonProperty("short_effect")] public string shortText { get; set; }
+    public ApiReference language { get; set; }
+}

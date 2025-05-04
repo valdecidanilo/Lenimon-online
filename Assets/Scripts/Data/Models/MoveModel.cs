@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 [Serializable]
 public class MoveModel
@@ -20,7 +21,7 @@ public class MoveModel
     public MoveModel(MoveData data)
     {
         this.data = data;
-        name = data.name.Replace("-", " ");
+        name = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(data.name.Replace("-", " "));
         id = data.id;
         moveType = data.type.name;
         power = data.power ?? 0;
