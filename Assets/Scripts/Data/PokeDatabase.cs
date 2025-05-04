@@ -2,7 +2,6 @@ using AddressableAsyncInstances;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 public static class PokeDatabase
@@ -12,6 +11,7 @@ public static class PokeDatabase
     public static Dictionary<string, MoveData> moves = new();
     public static Dictionary<string, MoveTypeData> moveTypes = new();
     public static Dictionary<string, AbilityData> abilities = new();
+    public static Dictionary<string, ItemData> items = new();
     #endregion
 
     //resources database

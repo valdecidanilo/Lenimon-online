@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class ItemData : ApiData
 {
@@ -13,6 +14,9 @@ public class ItemData : ApiData
 
     [JsonProperty("fling_effect")] public ApiReference flingEffect;
     [JsonProperty("fling_power")] public int flinPower;
+
+    //not included in the api
+    public Sprite icon;
 }
 public class HeldItem
 {

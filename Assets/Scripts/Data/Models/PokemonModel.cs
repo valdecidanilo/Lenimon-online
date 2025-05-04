@@ -120,13 +120,13 @@ public class Pokemon : ApiData
     private void LoadSprites()
     {
         dataChecklist.AddStep(3);
-        PokeAPI.GetSprite(data, (sprite) =>
+        PokeAPI.GetPokemonSprite(data, (sprite) =>
         {
             frontSprite = sprite;
             Logger.Log($"{name} Front sprite done loading", LogFlags.PokemonBuild);
             dataChecklist.FinishStep();
         });
-        PokeAPI.GetSprite(data, (sprite) =>
+        PokeAPI.GetPokemonSprite(data, (sprite) =>
         {
             backSprite = sprite;
             Logger.Log($"{name} Back sprite done loading", LogFlags.PokemonBuild);

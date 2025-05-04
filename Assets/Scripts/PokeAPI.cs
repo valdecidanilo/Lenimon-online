@@ -20,16 +20,13 @@ public static class PokeAPI
         WebConnection.GetRequest(route, onSuccess);
     }
 
-    public static void GetSprite(PokemonData pokemon, Action<Sprite> onSuccess, bool backSprite = false)
+    public static void GetPokemonSprite(PokemonData pokemon, Action<Sprite> onSuccess, bool backSprite = false)
     {
-        GetTexture(pokemon, (txt) =>
+        GetPokemonTexture(pokemon, (txt) =>
         {
             if (txt != null)
             {
-                Rect rect = new(0, 0, txt.width, txt.height);
-                Vector2 pivot = Vector2.one / 2f;
-                Sprite sprite = Sprite.Create(txt, rect, pivot);
-                onSuccess?.Invoke(sprite);
+                onSuccess?.Invoke(GenerateSprite(txt));
                 return;
             }
 
@@ -59,14 +56,11 @@ public static class PokeAPI
         Logger.Log($"icon route: {route}", LogFlags.API);
         WebConnection.GetTexture(route, (txt) =>
         {
-            Rect rect = new(0, 0, txt.width, txt.height);
-            Vector2 pivot = Vector2.one / 2f;
-            Sprite sprite = Sprite.Create(txt, rect, pivot);
-            onSuccess?.Invoke(sprite);
+            onSuccess?.Invoke(GenerateSprite(txt));
         });
     }
 
-    public static void GetTexture(PokemonData pokemon, Action<Texture2D> onSuccess, bool backSprite = false)
+    public static void GetPokemonTexture(PokemonData pokemon, Action<Texture2D> onSuccess, bool backSprite = false)
     {
         string route = backSprite ? pokemon.sprites.back_default : pokemon.sprites.front_default;
         if (string.IsNullOrEmpty(route))
@@ -115,14 +109,29 @@ public static class PokeAPI
     
     public static void GetItem(string route, Action<ItemModel> onSuccess)
     {
+        if (PokeDatabase.items.TryGetValue(route, out var item)) ReturnItem(item);
+        else WebConnection.GetRequest<ItemData>(route, ReturnItem);
+
+        void ReturnItem(ItemData data)
+        {
+            PokeDatabase.items[route] = data;
+            ItemModel item = new(data);
+            if(data.sprite == null) WebConnection.GetTexture(data.sprite.defaultIcon, (txt) =>
+            {
+                Sprite sprite = GenerateSprite(txt);
+                data.icon = sprite;
+                item.sprite = sprite;
+                onSuccess?.Invoke(item);
+            });
+            else onSuccess?.Invoke(item);
+        }
+
         WebConnection.GetRequest<ItemData>(route, (data) =>
         {
             ItemModel item = new(data);
             WebConnection.GetTexture(data.sprite.defaultIcon, (txt) =>
             {
-                Rect rect = new(0, 0, txt.width, txt.height);
-                Vector2 pivot = Vector2.one / 2f;
-                Sprite sprite = Sprite.Create(txt, rect, pivot);
+                Sprite sprite = GenerateSprite(txt);
                 item.sprite = sprite;
                 onSuccess?.Invoke(item);
             });
@@ -131,6 +140,12 @@ public static class PokeAPI
     }
 
     //helpers
+    private static Sprite GenerateSprite(Texture2D txt)
+    {
+        Rect rect = new(0, 0, txt.width, txt.height);
+        Vector2 pivot = Vector2.one / 2f;
+        return Sprite.Create(txt, rect, pivot);
+    }
     public static string SmallestFlavorText(List<FlavorText> entries, string language = "en")
     {
         string text = null;
