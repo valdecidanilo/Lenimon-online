@@ -54,7 +54,14 @@ public class Pokemon : ApiData
             pokemonData.spdStat
         );
 
-        iv = new(0, 0, 0, 0, 0, 0, 0, 0);
+        iv = new(
+            Random.Range(0, 32),
+            Random.Range(0, 32),
+            Random.Range(0, 32),
+            Random.Range(0, 32),
+            Random.Range(0, 32),
+            Random.Range(0, 32)
+        );
         ev = new(0, 0, 0, 0, 0, 0, 0, 0);
         nature = PokeDatabase.GetRandomNature(ref natureName);
 
