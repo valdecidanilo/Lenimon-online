@@ -28,6 +28,7 @@ public class Pokemon : ApiData
     public AbilityData ability;
     public MoveModel[] moves;
     public ItemModel heldItem;
+    public string natureName;
 
     //Data loading
     private Checklist dataChecklist;
@@ -55,7 +56,7 @@ public class Pokemon : ApiData
 
         iv = new(0, 0, 0, 0, 0, 0, 0, 0);
         ev = new(0, 0, 0, 0, 0, 0, 0, 0);
-        nature = new(100, 100, 100, 100, 100, 100, 100, 100);
+        nature = PokeDatabase.GetRandomNature(ref natureName);
 
         moves = new MoveModel[4];
         LevelUp(Mathf.Max(lv, 1));//minimum level is 1
@@ -84,7 +85,6 @@ public class Pokemon : ApiData
         LoadSprites();
         GetGender();
         GetAbility();
-        GetNature();
         GetRandomMoves();
         GetHeldItem();
     }
@@ -94,6 +94,11 @@ public class Pokemon : ApiData
         if (amount <= 0) return;
 
         level += amount;
+        UpdateStats();
+    }
+
+    private void UpdateStats()
+    {
         Stats newStats = stats;
         newStats.hp = BasicStatCalculation(data.hpStat, iv[StatType.hp], ev[StatType.hp], level) + level + 10;
         newStats.atk = NonHpCalculation(StatType.atk);
@@ -114,7 +119,6 @@ public class Pokemon : ApiData
             return Mathf.FloorToInt((BasicStatCalculation(data.stats[(int)type].base_stat, iv[type], ev[type], level) + 5) * (nature[type] / 100f));
         }
     }
-
 
     #region Data Load
     private void LoadSprites()
@@ -214,10 +218,6 @@ public class Pokemon : ApiData
             ability.abilityName = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(ability.name.Replace("-", " "));
             ability.flavorText = PokeAPI.SmallestFlavorText(ability.flavorTexts).Replace("\n", " ");
         });
-    }
-    private void GetNature()
-    {
-
     }
     private void GetHeldItem()
     {

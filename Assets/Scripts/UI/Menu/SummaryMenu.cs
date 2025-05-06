@@ -106,7 +106,7 @@ public class SummaryMenu : ContextMenu<Pokemon>
         abilityName.text = target.ability.abilityName;
         abilityDesc.text = target.ability.flavorText;
         //nature
-        memo.text = $"<color=red>NATURE</color> nature,\nmet at Lv<color=red>{Random.Range(1, target.level + 1)}</color>," +
+        memo.text = $"<color=red>{target.natureName.ToUpper()}</color> nature,\nmet at Lv<color=red>{Random.Range(1, target.level + 1)}</color>," +
             $"\n<color=red>ROUTE {Random.Range(1, 200)}</color>.";
         //set screen 2
         //item

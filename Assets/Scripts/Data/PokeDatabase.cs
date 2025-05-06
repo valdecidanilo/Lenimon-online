@@ -43,6 +43,7 @@ public static class PokeDatabase
         "unknown",
         "water",
     };
+    private static readonly List<string> natureNames = new();
     #endregion
 
     //Utility methods
@@ -87,6 +88,7 @@ public static class PokeDatabase
             for (int i = 0; i < data.results.Count; i++)
             {
                 string name = data.results[i].name;
+                natureNames.Add(name);
                 Stats nature = new(100, 100, 100, 100, 100, 100, 100, 100);
                 int decreaseId = (i / 5) + 1;
                 int increaseId = (i % 5) + 1;
@@ -108,6 +110,12 @@ public static class PokeDatabase
             Gender.Male => maleIcon,
             Gender.Female => femaleIcon
         };
+    }
+
+    public static Stats GetRandomNature(ref string name)
+    {
+        name = natureNames[Random.Range(0, natureNames.Count)];
+        return natures[name];
     }
     #endregion
 
