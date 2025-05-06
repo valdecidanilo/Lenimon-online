@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 471462753}
   - component: {fileID: 471462752}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: desc
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -593,7 +593,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battle: {fileID: 1465134122}
-  loadingScreen: {fileID: 2115061945}
 --- !u!4 &1369083909
 Transform:
   m_ObjectHideFlags: 0
@@ -944,7 +943,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   screen: {fileID: 2115061945}
-  text: {fileID: 471462752}
+  loadDescription: {fileID: 471462752}
 --- !u!1001 &3138083762762604888
 PrefabInstance:
   m_ObjectHideFlags: 0

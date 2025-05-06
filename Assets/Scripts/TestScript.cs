@@ -12,7 +12,6 @@ public class TestScript : MonoBehaviour
     private const int maxPokemonId = 1025;
 
     [SerializeField] private BattleSetup battle;
-    [SerializeField] private GameObject loadingScreen;
 
     private MoveDatabase moveDatabase;
 
@@ -22,12 +21,20 @@ public class TestScript : MonoBehaviour
     private void Awake()
     {
         PokeDatabase.PreloadAssets();
+        LoadingScreen.onDoneLoading += Setup;
         moveDatabase = Resources.Load<MoveDatabase>("MoveDatabase");
+    }
+
+    private void Setup()
+    {
+        LoadingScreen.onDoneLoading -= Setup;
+        LoadingScreen.onDoneLoading += StartBattle;
         GenerateParties();
     }
 
     private void GenerateParties()
     {
+
         //get encounter level
         int encounterLevel = Random.Range(1, 101);
 
@@ -37,6 +44,12 @@ public class TestScript : MonoBehaviour
         allyParty = new Pokemon[partySize];
         Checklist alliesLoaded = new(partySize);
 
+        Checklist requiredEnemy = new(1);
+        Logger.Log($"setup ally party ({partySize} pokemons)", LogFlags.Game);
+        LoadingScreen.AddOrChangeQueue(alliesLoaded, $"Loading ally party[1/{alliesLoaded.requiredSteps}]...");
+        LoadingScreen.AddOrChangeQueue(requiredEnemy, $"Loading opponent party...");
+
+        alliesLoaded.onProgress += (p) => LoadingScreen.AddOrChangeQueue(alliesLoaded, $"Loading ally party[{alliesLoaded.currentSteps+1}/{alliesLoaded.requiredSteps}]...");
         alliesLoaded.onCompleted += () =>
         {
             //load enemies
@@ -45,12 +58,10 @@ public class TestScript : MonoBehaviour
             enemyParty = new Pokemon[partySize];
 
             Checklist opponentLoaded = new(partySize);
-            opponentLoaded.onProgress += (p) => { if (opponentLoaded.currentSteps == 1) StartBattle(); };
+            opponentLoaded.onProgress += (p) => { if (!requiredEnemy.isDone) requiredEnemy.FinishStep(); };
             Logger.Log($"setup enemy party ({partySize} pokemons)", LogFlags.Game);
             SetupParty(enemyParty, opponentLoaded);
         };
-
-        Logger.Log($"setup ally party ({partySize} pokemons)", LogFlags.Game);
         SetupParty(allyParty, alliesLoaded);
 
         void SetupParty(Pokemon[] party, Checklist loaded)
@@ -82,7 +93,6 @@ public class TestScript : MonoBehaviour
 
     private void StartBattle()
     {
-        loadingScreen.SetActive(false);
         battle.SetupBattle(allyParty, enemyParty);
     }
 

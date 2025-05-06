@@ -54,17 +54,34 @@ public static class PokeDatabase
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void PreloadAssets()
     {
+        Checklist preloadedAssets = new(1);
+        LoadingScreen.AddOrChangeQueue(preloadedAssets, "Loading assets...");
         //gender sprites
-        AAAsset<Sprite>.LoadAsset(maleIconKey, (sprite) => maleIcon = sprite);
-        AAAsset<Sprite>.LoadAsset(femaleIconKey, (sprite) => femaleIcon = sprite);
+        AAAsset<Sprite>.LoadAsset(maleIconKey, (sprite) =>
+        {
+            maleIcon = sprite;
+            preloadedAssets.FinishStep();
+        });
+        preloadedAssets.AddStep();
+        AAAsset<Sprite>.LoadAsset(femaleIconKey, (sprite) =>
+        {
+            femaleIcon = sprite;
+            preloadedAssets.FinishStep();
+        });
 
         //type sprites
         for (int i = 0; i < types.Length; i++)
         {
             string typeKey = types[i];
-            AAAsset<Sprite>.LoadAsset($"type[{typeKey}]", (sprite) => typeSprites[typeKey] = sprite);
+            preloadedAssets.AddStep();
+            AAAsset<Sprite>.LoadAsset($"type[{typeKey}]", (sprite) =>
+            {
+                typeSprites[typeKey] = sprite;
+                preloadedAssets.FinishStep();
+            });
         }
 
+        preloadedAssets.AddStep();
         WebConnection.GetRequest<Natures>("https://pokeapi.co/api/v2/nature", (data) =>
         {
             for (int i = 0; i < data.results.Count; i++)
@@ -78,6 +95,7 @@ public static class PokeDatabase
                 Logger.Log($"{name} => +{(StatType)increaseId}; -{(StatType)decreaseId}", LogFlags.DataCheck);
                 natures[name] = nature;
             }
+            preloadedAssets.FinishStep();
         });
     }
 
