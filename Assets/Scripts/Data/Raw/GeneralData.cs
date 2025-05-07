@@ -1,10 +1,14 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-public class ApiReference
+public class ApiLink
+{
+    public string url { get; set; }
+}
+
+public class ApiReference : ApiLink
 {
     public string name { get; set; }
-    public string url { get; set; }
 }
 public class ApiData
 {

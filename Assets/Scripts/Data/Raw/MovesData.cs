@@ -11,6 +11,11 @@ public class MoveData : ApiData
     [JsonProperty("damage_class")] public ApiReference typeOfMove;
     public ApiReference type;
     [JsonProperty("flavor_text_entries")] public List<FlavorText> flavorTexts;
+    
+    public MoveMetaData meta;
+    public List<TMData> machines;
+    public ApiReference target;
+    [JsonProperty("stat_changes")] public List<StatChange> statChanges;
 
     //Not included in the api
     public MoveTypeData moveTypeData;
@@ -31,7 +36,6 @@ public enum MoveType
     Physical = 2,
     Special = 3,
 }
-
 public class MoveReference
 {
     public ApiReference move { get; set; }
@@ -61,4 +65,31 @@ public enum MoveLearnMethod
     Tutor = 3,
     TM = 4,
     Unknown = 999,
+}
+
+public class MoveMetaData
+{
+    public ApiReference category;
+    public int drain; //percentage; also recoil if negative
+    public int healing; //percentage
+    [JsonProperty("min_hits")] public int min_hits; 
+    [JsonProperty("max_hits")] public int max_hits; 
+    [JsonProperty("min_turns")] public int minTurns; 
+    [JsonProperty("max_turns")] public int maxTurns; 
+    [JsonProperty("crit_rate")] public int critRate;
+    [JsonProperty("flinch_chance")] public int flinchChance; //percentage
+    [JsonProperty("stat_chance")] public int statChance; //percentage; The likelihood this attack will cause a stat change in the target Pokémon.
+    [JsonProperty("ailment_chance")] public int ailmentChance; //percentage
+    public ApiReference ailment;
+}
+public class TMData
+{
+    public ApiLink machine;
+    public ApiReference version_group;
+}
+
+public class StatChange
+{
+    public int change;
+    public ApiReference stat;
 }

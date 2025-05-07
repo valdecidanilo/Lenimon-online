@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using Battle;
 
 [Serializable]
 public class MoveModel
@@ -17,6 +18,9 @@ public class MoveModel
     public readonly int maxPP;
 
     private MoveData data;
+    public MoveData Data => data;
+
+    public Effect effect;
 
     public MoveModel(MoveData data)
     {
