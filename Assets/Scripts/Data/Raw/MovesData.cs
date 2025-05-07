@@ -70,16 +70,16 @@ public enum MoveLearnMethod
 public class MoveMetaData
 {
     public ApiReference category;
-    public int drain; //percentage; also recoil if negative
-    public int healing; //percentage
-    [JsonProperty("min_hits")] public int min_hits; 
-    [JsonProperty("max_hits")] public int max_hits; 
-    [JsonProperty("min_turns")] public int minTurns; 
-    [JsonProperty("max_turns")] public int maxTurns; 
-    [JsonProperty("crit_rate")] public int critRate;
-    [JsonProperty("flinch_chance")] public int flinchChance; //percentage
-    [JsonProperty("stat_chance")] public int statChance; //percentage; The likelihood this attack will cause a stat change in the target Pokémon.
-    [JsonProperty("ailment_chance")] public int ailmentChance; //percentage
+    public int? drain; //percentage; also recoil if negative
+    public int? healing; //percentage
+    [JsonProperty("min_hits")] public int? min_hits; 
+    [JsonProperty("max_hits")] public int? max_hits; 
+    [JsonProperty("min_turns")] public int? minTurns; 
+    [JsonProperty("max_turns")] public int? maxTurns; 
+    [JsonProperty("crit_rate")] public int? critRate;
+    [JsonProperty("flinch_chance")] public int? flinchChance; //percentage
+    [JsonProperty("stat_chance")] public int? statChance; //percentage; The likelihood this attack will cause a stat change in the target Pokémon.
+    [JsonProperty("ailment_chance")] public int? ailmentChance; //percentage
     public ApiReference ailment;
 }
 public class TMData

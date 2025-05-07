@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
+using Battle;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -34,7 +36,6 @@ public class TestScript : MonoBehaviour
 
     private void GenerateParties()
     {
-
         //get encounter level
         int encounterLevel = Random.Range(1, 101);
 
@@ -94,6 +95,30 @@ public class TestScript : MonoBehaviour
     private void StartBattle()
     {
         battle.SetupBattle(allyParty, enemyParty);
+        
+        //test
+        List<StatChange> statChanges = new();
+        statChanges.Add(new StatChange
+        {
+            change = 1,
+            stat = new()
+            {
+                name = "attack"
+            }
+        });
+        statChanges.Add(new StatChange
+        {
+            change = 1,
+            stat = new()
+            {
+                name = "speed"
+            }
+        });
+        StatChangeEffect effect = new(statChanges);
+        StartCoroutine(effect.EffectSequence(new()
+        {
+            target = allyParty[0]
+        }));
     }
 
     private void CheckPokemon(Pokemon pokemon)

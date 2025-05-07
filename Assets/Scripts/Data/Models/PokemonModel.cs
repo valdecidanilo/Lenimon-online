@@ -18,7 +18,7 @@ public class Pokemon : ApiData
     public Stats iv{ get; private set; }
     public Stats ev{ get; private set; }
     public Stats nature{ get; private set; }
-    public Stats battleStats{ get; private set; }
+    public Stats battleStats{ get; set; }
     #endregion
     
     //MetaData
@@ -176,7 +176,8 @@ public class Pokemon : ApiData
         int moveId = Random.Range(0, possibleMoves.Count);
         newMoves[loadedMoves.currentSteps] = possibleMoves[moveId];
         possibleMoves.RemoveAt(moveId);
-        PokeAPI.GetMove(newMoves[loadedMoves.currentSteps].move.url, LoadMove);
+        //PokeAPI.GetMove(newMoves[loadedMoves.currentSteps].move.url, LoadMove);
+        PokeAPI.GetMove("pokeapi.co/api/v2/move/swords-dance", LoadMove);
 
         void LoadMove(MoveData data)
         {

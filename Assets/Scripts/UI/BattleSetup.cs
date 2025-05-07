@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Battle;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -55,6 +56,7 @@ public class BattleSetup : MonoBehaviour
     {
         battleChoice.onItemPick += OnChoicePick;
         fightMenu.onReturn += OpenChoiceMenu;
+        fightMenu.onPickMove += OnMovePick;
         partyChoice.onReturn += OpenChoiceMenu;
         partyChoice.onChangePokemon += OnAllyChanged;
         partyChoice.onSummaryCall += (id)=>
@@ -129,6 +131,21 @@ public class BattleSetup : MonoBehaviour
         allyParty[0] = cashe;
         SetupAlly(allyParty[0]);
         OpenChoiceMenu();
+    }
+
+    private void OnMovePick(int id)
+    {
+        BattleEvent evtBattle = new();
+        evtBattle.move = allyPokemon.moves[id];
+        evtBattle.origin = allyPokemon;
+        evtBattle.target = evtBattle.move.Data.target.name switch
+        {
+            "selected-pokemon" => enemyPokemon,
+            "all-opponents" => enemyPokemon,
+            "user" => allyPokemon,
+            "user-and-allies" => allyPokemon,
+        };
+        StartCoroutine(evtBattle.move.effect.EffectSequence(evtBattle));
     }
 
     #region Window Changes

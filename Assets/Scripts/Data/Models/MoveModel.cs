@@ -35,5 +35,6 @@ public class MoveModel
         priority = data.priority;
         typeOfMove = data.moveTypeData.id;
         description = PokeAPI.SmallestFlavorText(data.flavorTexts).Replace("\n", " ");
+        EffectCreation.AddEffectToMove(this);
     }
 }

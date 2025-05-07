@@ -1087,6 +1087,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bag
       objectReference: {fileID: 0}
+    - target: {fileID: 556338667027271623, guid: c052fccc73435c54fbcca8e5a3f49502,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5311397902517925457, guid: c052fccc73435c54fbcca8e5a3f49502,
         type: 3}
       propertyPath: m_Pivot.x

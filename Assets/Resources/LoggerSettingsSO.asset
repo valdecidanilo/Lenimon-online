@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   restoreLogsOnChange: 1
   ignoreLoggerOnStackTrace: 1
-  activeFlags: 8
+  activeFlags: 0
   flags:
   - Request
   - Response

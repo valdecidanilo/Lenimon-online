@@ -127,7 +127,7 @@ public class SummaryMenu : ContextMenu<Pokemon>
             moves[i].SetupMove(target.moves[i]);
 
         gameObject.SetActive(true);
-        UpdateScreen();
+        UpdateScreen(currentScreen);
     }
 
     protected override void Update()
@@ -193,6 +193,7 @@ public class SummaryMenu : ContextMenu<Pokemon>
 
     public override void CloseMenu()
     {
+        currentScreen = 0;
         selectMove.SetActive(false);
         gameObject.SetActive(false);
     }

@@ -11,6 +11,6 @@ namespace Battle
         public MoveModel move;
         public DamageEvent dmgEvent;
         public bool failed;
-        public List<string> messages;
+        public List<string> messages = new();
     }
 }

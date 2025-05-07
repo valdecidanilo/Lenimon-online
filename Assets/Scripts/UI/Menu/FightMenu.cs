@@ -1,5 +1,8 @@
+using System;
+using LenixSO.Logger;
 using TMPro;
 using UnityEngine;
+using Logger = LenixSO.Logger.Logger;
 
 public class FightMenu : ContextMenu<Pokemon>
 {
@@ -9,10 +12,13 @@ public class FightMenu : ContextMenu<Pokemon>
 
     private Pokemon pokemon;
 
+    public event Action<int> onPickMove; 
+
     protected override void Awake()
     {
         base.Awake();
         contextSelection.onSelect += OnSelectionChanged;
+        contextSelection.onItemPick += OnMovePick;
     }
 
     public override void OpenMenu(Pokemon data)
@@ -46,5 +52,11 @@ public class FightMenu : ContextMenu<Pokemon>
         moveType.text = move.moveType;
         int ppAmount = move.pp;
         movePp.text = $"{ppAmount}/{ppAmount}";
+    }
+
+    private void OnMovePick(int id)
+    {
+        Logger.Log($"{pokemon.name} will use {pokemon.moves[id].name}",LogFlags.Game);
+        onPickMove?.Invoke(id);
     }
 }
