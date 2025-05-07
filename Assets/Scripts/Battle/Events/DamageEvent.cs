@@ -19,6 +19,8 @@ namespace Battle
             this.defender = defender;
             power = move.power;
             typeOfMove = move.typeOfMove;
+            modifier1 = 1;
+            modifier2 = 1;
         }
 
         //https://bulbapedia.bulbagarden.net/wiki/Generation_III

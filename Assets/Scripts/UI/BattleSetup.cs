@@ -2,11 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Battle;
+using LenixSO.Logger;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using Logger = LenixSO.Logger.Logger;
 using Random = UnityEngine.Random;
 
 public class BattleSetup : MonoBehaviour
@@ -92,10 +94,12 @@ public class BattleSetup : MonoBehaviour
         //setup enemy
         enemyParty = enemies;
         SetupEnemy(enemyParty[0]);
+        enemyPokemon.onDamaged += OpponentDamaged;
 
         //setup ally
         allyParty = allies;
         SetupAlly(allyParty[0]);
+        allyPokemon.onDamaged += AllyDamaged;
 
         OpenChoiceMenu();
     }
@@ -106,8 +110,8 @@ public class BattleSetup : MonoBehaviour
         pokemonImage.sprite = allyPokemon.backSprite;
         pokemonName.text = allyPokemon.name;
         level.text = $"Lv{allyPokemon.level}";
-        hpValue.text = $"{allyPokemon.stats[StatType.hp]}/{allyPokemon.stats[StatType.hp]}";
-        hp.fillAmount = 1;
+        hpValue.text = $"{allyPokemon.battleStats[StatType.hp]}/{allyPokemon.stats[StatType.hp]}";
+        hp.fillAmount = allyPokemon.battleStats[StatType.hp] / (float)allyPokemon.stats[StatType.hp];
         xp.fillAmount = Random.Range(0, 1);
 
         PokeDatabase.SetGenderSprite(gender, allyPokemon.gender);
@@ -119,7 +123,7 @@ public class BattleSetup : MonoBehaviour
         enemyImage.sprite = enemyPokemon.frontSprite;
         enemyName.text = enemyPokemon.name;
         enemyLevel.text = $"Lv{enemyPokemon.level}";
-        enemyHp.fillAmount = 1;
+        enemyHp.fillAmount = enemy.battleStats[StatType.hp] / (float)enemy.stats[StatType.hp];
 
         PokeDatabase.SetGenderSprite(gender, enemyPokemon.gender);
     }
@@ -140,12 +144,25 @@ public class BattleSetup : MonoBehaviour
         evtBattle.origin = allyPokemon;
         evtBattle.target = evtBattle.move.Data.target.name switch
         {
-            "selected-pokemon" => enemyPokemon,
-            "all-opponents" => enemyPokemon,
             "user" => allyPokemon,
             "user-and-allies" => allyPokemon,
+            "selected-pokemon" => enemyPokemon,
+            "all-opponents" => enemyPokemon,
+            "all-other-pokemon" => enemyPokemon,
         };
+        if (evtBattle.target == enemyPokemon)
+            evtBattle.dmgEvent = new(allyPokemon, enemyPokemon, evtBattle.move);
         StartCoroutine(evtBattle.move.effect.EffectSequence(evtBattle));
+    }
+
+    private void AllyDamaged(int initialValue, int currentValue)
+    {
+        SetupAlly(allyPokemon);
+    }
+    private void OpponentDamaged(int initialValue, int currentValue)
+    {
+        Logger.Log("Enemy damaged",LogFlags.Game);
+        SetupEnemy(enemyPokemon);
     }
 
     #region Window Changes

@@ -15,6 +15,7 @@ namespace Battle
             {
                 case "damage":
                     //Logger.Log("damage move", LogFlags.DataCheck);
+                    effectCreation = new CreatorDamageEffect();
                     break;
                 case "damage+ailment":
                     //Logger.Log("damage and ailment move", LogFlags.DataCheck);

@@ -30,9 +30,11 @@ public class Pokemon : ApiData
     public ItemModel heldItem;
     public string natureName;
 
+    public event Action<int, int> onDamaged;
+
     //Data loading
     private Checklist dataChecklist;
-    public Action onDoneLoading;
+    public event Action onDoneLoading;
 
     public Pokemon(PokemonData pokemonData, int lv = 1)
     {
@@ -68,7 +70,7 @@ public class Pokemon : ApiData
         moves = new MoveModel[4];
         LevelUp(Mathf.Max(lv, 1));//minimum level is 1
 
-        battleStats = stats;
+        battleStats = Stats.Copy(stats);
 
         dataChecklist = new(0);
         dataChecklist.onCompleted += () => onDoneLoading?.Invoke();
@@ -127,6 +129,16 @@ public class Pokemon : ApiData
         }
     }
 
+    public void DamagePokemon(int value)
+    {
+        Stats currentStats = battleStats;
+        int currentHp = currentStats.hp;
+        currentStats.hp = Mathf.Max(currentHp - value, 0);
+        int newHp = currentStats.hp;
+        battleStats = currentStats;
+        onDamaged?.Invoke(currentHp, newHp);
+    }
+
     #region Data Load
     private void LoadSprites()
     {
@@ -177,7 +189,8 @@ public class Pokemon : ApiData
         newMoves[loadedMoves.currentSteps] = possibleMoves[moveId];
         possibleMoves.RemoveAt(moveId);
         //PokeAPI.GetMove(newMoves[loadedMoves.currentSteps].move.url, LoadMove);
-        PokeAPI.GetMove("pokeapi.co/api/v2/move/swords-dance", LoadMove);
+        //PokeAPI.GetMove("pokeapi.co/api/v2/move/swords-dance", LoadMove);
+        PokeAPI.GetMove("pokeapi.co/api/v2/move/tackle", LoadMove);
 
         void LoadMove(MoveData data)
         {
@@ -288,6 +301,12 @@ public struct Stats
         stats[5] = Spd;
         stats[6] = Acc;
         stats[7] = Eva;
+    }
+
+    public static Stats Copy(Stats target)
+    {
+        return new(target.hp, target.atk, target.def, target.sAtk,
+            target.sDef, target.spd, target.acc, target.eva);
     }
 }
 
