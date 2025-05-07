@@ -6,7 +6,7 @@ namespace Battle
     {
         public override void AddEffect(MoveModel move)
         {
-            
+            move.effect = new StatChangeEffect();
         }
     }
 }
