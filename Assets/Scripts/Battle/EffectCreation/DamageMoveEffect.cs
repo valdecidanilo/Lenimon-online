@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace Battle
 {
-    public class CreatorDamageEffect : EffectCreation
+    public class DamageMoveEffect : MoveEffectCreator
     {
         private int subEffectChance;
         private Effect subEffect;
         private Action<BattleEvent> subEffectSetup;
 
-        public CreatorDamageEffect(Effect subEffect = null, int chance = 100, Action<BattleEvent> subEffectSetup = null)
+        public DamageMoveEffect(Effect subEffect = null, int chance = 100, Action<BattleEvent> subEffectSetup = null)
         {
             this.subEffect = subEffect;
             subEffectChance = chance;

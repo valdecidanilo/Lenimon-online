@@ -30,7 +30,7 @@ public class Pokemon : ApiData
     public ItemModel heldItem;
     public string natureName;
 
-    public event Action<int, int> onDamaged;
+    public event Action<int, int> onHpChanged;
 
     //Data loading
     private Checklist dataChecklist;
@@ -131,7 +131,14 @@ public class Pokemon : ApiData
         int currentHp = battleStats.hp;
         battleStats.hp = Mathf.Max(currentHp - value, 0);
         int newHp = battleStats.hp;
-        onDamaged?.Invoke(currentHp, newHp);
+        onHpChanged?.Invoke(currentHp, newHp);
+    }
+    public void HealPokemon(int value)
+    {
+        int currentHp = battleStats.hp;
+        battleStats.hp = Mathf.Min(currentHp + value, stats.hp);
+        int newHp = battleStats.hp;
+        onHpChanged?.Invoke(currentHp, newHp);
     }
 
     #region Data Load
@@ -178,8 +185,8 @@ public class Pokemon : ApiData
 
         //test
         possibleMoves = new List<MoveReference>();
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/tackle" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/dragon-dance" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/recover" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/drain-punch" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/metal-claw" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/rock-tomb" } });
 

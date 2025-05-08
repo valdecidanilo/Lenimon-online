@@ -1,6 +1,6 @@
 namespace Battle
 {
-    public class CreatorAilmentEffect : EffectCreation
+    public class AilmentMoveEffect : MoveEffectCreator
     {
         public override void AddEffect(MoveModel move)
         {

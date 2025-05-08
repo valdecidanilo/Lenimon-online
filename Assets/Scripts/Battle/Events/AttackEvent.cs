@@ -15,6 +15,7 @@ namespace Battle
         public MoveType typeOfMove;
         public float modifier; //burn attack reduction, screens, weather, flashFire like abilities, critical, double damage effect, STAB, type multiplier 1 and 2
 
+        public int damageDealt { get; private set; }
         private readonly Stats attackerStats;
         private readonly Stats defenderStats;
 
@@ -59,6 +60,7 @@ namespace Battle
             Logger.Log($"dealt {finalDamage} damage to {defender.name} " +
                        $"({defender.battleStats.hp}/{defender.stats.hp})" +
                        $"\n{atk}({attacker.battleStats[StatType.atk]}) vs {def}", LogFlags.Game);
+            damageDealt = finalDamage;
             defender.DamagePokemon(finalDamage);
         }
 

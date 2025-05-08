@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace Battle
 {
-    public class CreatorStatusChangeEffect : EffectCreation
+    public class StatusChangeMoveEffect : MoveEffectCreator
     {
         public override void AddEffect(MoveModel move)
         {

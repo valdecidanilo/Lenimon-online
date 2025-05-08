@@ -70,8 +70,8 @@ public enum MoveLearnMethod
 public class MoveMetaData
 {
     public ApiReference category;
-    public int? drain; //percentage; also recoil if negative
-    public int? healing; //percentage
+    public int drain; //percentage; also recoil if negative
+    public int healing; //percentage
     [JsonProperty("min_hits")] public int? min_hits; 
     [JsonProperty("max_hits")] public int? max_hits; 
     [JsonProperty("min_turns")] public int? minTurns; 

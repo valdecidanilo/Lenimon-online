@@ -96,12 +96,12 @@ public class BattleSetup : MonoBehaviour
         //setup enemy
         enemyParty = enemies;
         SetupEnemy(enemyParty[0]);
-        enemyPokemon.onDamaged += OpponentDamaged;
+        enemyPokemon.onHpChanged += OpponentHpChanged;
 
         //setup ally
         allyParty = allies;
         SetupAlly(allyParty[0]);
-        allyPokemon.onDamaged += AllyDamaged;
+        allyPokemon.onHpChanged += AllyHpChanged;
 
         OpenChoiceMenu();
     }
@@ -132,10 +132,12 @@ public class BattleSetup : MonoBehaviour
 
     private void OnAllyChanged(int newAlly)
     {
+        allyPokemon.onHpChanged -= AllyHpChanged;
         Pokemon cashe = allyParty[newAlly];
         allyParty[newAlly] = allyParty[0];
         allyParty[0] = cashe;
         SetupAlly(allyParty[0]);
+        allyPokemon.onHpChanged += AllyHpChanged;
         OpenChoiceMenu();
     }
 
@@ -166,6 +168,10 @@ public class BattleSetup : MonoBehaviour
         {
             //missed/evaded text
         }
+
+        //next move
+        yield return new WaitForSeconds(2);
+        allyPokemon.DamagePokemon(50);
     }
 
     private Pokemon GetTarget(string target, Pokemon self, Pokemon opponent)
@@ -180,11 +186,11 @@ public class BattleSetup : MonoBehaviour
         };
     }
 
-    private void AllyDamaged(int initialValue, int currentValue)
+    private void AllyHpChanged(int initialValue, int currentValue)
     {
         SetupAlly(allyPokemon);
     }
-    private void OpponentDamaged(int initialValue, int currentValue)
+    private void OpponentHpChanged(int initialValue, int currentValue)
     {
         SetupEnemy(enemyPokemon);
     }
