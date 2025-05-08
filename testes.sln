@@ -1,19 +1,36 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{1b5f2664-4683-41ab-ab48-322a246e2260}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LenixSO.Logger", "LenixSO.Logger.csproj", "{AE168E9C-E30E-286E-E1E2-87D773E564DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-firstpass", "Assembly-CSharp-firstpass.csproj", "{11fd4efb-e9a5-84b1-daf3-36c9e94f50cf}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{64265F1B-8346-AB41-AB48-322A246E2260}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-firstpass", "Assembly-CSharp-firstpass.csproj", "{FB4EFD11-A5E9-B184-DAF3-36C9E94F50CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LenixSO.Logger.Editor", "LenixSO.Logger.Editor.csproj", "{5CDED9C7-D49C-F686-A56F-77038D1419FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1b5f2664-4683-41ab-ab48-322a246e2260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1b5f2664-4683-41ab-ab48-322a246e2260}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{11fd4efb-e9a5-84b1-daf3-36c9e94f50cf}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{11fd4efb-e9a5-84b1-daf3-36c9e94f50cf}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE168E9C-E30E-286E-E1E2-87D773E564DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE168E9C-E30E-286E-E1E2-87D773E564DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE168E9C-E30E-286E-E1E2-87D773E564DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE168E9C-E30E-286E-E1E2-87D773E564DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64265F1B-8346-AB41-AB48-322A246E2260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64265F1B-8346-AB41-AB48-322A246E2260}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64265F1B-8346-AB41-AB48-322A246E2260}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64265F1B-8346-AB41-AB48-322A246E2260}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB4EFD11-A5E9-B184-DAF3-36C9E94F50CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB4EFD11-A5E9-B184-DAF3-36C9E94F50CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB4EFD11-A5E9-B184-DAF3-36C9E94F50CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB4EFD11-A5E9-B184-DAF3-36C9E94F50CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CDED9C7-D49C-F686-A56F-77038D1419FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CDED9C7-D49C-F686-A56F-77038D1419FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CDED9C7-D49C-F686-A56F-77038D1419FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CDED9C7-D49C-F686-A56F-77038D1419FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

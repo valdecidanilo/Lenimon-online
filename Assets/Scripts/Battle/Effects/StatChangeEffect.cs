@@ -29,15 +29,15 @@ namespace Battle
         {
             yield return null;
             StringBuilder sb = new($"{evt.target.name}'s ");
-            string changeType = changes[0] > 0 ? "increased" : "decreased";
+            string changeType = changes[0] > 0 ? "rose" : "fell";
             Stats stats = evt.target.battleStats;
             for (int i = 0; i < changes.Length; i++)
             {
-                stats[types[i]] += changes[i];
+                stats[types[i]] = Mathf.Clamp(stats[types[i]] + changes[i], -6, 6);
                 sb.Append($"{changeRef[i].stat.name.Replace("-", " ")}");
                 if (i < changes.Length - 1) sb.Append(" and ");
             }
-            sb.Append($" {changeType}");
+            sb.Append($" {changeType}!");
             Logger.Log(sb.ToString(), LogFlags.Game);
             evt.target.battleStats = stats;
         }

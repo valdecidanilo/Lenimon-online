@@ -70,7 +70,7 @@ public class Pokemon : ApiData
         moves = new MoveModel[4];
         LevelUp(Mathf.Max(lv, 1));//minimum level is 1
 
-        battleStats = Stats.Copy(stats);
+        battleStats = new(stats.hp, 0, 0, 0, 0, 0, 0, 0);
 
         dataChecklist = new(0);
         dataChecklist.onCompleted += () => onDoneLoading?.Invoke();
@@ -181,6 +181,13 @@ public class Pokemon : ApiData
             }
         }
 
+        //test
+        possibleMoves = new List<MoveReference>();
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/tackle" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/swords-dance" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/disarming-voice" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/quiver-dance" } });
+
         MoveReference[] newMoves = new MoveReference[4];
         int moveAmount = Mathf.Min(possibleMoves.Count, 4);
         dataChecklist.AddStep();
@@ -188,9 +195,7 @@ public class Pokemon : ApiData
         int moveId = Random.Range(0, possibleMoves.Count);
         newMoves[loadedMoves.currentSteps] = possibleMoves[moveId];
         possibleMoves.RemoveAt(moveId);
-        //PokeAPI.GetMove(newMoves[loadedMoves.currentSteps].move.url, LoadMove);
-        //PokeAPI.GetMove("pokeapi.co/api/v2/move/swords-dance", LoadMove);
-        PokeAPI.GetMove("pokeapi.co/api/v2/move/tackle", LoadMove);
+        PokeAPI.GetMove(newMoves[loadedMoves.currentSteps].move.url, LoadMove);
 
         void LoadMove(MoveData data)
         {

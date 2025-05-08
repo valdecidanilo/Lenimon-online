@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using LenixSO.Logger;
 using UnityEngine;
+using LenixSO.Logger;
 using Logger = LenixSO.Logger.Logger;
 
 namespace Battle
@@ -21,11 +21,7 @@ namespace Battle
             yield return null;
             //check hit
             //damage
-            int damage = evt.dmgEvent.GetDamage();
-            Pokemon target = evt.dmgEvent.defender;
-            target.DamagePokemon(damage);
-            Logger.Log($"dealt {damage} damage to {target.name} " +
-                       $"({target.battleStats.hp}/{target.stats.hp})", LogFlags.Game);
+            evt.dmgEvent.DealDamage();
             //sub effect
             //TODO:
         }

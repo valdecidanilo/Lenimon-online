@@ -8,8 +8,8 @@ public class MoveModel
     public int id;
     public string name;
     public string moveType;
-    public int power;
-    public int accuracy;
+    public int? power;
+    public int? accuracy;
     public int pp;
     public int priority;
     public MoveType typeOfMove;
@@ -28,8 +28,8 @@ public class MoveModel
         name = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(data.name.Replace("-", " "));
         id = data.id;
         moveType = data.type.name;
-        power = data.power ?? 0;
-        accuracy = data.accuracy ?? 0;
+        power = data.power;
+        accuracy = data.accuracy;
         pp = data.pp;
         maxPP = pp;
         priority = data.priority;
