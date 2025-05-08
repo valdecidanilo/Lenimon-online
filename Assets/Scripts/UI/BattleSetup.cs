@@ -16,6 +16,7 @@ public class BattleSetup : MonoBehaviour
     [Header("Battle Menu")]
     [SerializeField] private GameObject battleMenu;
     [SerializeField] private ContextSelection battleChoice;
+    [SerializeField] private Button enemySummaryButton;
 
     [Header("Moves Menu")]
     [SerializeField] private FightMenu fightMenu;
@@ -56,6 +57,7 @@ public class BattleSetup : MonoBehaviour
 
     private void Awake()
     {
+        enemySummaryButton.onClick.AddListener(() => OpenPokemonSummary(enemyPokemon));
         battleChoice.onItemPick += OnChoicePick;
         fightMenu.onReturn += OpenChoiceMenu;
         fightMenu.onPickMove += OnMovePick;
