@@ -108,15 +108,12 @@ public class Pokemon : ApiData
 
     private void UpdateStats()
     {
-        Stats newStats = stats;
-        newStats.hp = BasicStatCalculation(data.hpStat, iv[StatType.hp], ev[StatType.hp], level) + level + 10;
-        newStats.atk = NonHpCalculation(StatType.atk);
-        newStats.def = NonHpCalculation(StatType.def);
-        newStats.sAtk = NonHpCalculation(StatType.sAtk);
-        newStats.sDef = NonHpCalculation(StatType.sDef);
-        newStats.spd = NonHpCalculation(StatType.spd);
-
-        stats = newStats;
+        stats.hp = BasicStatCalculation(data.hpStat, iv[StatType.hp], ev[StatType.hp], level) + level + 10;
+        stats.atk = NonHpCalculation(StatType.atk);
+        stats.def = NonHpCalculation(StatType.def);
+        stats.sAtk = NonHpCalculation(StatType.sAtk);
+        stats.sDef = NonHpCalculation(StatType.sDef);
+        stats.spd = NonHpCalculation(StatType.spd);
 
         int BasicStatCalculation(int baseStat, int iv, int ev, int level)
         {
@@ -131,11 +128,9 @@ public class Pokemon : ApiData
 
     public void DamagePokemon(int value)
     {
-        Stats currentStats = battleStats;
-        int currentHp = currentStats.hp;
-        currentStats.hp = Mathf.Max(currentHp - value, 0);
-        int newHp = currentStats.hp;
-        battleStats = currentStats;
+        int currentHp = battleStats.hp;
+        battleStats.hp = Mathf.Max(currentHp - value, 0);
+        int newHp = battleStats.hp;
         onDamaged?.Invoke(currentHp, newHp);
     }
 
@@ -184,7 +179,7 @@ public class Pokemon : ApiData
         //test
         possibleMoves = new List<MoveReference>();
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/tackle" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/swords-dance" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/dragon-dance" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/disarming-voice" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/quiver-dance" } });
 
@@ -274,7 +269,7 @@ public class Pokemon : ApiData
     #endregion
 }
 
-public struct Stats
+public class Stats
 {
     public int hp { get => stats[0]; set => stats[0] = value; }
     public int atk { get => stats[1]; set => stats[1] = value; }

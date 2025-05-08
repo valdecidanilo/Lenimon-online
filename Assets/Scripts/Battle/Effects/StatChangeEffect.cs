@@ -34,12 +34,12 @@ namespace Battle
             for (int i = 0; i < changes.Length; i++)
             {
                 stats[types[i]] = Mathf.Clamp(stats[types[i]] + changes[i], -6, 6);
+                if(stats[types[i]] == evt.target.battleStats[types[i]]) sb.Append("");//can't rise
                 sb.Append($"{changeRef[i].stat.name.Replace("-", " ")}");
                 if (i < changes.Length - 1) sb.Append(" and ");
             }
             sb.Append($" {changeType}!");
             Logger.Log(sb.ToString(), LogFlags.Game);
-            evt.target.battleStats = stats;
         }
 
         private static StatType ApiToStat(ApiReference reference)
