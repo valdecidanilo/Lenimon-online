@@ -95,30 +95,6 @@ public class TestScript : MonoBehaviour
     private void StartBattle()
     {
         battle.SetupBattle(allyParty, enemyParty);
-        
-        //test
-        List<StatChange> statChanges = new();
-        statChanges.Add(new StatChange
-        {
-            change = 1,
-            stat = new()
-            {
-                name = "attack"
-            }
-        });
-        statChanges.Add(new StatChange
-        {
-            change = 1,
-            stat = new()
-            {
-                name = "speed"
-            }
-        });
-        StatChangeEffect effect = new(statChanges);
-        StartCoroutine(effect.EffectSequence(new()
-        {
-            target = allyParty[0]
-        }));
     }
 
     private void CheckPokemon(Pokemon pokemon)
