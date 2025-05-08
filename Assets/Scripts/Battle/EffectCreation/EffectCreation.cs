@@ -25,10 +25,14 @@ namespace Battle
                     break;
                 case "damage+lower":
                     //Logger.Log("damage and target's stats move", LogFlags.DataCheck);
+                    effectCreation = new CreatorDamageEffect(new StatChangeEffect
+                        (move.Data.statChanges), move.Data.meta.statChance ?? 0);
                     break;
                 case "damage+raise":
-                    Logger.Log("damage and self stats move", LogFlags.DataCheck);
-                    effectCreation = new CreatorDamageEffect();
+                    //Logger.Log("damage and self stats move", LogFlags.DataCheck);
+                    effectCreation = new CreatorDamageEffect(new StatChangeEffect
+                        (move.Data.statChanges), move.Data.meta.statChance ?? 0,
+                        (evt) => evt.target = evt.origin);
                     break;
                 case "ailment":
                     //Logger.Log("ailment move", LogFlags.DataCheck);

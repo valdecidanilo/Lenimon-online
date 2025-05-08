@@ -186,7 +186,6 @@ public class BattleSetup : MonoBehaviour
     }
     private void OpponentDamaged(int initialValue, int currentValue)
     {
-        Logger.Log("Enemy damaged",LogFlags.Game);
         SetupEnemy(enemyPokemon);
     }
 

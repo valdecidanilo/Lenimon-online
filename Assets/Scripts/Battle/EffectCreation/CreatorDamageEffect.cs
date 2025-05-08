@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,16 +9,18 @@ namespace Battle
     {
         private int subEffectChance;
         private Effect subEffect;
+        private Action<BattleEvent> subEffectSetup;
 
-        public CreatorDamageEffect(Effect subEffect = null, int chance = 100)
+        public CreatorDamageEffect(Effect subEffect = null, int chance = 100, Action<BattleEvent> subEffectSetup = null)
         {
             this.subEffect = subEffect;
             subEffectChance = chance;
+            this.subEffectSetup = subEffectSetup;
         }
         
         public override void AddEffect(MoveModel move)
         {
-            move.effect = new DamageEffect(subEffect, subEffectChance);
+            move.effect = new DamageEffect(subEffect, subEffectChance, subEffectSetup);
         }
     }
 }

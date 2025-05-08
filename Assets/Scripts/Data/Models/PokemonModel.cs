@@ -181,7 +181,7 @@ public class Pokemon : ApiData
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/tackle" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/dragon-dance" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/metal-claw" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/quiver-dance" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/rock-tomb" } });
 
         MoveReference[] newMoves = new MoveReference[4];
         int moveAmount = Mathf.Min(possibleMoves.Count, 4);
@@ -242,7 +242,7 @@ public class Pokemon : ApiData
     }
     private void GetHeldItem()
     {
-        int rand = Random.Range(0, 100);
+        int rand = Random.Range(1, 100);
         int itemCheck = 0;
         string itemRoute = string.Empty;
 
