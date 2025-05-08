@@ -180,7 +180,7 @@ public class Pokemon : ApiData
         possibleMoves = new List<MoveReference>();
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/tackle" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/dragon-dance" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/disarming-voice" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/metal-claw" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/quiver-dance" } });
 
         MoveReference[] newMoves = new MoveReference[4];

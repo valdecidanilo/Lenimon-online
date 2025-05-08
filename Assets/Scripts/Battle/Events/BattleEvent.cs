@@ -9,7 +9,7 @@ namespace Battle
         public Pokemon origin;
         public Pokemon target;
         public MoveModel move;
-        public DamageEvent dmgEvent;
+        public AttackEvent attackEvent;
         public bool failed;
         public List<string> messages = new();
     }

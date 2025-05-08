@@ -27,7 +27,8 @@ namespace Battle
                     //Logger.Log("damage and target's stats move", LogFlags.DataCheck);
                     break;
                 case "damage+raise":
-                    //Logger.Log("damage and self stats move", LogFlags.DataCheck);
+                    Logger.Log("damage and self stats move", LogFlags.DataCheck);
+                    effectCreation = new CreatorDamageEffect();
                     break;
                 case "ailment":
                     //Logger.Log("ailment move", LogFlags.DataCheck);

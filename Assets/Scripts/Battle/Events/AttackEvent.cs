@@ -7,7 +7,7 @@ using Logger = LenixSO.Logger.Logger;
 
 namespace Battle
 {
-    public class DamageEvent
+    public class AttackEvent
     {
         public Pokemon attacker;
         public Pokemon defender;
@@ -15,20 +15,31 @@ namespace Battle
         public MoveType typeOfMove;
         public float modifier; //burn attack reduction, screens, weather, flashFire like abilities, critical, double damage effect, STAB, type multiplier 1 and 2
 
-        public DamageEvent(Pokemon attacker, Pokemon defender, MoveModel move)
+        private readonly Stats attackerStats;
+        private readonly Stats defenderStats;
+
+        public AttackEvent(Pokemon attacker, Pokemon defender, MoveModel move)
         {
             this.attacker = attacker;
             this.defender = defender;
             power = move.power ?? 0;
             typeOfMove = move.typeOfMove;
             modifier = 1;
+
+            attackerStats = CalculateModifiers(attacker);
+            defenderStats = CalculateModifiers(defender);
+        }
+
+        public bool CheckHit(out bool missed, out bool evaded)
+        {
+            missed = false;
+            evaded = false;
+            return true;
         }
 
         //https://bulbapedia.bulbagarden.net/wiki/Generation_III
         public void DealDamage()
         {
-            Stats attackerStats = CalculateModifiers(attacker);
-            Stats defenderStats = CalculateModifiers(defender);
             int atk = typeOfMove switch
             {
                 MoveType.Physical => attackerStats.atk,
@@ -43,7 +54,7 @@ namespace Battle
             };
             float baseDamage = (((((2 * attacker.level) / 5f) + 2) * power * (atk / def)) / 50f) + 2;
             int finalDamage = Mathf.FloorToInt((baseDamage * modifier));
-            //finalDamage = Mathf.FloorToInt(finalDamage * (Random.Range(85, 101) / 100f));
+            finalDamage = Mathf.FloorToInt(finalDamage * (Random.Range(85, 101) / 100f));//random modifier
 
             Logger.Log($"dealt {finalDamage} damage to {defender.name} " +
                        $"({defender.battleStats.hp}/{defender.stats.hp})" +

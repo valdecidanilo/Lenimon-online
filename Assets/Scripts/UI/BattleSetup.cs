@@ -139,20 +139,43 @@ public class BattleSetup : MonoBehaviour
 
     private void OnMovePick(int id)
     {
+        StartCoroutine(BattleSequence(allyPokemon.moves[id], null));
+    }
+
+    private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
+    {
         BattleEvent evtBattle = new();
-        evtBattle.move = allyPokemon.moves[id];
+        evtBattle.move = allyMove;
         evtBattle.origin = allyPokemon;
-        evtBattle.target = evtBattle.move.Data.target.name switch
+        evtBattle.target = GetTarget(evtBattle.move.Data.target.name, allyPokemon, enemyPokemon);
+        evtBattle.attackEvent = new(allyPokemon, enemyPokemon, evtBattle.move);
+
+        bool hit = evtBattle.attackEvent.CheckHit(out bool missed, out bool evaded);
+
+        if (hit)
         {
-            "user" => allyPokemon,
-            "user-and-allies" => allyPokemon,
-            "selected-pokemon" => enemyPokemon,
-            "all-opponents" => enemyPokemon,
-            "all-other-pokemon" => enemyPokemon,
+            yield return evtBattle.move.effect.EffectSequence(evtBattle);
+            if (evtBattle.failed)
+            {
+                //fail text
+            }
+        }
+        else
+        {
+            //missed/evaded text
+        }
+    }
+
+    private Pokemon GetTarget(string target, Pokemon self, Pokemon opponent)
+    {
+        return target switch
+        {
+            "user" => self,
+            "user-and-allies" => self,
+            "selected-pokemon" => opponent,
+            "all-opponents" => opponent,
+            "all-other-pokemon" => opponent,
         };
-        if (evtBattle.target == enemyPokemon)
-            evtBattle.dmgEvent = new(allyPokemon, enemyPokemon, evtBattle.move);
-        StartCoroutine(evtBattle.move.effect.EffectSequence(evtBattle));
     }
 
     private void AllyDamaged(int initialValue, int currentValue)

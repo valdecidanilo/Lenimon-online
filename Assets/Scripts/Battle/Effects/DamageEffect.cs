@@ -21,7 +21,7 @@ namespace Battle
             yield return null;
             //check hit
             //damage
-            evt.dmgEvent.DealDamage();
+            evt.attackEvent.DealDamage();
             //sub effect
             //TODO:
         }
