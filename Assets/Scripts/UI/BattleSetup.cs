@@ -1,15 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Battle;
-using LenixSO.Logger;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using Logger = LenixSO.Logger.Logger;
-using Random = UnityEngine.Random;
 
 public class BattleSetup : MonoBehaviour
 {
@@ -17,6 +8,7 @@ public class BattleSetup : MonoBehaviour
     [SerializeField] private GameObject battleMenu;
     [SerializeField] private ContextSelection battleChoice;
     [SerializeField] private Button enemySummaryButton;
+    [SerializeField] private Announcer choiceAnnouncer;
 
     [Header("Moves Menu")]
     [SerializeField] private FightMenu fightMenu;
@@ -30,34 +22,15 @@ public class BattleSetup : MonoBehaviour
     private bool summaryFromParty;
     private int summaryPokemonId;
 
-    #region Battle Visuals
-
     //Enemy
-    private Pokemon enemyPokemon;
     private Pokemon[] enemyParty;
-    [Header("Enemy")]
-    [SerializeField] private Image enemyImage;
-    [SerializeField] private TMP_Text enemyName;
-    [SerializeField] private TMP_Text enemyLevel;
-    [SerializeField] private Image enemyHp;
-    [SerializeField] private Image enemyGender;
 
     //Ally
-    private Pokemon allyPokemon;
     private Pokemon[] allyParty;
-    [Header("Ally")]
-    [SerializeField] private Image pokemonImage;
-    [SerializeField] private TMP_Text pokemonName;
-    [SerializeField] private TMP_Text level;
-    [SerializeField] private Image hp;
-    [SerializeField] private TMP_Text hpValue;
-    [SerializeField] private Image xp;
-    [SerializeField] private Image gender;
-    #endregion
 
     private void Awake()
     {
-        enemySummaryButton.onClick.AddListener(() => OpenPokemonSummary(enemyPokemon));
+        enemySummaryButton.onClick.AddListener(() => OpenPokemonSummary(enemyParty[0]));
         battleChoice.onItemPick += OnChoicePick;
         fightMenu.onReturn += OpenChoiceMenu;
         fightMenu.onPickMove += OnMovePick;
@@ -88,111 +61,31 @@ public class BattleSetup : MonoBehaviour
 
     private void Update()
     {
-        if(Keyboard.current.tabKey.wasPressedThisFrame) OpenPokemonSummary(enemyPokemon);
+        if(Keyboard.current.tabKey.wasPressedThisFrame) OpenPokemonSummary(enemyParty[0]);
     }
 
     public void SetupBattle(Pokemon[] allies, Pokemon[] enemies)
     {
         //setup enemy
-        enemyParty = enemies;
-        SetupEnemy(enemyParty[0]);
-        enemyPokemon.onHpChanged += OpponentHpChanged;
-
-        //setup ally
         allyParty = allies;
-        SetupAlly(allyParty[0]);
-        allyPokemon.onHpChanged += AllyHpChanged;
+        enemyParty = enemies;
+        fightMenu.SetupBattle(allyParty[0], enemyParty[0]);
 
         OpenChoiceMenu();
     }
 
-    private void SetupAlly(Pokemon ally)
-    {
-        allyPokemon = ally;
-        pokemonImage.sprite = allyPokemon.backSprite;
-        pokemonName.text = allyPokemon.name;
-        level.text = $"Lv{allyPokemon.level}";
-        hpValue.text = $"{allyPokemon.battleStats[StatType.hp]}/{allyPokemon.stats[StatType.hp]}";
-        hp.fillAmount = allyPokemon.battleStats[StatType.hp] / (float)allyPokemon.stats[StatType.hp];
-        xp.fillAmount = Random.Range(0, 1);
-
-        PokeDatabase.SetGenderSprite(gender, allyPokemon.gender);
-    }
-
-    private void SetupEnemy(Pokemon enemy)
-    {
-        enemyPokemon = enemy;
-        enemyImage.sprite = enemyPokemon.frontSprite;
-        enemyName.text = enemyPokemon.name;
-        enemyLevel.text = $"Lv{enemyPokemon.level}";
-        enemyHp.fillAmount = enemy.battleStats[StatType.hp] / (float)enemy.stats[StatType.hp];
-
-        PokeDatabase.SetGenderSprite(gender, enemyPokemon.gender);
-    }
-
     private void OnAllyChanged(int newAlly)
     {
-        allyPokemon.onHpChanged -= AllyHpChanged;
         Pokemon cashe = allyParty[newAlly];
         allyParty[newAlly] = allyParty[0];
         allyParty[0] = cashe;
-        SetupAlly(allyParty[0]);
-        allyPokemon.onHpChanged += AllyHpChanged;
+        fightMenu.ChangeAllyPokemon(allyParty[0], true);
         OpenChoiceMenu();
     }
 
     private void OnMovePick(int id)
     {
-        StartCoroutine(BattleSequence(allyPokemon.moves[id], null));
-    }
-
-    private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
-    {
-        BattleEvent evtBattle = new();
-        evtBattle.move = allyMove;
-        evtBattle.origin = allyPokemon;
-        evtBattle.target = GetTarget(evtBattle.move.Data.target.name, allyPokemon, enemyPokemon);
-        evtBattle.attackEvent = new(allyPokemon, enemyPokemon, evtBattle.move);
-
-        bool hit = evtBattle.attackEvent.CheckHit(out bool missed, out bool evaded);
-
-        if (hit)
-        {
-            yield return evtBattle.move.effect.EffectSequence(evtBattle);
-            if (evtBattle.failed)
-            {
-                //fail text
-            }
-        }
-        else
-        {
-            //missed/evaded text
-        }
-
-        //next move
-        yield return new WaitForSeconds(2);
-        allyPokemon.DamagePokemon(50);
-    }
-
-    private Pokemon GetTarget(string target, Pokemon self, Pokemon opponent)
-    {
-        return target switch
-        {
-            "user" => self,
-            "user-and-allies" => self,
-            "selected-pokemon" => opponent,
-            "all-opponents" => opponent,
-            "all-other-pokemon" => opponent,
-        };
-    }
-
-    private void AllyHpChanged(int initialValue, int currentValue)
-    {
-        SetupAlly(allyPokemon);
-    }
-    private void OpponentHpChanged(int initialValue, int currentValue)
-    {
-        SetupEnemy(enemyPokemon);
+        //StartCoroutine(BattleSequence(allyPokemon.moves[id], null));
     }
 
     #region Window Changes
@@ -228,12 +121,14 @@ public class BattleSetup : MonoBehaviour
         //open window
         battleMenu.SetActive(true);
         battleChoice.Select(0);
+        Announcer.ChangeAnnouncer(choiceAnnouncer);
+        StartCoroutine(Announcer.Announce($"What will {allyParty[0].name} do?"));
     }
 
     private void OpenBattleScene()
     {
         battleMenu.SetActive(false);
-        fightMenu.OpenMenu(allyPokemon);
+        fightMenu.OpenMenu(allyParty[0]);
     }
 
     private void OpenBag()
