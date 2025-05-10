@@ -19,14 +19,13 @@ namespace Battle
 
         public override IEnumerator EffectSequence(BattleEvent evt)
         {
-            yield return null;
             int heal = healType switch
             {
                 HealType.Hp => Mathf.FloorToInt(evt.target.stats.hp * (healAmount / 100f)),
                 HealType.Drain => Mathf.FloorToInt(evt.attackEvent.damageDealt * (healAmount / 100f)),
                 _ => healAmount,
             };
-            evt.target.HealPokemon(heal);
+            yield return evt.target.HealPokemon(heal);
             Logger.Log($"{evt.target.name} healed by {heal} ({evt.target.battleStats.hp}/{evt.target.stats.hp})", LogFlags.Game);
         }
 

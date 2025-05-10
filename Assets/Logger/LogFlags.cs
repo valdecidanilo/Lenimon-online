@@ -11,5 +11,6 @@ namespace LenixSO.Logger
         Game = 8,
         DataCheck = 16,
         PokemonBuild = 32,
+        Tests = 64,
     }
 }

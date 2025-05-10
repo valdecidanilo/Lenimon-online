@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using LenixSO.Logger;
 using Random = UnityEngine.Random;
 using Logger = LenixSO.Logger.Logger;
+using System.Collections;
 
 public class TestScript : MonoBehaviour
 {

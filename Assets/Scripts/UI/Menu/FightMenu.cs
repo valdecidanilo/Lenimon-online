@@ -122,7 +122,7 @@ public class FightMenu : ContextMenu<Pokemon>
         //next move
         yield return Announcer.Announce($"{enemyPokemon.name} attacks", holdTime: 1.5f);
         contextSelection.Focus();
-        allyPokemon.DamagePokemon(50);
+        yield return allyPokemon.DamagePokemon(50);
         Announcer.CloseAnnouncement();
     }
     private Pokemon GetTarget(string target, Pokemon self, Pokemon opponent)
@@ -136,13 +136,41 @@ public class FightMenu : ContextMenu<Pokemon>
             "all-other-pokemon" => opponent,
         };
     }
-    private void AllyHpChanged(int initialValue, int currentValue)
+    private IEnumerator AllyHpChanged(int initialValue, int currentValue)
     {
-        SetupAlly(allyPokemon);
+        float moveTime = .6f;
+        float time = 0;
+        while (time < moveTime)
+        {
+            int currentHp = Mathf.RoundToInt(Mathf.Lerp(initialValue, currentValue, time / moveTime));
+            hpValue.text = $"{currentHp}/{allyPokemon.stats.hp}";
+            ChangeHpBar(allyPokemon, hp, currentHp);
+            yield return null;
+            time += Time.deltaTime;
+        }
+        ChangeHpBar(allyPokemon, hp, currentValue);
+        hpValue.text = $"{currentValue}/{allyPokemon.stats.hp}";
     }
-    private void OpponentHpChanged(int initialValue, int currentValue)
+    private IEnumerator OpponentHpChanged(int initialValue, int currentValue)
     {
-        SetupEnemy(enemyPokemon);
+        float moveTime = .6f;
+        float time = 0;
+        while (time < moveTime) 
+        {
+            ChangeHpBar(enemyPokemon, enemyHp, (int)Mathf.Lerp(initialValue, currentValue, time / moveTime));
+            yield return null;
+            time += Time.deltaTime;
+        }
+        ChangeHpBar(enemyPokemon, enemyHp, currentValue);
+    }
+
+    private void ChangeHpBar(Pokemon pokemon, Image hpImage, int hpValue)
+    {
+        hpValue = Mathf.Clamp(hpValue, 0, pokemon.stats.hp);
+        float percentage = (float)hpValue / pokemon.stats.hp;
+        hpImage.fillAmount = percentage;
+
+        //change color
     }
     #endregion
 
@@ -153,12 +181,12 @@ public class FightMenu : ContextMenu<Pokemon>
         //setup enemy
         enemyPokemon = opponent;
         SetupEnemy(enemyPokemon);
-        enemyPokemon.onHpChanged += OpponentHpChanged;
+        enemyPokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
 
         //setup ally
         allyPokemon = ally;
         SetupAlly(allyPokemon);
-        allyPokemon.onHpChanged += AllyHpChanged;
+        allyPokemon.onHpChanged.RegisterCallback(AllyHpChanged);
     }
     private void SetupAlly(Pokemon ally)
     {
@@ -184,29 +212,29 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     public void ChangeAllyPokemon(Pokemon newAlly, bool animate = false)
     {
-        allyPokemon.onHpChanged -= AllyHpChanged;
+        allyPokemon.onHpChanged.RemoveCallback(AllyHpChanged);
         if (!animate)
         {
             SetupAlly(newAlly);
             allyPokemon = newAlly;
-            allyPokemon.onHpChanged += AllyHpChanged;
+            allyPokemon.onHpChanged.RegisterCallback(AllyHpChanged);
         }
         else
         {
             SetupAlly(newAlly);
             allyPokemon = newAlly;
-            allyPokemon.onHpChanged += AllyHpChanged;
+            allyPokemon.onHpChanged.RegisterCallback(AllyHpChanged);
         }
     }
     public void ChangeOpponentPokemon(Pokemon newOpponent, bool animate = false)
     {
-        enemyPokemon.onHpChanged -= OpponentHpChanged;
+        enemyPokemon.onHpChanged.RemoveCallback(OpponentHpChanged);
         if (!animate)
         {
             SetupEnemy(newOpponent);
         }
         enemyPokemon = newOpponent;
-        enemyPokemon.onHpChanged += OpponentHpChanged;
+        enemyPokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
     }
     #endregion
 }

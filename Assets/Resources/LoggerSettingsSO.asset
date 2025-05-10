@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   restoreLogsOnChange: 1
   ignoreLoggerOnStackTrace: 1
-  activeFlags: 8
+  activeFlags: 64
   flags:
   - Request
   - Response
@@ -22,3 +22,4 @@ MonoBehaviour:
   - Game
   - DataCheck
   - PokemonBuild
+  - Tests

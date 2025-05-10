@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Random = UnityEngine.Random;
 using LenixSO.Logger;
 using Logger = LenixSO.Logger.Logger;
+using UnityEngine;
 
 namespace Battle
 {
@@ -23,9 +22,18 @@ namespace Battle
 
         public override IEnumerator EffectSequence(BattleEvent evt)
         {
-            yield return null;
+            WaitForSeconds attacksDelay = new(.4f);
             //damage
-            evt.attackEvent.DealDamage();
+            int hits = Random.Range(evt.attackEvent.minHits, evt.attackEvent.maxHits + 1);
+            for (int i = 0; i < hits; i++)
+            {
+                yield return evt.attackEvent.DealDamage();
+                if (i < hits - 1) yield return attacksDelay;
+            }
+
+            if (evt.attackEvent.maxHits > evt.attackEvent.minHits)
+                yield return Announcer.Announce($"It hit {hits} times!", holdTime: 1);
+
             //sub effect
             //check chance
             if (subEffect == null) yield break;

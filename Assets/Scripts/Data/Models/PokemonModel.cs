@@ -5,6 +5,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using Logger = LenixSO.Logger.Logger;
 using System.Globalization;
+using System.Collections;
 
 public class Pokemon : ApiData
 {
@@ -30,7 +31,7 @@ public class Pokemon : ApiData
     public ItemModel heldItem;
     public string natureName;
 
-    public event Action<int, int> onHpChanged;
+    public CoroutineAction<int, int> onHpChanged = new();
 
     //Data loading
     private Checklist dataChecklist;
@@ -126,19 +127,21 @@ public class Pokemon : ApiData
         }
     }
 
-    public void DamagePokemon(int value)
+    public IEnumerator DamagePokemon(int value)
     {
         int currentHp = battleStats.hp;
         battleStats.hp = Mathf.Max(currentHp - value, 0);
         int newHp = battleStats.hp;
-        onHpChanged?.Invoke(currentHp, newHp);
+        if(currentHp == newHp) yield break;
+        yield return onHpChanged?.Invoke(currentHp, newHp);
     }
-    public void HealPokemon(int value)
+    public IEnumerator HealPokemon(int value)
     {
         int currentHp = battleStats.hp;
         battleStats.hp = Mathf.Min(currentHp + value, stats.hp);
         int newHp = battleStats.hp;
-        onHpChanged?.Invoke(currentHp, newHp);
+        if (currentHp == newHp) yield break;
+        yield return onHpChanged?.Invoke(currentHp, newHp);
     }
 
     #region Data Load
@@ -187,7 +190,7 @@ public class Pokemon : ApiData
         possibleMoves = new List<MoveReference>();
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/recover" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/drain-punch" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/metal-claw" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/pin-missile" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/rock-tomb" } });
 
         MoveReference[] newMoves = new MoveReference[4];

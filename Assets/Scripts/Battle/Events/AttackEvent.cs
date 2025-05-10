@@ -15,6 +15,8 @@ namespace Battle
         public MoveType typeOfMove;
         public float modifier; //burn attack reduction, screens, weather, flashFire like abilities, critical, double damage effect, STAB, type multiplier 1 and 2
 
+        public int minHits, maxHits;
+
         public int damageDealt { get; private set; }
         private readonly Stats attackerStats;
         private readonly Stats defenderStats;
@@ -26,6 +28,9 @@ namespace Battle
             power = move.power ?? 0;
             typeOfMove = move.typeOfMove;
             modifier = 1;
+
+            minHits = move.Data.meta.min_hits ?? 1;
+            maxHits = move.Data.meta.max_hits ?? minHits;
 
             attackerStats = CalculateModifiers(attacker);
             defenderStats = CalculateModifiers(defender);
@@ -39,7 +44,7 @@ namespace Battle
         }
 
         //https://bulbapedia.bulbagarden.net/wiki/Generation_III
-        public void DealDamage()
+        public IEnumerator DealDamage()
         {
             int atk = typeOfMove switch
             {
@@ -61,7 +66,7 @@ namespace Battle
                        $"({defender.battleStats.hp}/{defender.stats.hp})" +
                        $"\n{atk}({attacker.battleStats[StatType.atk]}) vs {def}", LogFlags.Game);
             damageDealt = finalDamage;
-            defender.DamagePokemon(finalDamage);
+            yield return defender.DamagePokemon(finalDamage);
         }
 
         private Stats CalculateModifiers(Pokemon pokemon)
