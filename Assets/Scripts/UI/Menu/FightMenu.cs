@@ -16,6 +16,8 @@ public class FightMenu : ContextMenu<Pokemon>
     [SerializeField] private Announcer battleAnnouncer;
 
     #region Battle Visuals
+    [Header("Battle Visuals")]
+    [SerializeField] Sprite[] healthStates;
     //Enemy
     private Pokemon enemyPokemon;
     [Header("Enemy")] [SerializeField] private Image enemyImage;
@@ -171,6 +173,12 @@ public class FightMenu : ContextMenu<Pokemon>
         hpImage.fillAmount = percentage;
 
         //change color
+        hpImage.sprite = percentage switch
+        {
+            >= .5f => healthStates[1],
+            >= .25f => healthStates[2],
+            _ => healthStates[0],
+        };
     }
     #endregion
 

@@ -718,6 +718,10 @@ MonoBehaviour:
   - {fileID: 4826138852453023688}
   - {fileID: 6829741701785949444}
   battleAnnouncer: {fileID: 8288845816524571330}
+  healthStates:
+  - {fileID: -873948548, guid: 64aa42aebb197a5428a949f708d5753a, type: 3}
+  - {fileID: -45398888, guid: 64aa42aebb197a5428a949f708d5753a, type: 3}
+  - {fileID: -916651187, guid: 64aa42aebb197a5428a949f708d5753a, type: 3}
   enemyImage: {fileID: 8280553689158368048}
   enemyName: {fileID: 2588102518245860084}
   enemyLevel: {fileID: 4875774886786944921}
