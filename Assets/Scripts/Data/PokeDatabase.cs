@@ -15,10 +15,13 @@ public static class PokeDatabase
     public static Dictionary<string, AbilityData> abilities = new();
     public static Dictionary<string, ItemData> items = new();
     public static Dictionary<string, Stats> natures = new();
+    public static Dictionary<MoveData, TMData> TMs = new();
     #endregion
 
     //resources database
     #region Addressable Keys
+    private const string genericIconKey = "Sprite/Icons[pokeball_0]";
+    private const string genericTMKey = "Item_Icons[TM_Generic]";
     private const string maleIconKey = "maleIcon";
     private const string femaleIconKey = "femaleIcon";
     private static readonly string[] types = 
@@ -48,6 +51,8 @@ public static class PokeDatabase
 
     //Utility methods
     #region Resources
+    public static Sprite genericIcon;
+    public static Sprite genericTM;
     public static Sprite maleIcon;
     public static Sprite femaleIcon;
     public static Dictionary<string, Sprite> typeSprites = new();
@@ -82,6 +87,21 @@ public static class PokeDatabase
             });
         }
 
+        //Generic sprites
+        preloadedAssets.AddStep();
+        AAAsset<Sprite>.LoadAsset(genericIconKey, (sprite) =>
+        {
+            genericIcon = sprite;
+            preloadedAssets.FinishStep();
+        });
+        preloadedAssets.AddStep();
+        AAAsset<Sprite>.LoadAsset(genericTMKey, (sprite) =>
+        {
+            genericTM = sprite;
+            preloadedAssets.FinishStep();
+        });
+
+        //Natures
         preloadedAssets.AddStep();
         WebConnection.GetRequest<Natures>("https://pokeapi.co/api/v2/nature", (data) =>
         {

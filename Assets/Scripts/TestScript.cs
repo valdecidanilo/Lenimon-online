@@ -16,8 +16,6 @@ public class TestScript : MonoBehaviour
 
     [SerializeField] private BattleSetup battle;
 
-    private MoveDatabase moveDatabase;
-
     Pokemon[] allyParty;
     Pokemon[] enemyParty;
 
@@ -25,7 +23,6 @@ public class TestScript : MonoBehaviour
     {
         PokeDatabase.PreloadAssets();
         LoadingScreen.onDoneLoading += Setup;
-        moveDatabase = Resources.Load<MoveDatabase>("MoveDatabase");
     }
 
     private void Setup()

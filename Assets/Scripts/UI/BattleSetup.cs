@@ -1,6 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using LenixSO.Logger;
+using Logger = LenixSO.Logger.Logger;
+using System.Text;
 
 public class BattleSetup : MonoBehaviour
 {
@@ -70,6 +74,31 @@ public class BattleSetup : MonoBehaviour
         allyParty = allies;
         enemyParty = enemies;
         fightMenu.SetupBattle(allyParty[0], enemyParty[0]);
+
+        List<MoveReference> possibleTMs = MoveHelper.GetPossibleMoves(allyParty[0], new[] { MoveLearnMethod.TM });
+        Checklist loadedTMs = new(possibleTMs.Count);
+        StringBuilder log = new($"{allyParty[0].name} TM moves are:");
+        if (possibleTMs.Count > 0) LoadTMs(possibleTMs[0]);
+        
+        void LoadTMs(MoveReference moveReference)
+        {
+            PokeAPI.GetMove(moveReference.move.url, LoadMoveData);
+            void LoadMoveData(MoveData moveData)
+            {
+                PokeAPI.GetTM(moveData, (tm) =>
+                {
+                    log.Append($"\n{tm.name} => {tm.data.moveData.name}");
+
+                    loadedTMs.FinishStep();
+                    if (loadedTMs.isDone)
+                    {
+                        Logger.Log(log.ToString(), LogFlags.Tests);
+                        return;
+                    }
+                    LoadTMs(possibleTMs[loadedTMs.currentSteps]);
+                });
+            }
+        }
 
         OpenChoiceMenu();
     }

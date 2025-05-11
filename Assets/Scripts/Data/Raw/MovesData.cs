@@ -13,7 +13,7 @@ public class MoveData : ApiData
     [JsonProperty("flavor_text_entries")] public List<FlavorText> flavorTexts;
     
     public MoveMetaData meta;
-    public List<TMData> machines;
+    public List<TMReference> machines;
     public ApiReference target;
     [JsonProperty("stat_changes")] public List<StatChange> statChanges;
 
@@ -82,7 +82,7 @@ public class MoveMetaData
     [JsonProperty("ailment_chance")] public int? ailmentChance; //percentage
     public ApiReference ailment;
 }
-public class TMData
+public class TMReference
 {
     public ApiLink machine;
     public ApiReference version_group;

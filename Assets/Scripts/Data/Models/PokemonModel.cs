@@ -1,8 +1,8 @@
-using LenixSO.Logger;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using LenixSO.Logger;
 using Logger = LenixSO.Logger.Logger;
 using System.Globalization;
 using System.Collections;
@@ -169,55 +169,8 @@ public class Pokemon : ApiData
     }
     private void GetRandomMoves()
     {
-        List<MoveReference> possibleMoves = new(data.moves.Count);
-        //get only level up moves
-        for (int i = 0; i < data.moves.Count; i++)
-        {
-            MoveReference move = data.moves[i];
-            for (int j = 0; j < move.learningDetails.Count; j++)
-            {
-                LearningDetail learningDetail = move.learningDetails[j];
-                if (learningDetail.learnMethod != MoveLearnMethod.LevelUp) continue;
-                if (learningDetail.level > level) continue;
-                possibleMoves.Add(move);
-                break;
-            }
-        }
-
-        //test
-        possibleMoves = new List<MoveReference>();
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/recover" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/drain-punch" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/pin-missile" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/rock-tomb" } });
-
-        MoveReference[] newMoves = new MoveReference[4];
         dataChecklist.AddStep();
-        Checklist loadedMoves = new(Mathf.Min(possibleMoves.Count, 4));
-        GetRandomMove();
-
-        void GetRandomMove()
-        {
-            int moveId = Random.Range(0, possibleMoves.Count);
-            newMoves[loadedMoves.currentSteps] = possibleMoves[moveId];
-            possibleMoves.RemoveAt(moveId);
-            PokeAPI.GetMove(newMoves[loadedMoves.currentSteps].move.url, LoadMove);
-
-            void LoadMove(MoveData data)
-            {
-                moves[loadedMoves.currentSteps] = new MoveModel(data);
-                loadedMoves.FinishStep();
-                Logger.Log($"{name}[{loadedMoves.currentSteps}/{loadedMoves.requiredSteps}] => {data.name}", LogFlags.PokemonBuild);
-
-                if (loadedMoves.isDone)
-                {
-                    Logger.Log($"{name} Moves done loading", LogFlags.PokemonBuild);
-                    dataChecklist.FinishStep();
-                    return;
-                }
-                GetRandomMove();
-            }
-        }
+        MoveHelper.GetRandomMoves(this, new[] { MoveLearnMethod.LevelUp }, () => dataChecklist.FinishStep());
     }
     private void GetGender()
     {

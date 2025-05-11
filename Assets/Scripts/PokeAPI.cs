@@ -7,15 +7,17 @@ using Logger = LenixSO.Logger.Logger;
 
 public static class PokeAPI
 {
+    public const string baseRoute = "https://pokeapi.co/api/v2/";
+
     public static void GetPokemonData(string pokemonName, Action<PokemonData> onSuccess)
     {
-        string route = $"https://pokeapi.co/api/v2/pokemon/{pokemonName.ToLower()}";
+        string route = $"{baseRoute}/pokemon/{pokemonName.ToLower()}";
         WebConnection.GetRequest(route, onSuccess);
     }
 
     public static void GetPokemonData(int index, Action<PokemonData> onSuccess)
     {
-        string route = $"https://pokeapi.co/api/v2/pokemon/{index}";
+        string route = $"{baseRoute}/pokemon/{index}";
         Logger.Log($"pokemon route: {route}", LogFlags.API);
         WebConnection.GetRequest(route, onSuccess);
     }
@@ -109,22 +111,63 @@ public static class PokeAPI
     
     public static void GetItem(string route, Action<ItemModel> onSuccess)
     {
-        if (PokeDatabase.items.TryGetValue(route, out var item)) ReturnItem(item);
-        else WebConnection.GetRequest<ItemData>(route, ReturnItem);
+        GetItemData(route, ReturnItem);
 
         void ReturnItem(ItemData data)
         {
             PokeDatabase.items[route] = data;
             ItemModel item = new(data);
-            if(data.sprite != null) WebConnection.GetTexture(data.sprite.defaultIcon, (txt) =>
+            item.sprite = data.sprite;
+            onSuccess?.Invoke(item);
+        }
+    }
+
+    public static void GetItemData(string route, Action<ItemData> onSuccess)
+    {
+        if (PokeDatabase.items.TryGetValue(route, out var item)) ReturnData(item);
+        else WebConnection.GetRequest<ItemData>(route, ReturnData);
+
+        void ReturnData(ItemData data)
+        {
+            PokeDatabase.items[route] = data;
+            if (data.sprite == null && data.spriteRoute != null)
             {
-                Logger.Log($"{txt == null}",LogFlags.Tests);
-                Sprite sprite = GenerateSprite(txt);
-                data.icon = sprite;
-                item.sprite = sprite;
-                onSuccess?.Invoke(item);
+                if (string.IsNullOrEmpty(data.spriteRoute.defaultIcon))
+                {
+                    data.sprite = PokeDatabase.genericIcon;
+                    Logger.LogError($"{data.name} icon not found", LogFlags.API);
+                    onSuccess?.Invoke(data);
+                    return;
+                }
+                WebConnection.GetTexture(data.spriteRoute.defaultIcon, (txt) =>
+                {
+                    data.sprite = GenerateSprite(txt);
+                    onSuccess?.Invoke(data);
+                });
+            }
+            else onSuccess?.Invoke(data);
+        }
+    }
+
+    public static void GetTM(MoveData move, Action<TMModel> onSuccess)
+    {
+        if (move.machines is { Count: <= 0 }) return;
+        string route = move.machines[0].machine.url;
+        if (PokeDatabase.TMs.TryGetValue(move, out var tm)) ReturnTM(tm);
+        else WebConnection.GetRequest<TMData>(route, ReturnTM);
+
+        void ReturnTM(TMData data)
+        {
+            PokeDatabase.TMs[move] = data;
+            data.moveData = move;
+            //get item data
+            GetItemData(data.item.url, (item) =>
+            {
+                data.itemData = item;
+                if (data.icon == null || data.icon == PokeDatabase.genericIcon) data.itemData.sprite = PokeDatabase.genericTM;
+                TMModel tm = new(data);
+                onSuccess?.Invoke(tm);
             });
-            else onSuccess?.Invoke(item);
         }
     }
 
