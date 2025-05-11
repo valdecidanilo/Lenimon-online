@@ -172,13 +172,12 @@ public class FightMenu : ContextMenu<Pokemon>
         float percentage = (float)hpValue / pokemon.stats.hp;
         hpImage.fillAmount = percentage;
 
+        int healthState = 0;
+        if (percentage <= .5f) healthState++;
+        if (percentage <= .25f) healthState++;
+
         //change color
-        hpImage.sprite = percentage switch
-        {
-            >= .5f => healthStates[1],
-            >= .25f => healthStates[2],
-            _ => healthStates[0],
-        };
+        hpImage.sprite = healthStates[healthState];
     }
     #endregion
 
