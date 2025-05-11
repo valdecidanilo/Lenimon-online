@@ -170,7 +170,6 @@ public class Pokemon : ApiData
     private void GetRandomMoves()
     {
         List<MoveReference> possibleMoves = new(data.moves.Count);
-
         //get only level up moves
         for (int i = 0; i < data.moves.Count; i++)
         {
@@ -180,7 +179,6 @@ public class Pokemon : ApiData
                 LearningDetail learningDetail = move.learningDetails[j];
                 if (learningDetail.learnMethod != MoveLearnMethod.LevelUp) continue;
                 if (learningDetail.level > level) continue;
-
                 possibleMoves.Add(move);
                 break;
             }
@@ -194,42 +192,40 @@ public class Pokemon : ApiData
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/rock-tomb" } });
 
         MoveReference[] newMoves = new MoveReference[4];
-        int moveAmount = Mathf.Min(possibleMoves.Count, 4);
         dataChecklist.AddStep();
-        Checklist loadedMoves = new(moveAmount);
-        int moveId = Random.Range(0, possibleMoves.Count);
-        newMoves[loadedMoves.currentSteps] = possibleMoves[moveId];
-        possibleMoves.RemoveAt(moveId);
-        PokeAPI.GetMove(newMoves[loadedMoves.currentSteps].move.url, LoadMove);
+        Checklist loadedMoves = new(Mathf.Min(possibleMoves.Count, 4));
+        GetRandomMove();
 
-        void LoadMove(MoveData data)
+        void GetRandomMove()
         {
-            moves[loadedMoves.currentSteps] = new MoveModel(data);
-            loadedMoves.FinishStep();
-            Logger.Log($"{name}[{loadedMoves.currentSteps}/{loadedMoves.requiredSteps}] => {data.name}", LogFlags.PokemonBuild);
-
-            if (loadedMoves.isDone)
-            {
-                Logger.Log($"{name} Moves done loading", LogFlags.PokemonBuild);
-                dataChecklist.FinishStep();
-                return;
-            }
-            moveId = Random.Range(0, possibleMoves.Count);
+            int moveId = Random.Range(0, possibleMoves.Count);
             newMoves[loadedMoves.currentSteps] = possibleMoves[moveId];
             possibleMoves.RemoveAt(moveId);
             PokeAPI.GetMove(newMoves[loadedMoves.currentSteps].move.url, LoadMove);
+
+            void LoadMove(MoveData data)
+            {
+                moves[loadedMoves.currentSteps] = new MoveModel(data);
+                loadedMoves.FinishStep();
+                Logger.Log($"{name}[{loadedMoves.currentSteps}/{loadedMoves.requiredSteps}] => {data.name}", LogFlags.PokemonBuild);
+
+                if (loadedMoves.isDone)
+                {
+                    Logger.Log($"{name} Moves done loading", LogFlags.PokemonBuild);
+                    dataChecklist.FinishStep();
+                    return;
+                }
+                GetRandomMove();
+            }
         }
     }
     private void GetGender()
     {
         dataChecklist.AddStep();
-
         WebConnection.GetRequest<Species>(data.species.url, (data) =>
         {
             if (data.genderRate < 0)
-            {
                 gender = Gender.NonBinary;
-            }
             else
             {
                 float randomGender = Random.Range(0, 8);
@@ -242,12 +238,14 @@ public class Pokemon : ApiData
     }
     private void GetAbility()
     {
+        dataChecklist.AddStep();
         int abilityId = Random.Range(0, data.abilities.Count);
         PokeAPI.GetAbility(data.abilities[abilityId].reference.url, (abilityData) =>
         {
             ability = abilityData;
             ability.abilityName = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(ability.name.Replace("-", " "));
             ability.flavorText = PokeAPI.SmallestFlavorText(ability.flavorTexts).Replace("\n", " ");
+            dataChecklist.FinishStep();
         });
     }
     private void GetHeldItem()
