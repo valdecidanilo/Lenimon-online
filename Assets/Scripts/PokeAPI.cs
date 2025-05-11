@@ -116,8 +116,9 @@ public static class PokeAPI
         {
             PokeDatabase.items[route] = data;
             ItemModel item = new(data);
-            if(data.sprite == null) WebConnection.GetTexture(data.sprite.defaultIcon, (txt) =>
+            if(data.sprite != null) WebConnection.GetTexture(data.sprite.defaultIcon, (txt) =>
             {
+                Logger.Log($"{txt == null}",LogFlags.Tests);
                 Sprite sprite = GenerateSprite(txt);
                 data.icon = sprite;
                 item.sprite = sprite;
@@ -125,18 +126,6 @@ public static class PokeAPI
             });
             else onSuccess?.Invoke(item);
         }
-
-        WebConnection.GetRequest<ItemData>(route, (data) =>
-        {
-            ItemModel item = new(data);
-            WebConnection.GetTexture(data.sprite.defaultIcon, (txt) =>
-            {
-                Sprite sprite = GenerateSprite(txt);
-                item.sprite = sprite;
-                onSuccess?.Invoke(item);
-            });
-
-        });
     }
 
     //helpers
