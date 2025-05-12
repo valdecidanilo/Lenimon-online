@@ -16,12 +16,12 @@ public class BattleSetup : MonoBehaviour
 
     [Header("Moves Menu")]
     [SerializeField] private FightMenu fightMenu;
-
     [Header("Party Menu")]
     [SerializeField] private PartyMenu partyChoice;
-
     [Header("Summary Menu")]
     [SerializeField] private SummaryMenu summary;
+    [Header("Bag Menu")]
+    [SerializeField] private BagMenu bag;
 
     private bool summaryFromParty;
     private int summaryPokemonId;
@@ -40,27 +40,10 @@ public class BattleSetup : MonoBehaviour
         fightMenu.onPickMove += OnMovePick;
         partyChoice.onReturn += OpenChoiceMenu;
         partyChoice.onChangePokemon += OnAllyChanged;
-        partyChoice.onSummaryCall += (id)=>
-        {
-            summaryPokemonId = id;
-            summaryFromParty = true;
-            OpenPokemonSummary(allyParty[id]);
-        };
-        summary.onShiftPokemon += (delta) =>
-        {
-            if (delta == 0 || !summaryFromParty) return;
-            summaryPokemonId = (summaryPokemonId + delta + allyParty.Length) % allyParty.Length;
-            OpenPokemonSummary(allyParty[summaryPokemonId]);
-        };
-        summary.onReturn += ()=>
-        {
-            summary.CloseMenu();
-            if(summaryFromParty)
-                OpenParty();
-            else
-                OpenChoiceMenu();
-            summaryFromParty = false;
-        };
+        partyChoice.onSummaryCall += OnPokemonSummaryRequest;
+        summary.onShiftPokemon += SwitchPokemon;
+        summary.onReturn += CloseSummary;
+        bag.onReturn += OpenChoiceMenu;
     }
 
     private void Update()
@@ -74,32 +57,6 @@ public class BattleSetup : MonoBehaviour
         allyParty = allies;
         enemyParty = enemies;
         fightMenu.SetupBattle(allyParty[0], enemyParty[0]);
-
-        List<MoveReference> possibleTMs = MoveHelper.GetPossibleMoves(allyParty[0], new[] { MoveLearnMethod.TM });
-        Checklist loadedTMs = new(possibleTMs.Count);
-        StringBuilder log = new($"{allyParty[0].name} TM moves are:");
-        if (possibleTMs.Count > 0) LoadTMs(possibleTMs[0]);
-        
-        void LoadTMs(MoveReference moveReference)
-        {
-            PokeAPI.GetMove(moveReference.move.url, LoadMoveData);
-            void LoadMoveData(MoveData moveData)
-            {
-                PokeAPI.GetTM(moveData, (tm) =>
-                {
-                    log.Append($"\n{tm.name} => {tm.data.moveData.name}");
-
-                    loadedTMs.FinishStep();
-                    if (loadedTMs.isDone)
-                    {
-                        Logger.Log(log.ToString(), LogFlags.Tests);
-                        return;
-                    }
-                    LoadTMs(possibleTMs[loadedTMs.currentSteps]);
-                });
-            }
-        }
-
         OpenChoiceMenu();
     }
 
@@ -116,6 +73,32 @@ public class BattleSetup : MonoBehaviour
     {
         //StartCoroutine(BattleSequence(allyPokemon.moves[id], null));
     }
+
+    #region Summary
+    private void OnPokemonSummaryRequest(int id)
+    {
+        summaryPokemonId = id;
+        summaryFromParty = true;
+        OpenPokemonSummary(allyParty[id]);
+    }
+
+    private void SwitchPokemon(int delta)
+    {
+        if (delta == 0 || !summaryFromParty) return;
+        summaryPokemonId = (summaryPokemonId + delta + allyParty.Length) % allyParty.Length;
+        OpenPokemonSummary(allyParty[summaryPokemonId]);
+    }
+
+    private void CloseSummary()
+    {
+        summary.CloseMenu();
+        if(summaryFromParty)
+            OpenParty();
+        else
+            OpenChoiceMenu();
+        summaryFromParty = false;
+    }
+    #endregion
 
     #region Window Changes
     private void OnChoicePick(int choice)
@@ -146,6 +129,7 @@ public class BattleSetup : MonoBehaviour
         fightMenu.CloseMenu();
         partyChoice.CloseMenu();
         summary.CloseMenu();
+        bag.CloseMenu();
 
         //open window
         battleMenu.SetActive(true);
@@ -162,18 +146,21 @@ public class BattleSetup : MonoBehaviour
 
     private void OpenBag()
     {
-        
+        battleMenu.SetActive(false);
+        bag.OpenMenu(null);
     }
 
     private void OpenParty()
     {
         battleChoice.ReleaseSelection();
+        battleMenu.SetActive(false);
         partyChoice.OpenMenu(allyParty);
     }
 
     private void OpenPokemonSummary(Pokemon pokemon)
     {
         battleChoice.ReleaseSelection();
+        battleMenu.SetActive(false);
         partyChoice.CloseMenu();
         summary.OpenMenu(pokemon);
     }

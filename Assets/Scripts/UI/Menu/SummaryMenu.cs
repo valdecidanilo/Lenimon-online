@@ -1,13 +1,8 @@
-using LenixSO.Logger;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
-using Logger = LenixSO.Logger.Logger;
 using Random = UnityEngine.Random;
 
 public class SummaryMenu : ContextMenu<Pokemon>

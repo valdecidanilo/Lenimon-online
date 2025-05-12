@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Battle;
@@ -8,7 +9,6 @@ using UnityEngine.SceneManagement;
 using LenixSO.Logger;
 using Random = UnityEngine.Random;
 using Logger = LenixSO.Logger.Logger;
-using System.Collections;
 
 public class TestScript : MonoBehaviour
 {
@@ -16,8 +16,10 @@ public class TestScript : MonoBehaviour
 
     [SerializeField] private BattleSetup battle;
 
-    Pokemon[] allyParty;
-    Pokemon[] enemyParty;
+    private Pokemon[] allyParty;
+    private Pokemon[] enemyParty;
+
+    private Checklist itemsLoaded;
 
     private void Awake()
     {
@@ -25,13 +27,19 @@ public class TestScript : MonoBehaviour
         LoadingScreen.onDoneLoading += Setup;
     }
 
+    private void Update()
+    {
+        if (Keyboard.current.spaceKey.wasPressedThisFrame) SceneManager.LoadScene(0);
+    }
+
     private void Setup()
     {
         LoadingScreen.onDoneLoading -= Setup;
-        LoadingScreen.onDoneLoading += StartBattle;
+        LoadingScreen.onDoneLoading += GenerateItems;
         GenerateParties();
     }
 
+    #region Pokemon
     private void GenerateParties()
     {
         //get encounter level
@@ -48,7 +56,8 @@ public class TestScript : MonoBehaviour
         LoadingScreen.AddOrChangeQueue(alliesLoaded, $"Loading ally party[1/{alliesLoaded.requiredSteps}]...");
         LoadingScreen.AddOrChangeQueue(requiredEnemy, $"Loading opponent party...");
 
-        alliesLoaded.onProgress += (p) => LoadingScreen.AddOrChangeQueue(alliesLoaded, $"Loading ally party[{alliesLoaded.currentSteps+1}/{alliesLoaded.requiredSteps}]...");
+        alliesLoaded.onProgress += (p) => LoadingScreen.AddOrChangeQueue(alliesLoaded,
+            $"Loading ally party[{alliesLoaded.currentSteps + 1}/{alliesLoaded.requiredSteps}]...");
         alliesLoaded.onCompleted += () =>
         {
             //load enemies
@@ -57,7 +66,10 @@ public class TestScript : MonoBehaviour
             enemyParty = new Pokemon[partySize];
 
             Checklist opponentLoaded = new(partySize);
-            opponentLoaded.onProgress += (p) => { if (!requiredEnemy.isDone) requiredEnemy.FinishStep(); };
+            opponentLoaded.onProgress += (p) =>
+            {
+                if (!requiredEnemy.isDone) requiredEnemy.FinishStep();
+            };
             Logger.Log($"setup enemy party ({partySize} pokemons)", LogFlags.Game);
             SetupParty(enemyParty, opponentLoaded);
         };
@@ -76,25 +88,14 @@ public class TestScript : MonoBehaviour
             });
         }
     }
-
     private void GetPokemon(int pokemonId, int level, Action<Pokemon> onFinished)
     {
-        PokeAPI.GetPokemonData(pokemonId, (data) =>
-        {
-            Pokemon.GetLoadedPokemon(data, level, onFinished);
-        });
+        PokeAPI.GetPokemonData(pokemonId, (data) => { Pokemon.GetLoadedPokemon(data, level, onFinished); });
     }
-
-    private void Update()
-    {
-        if (Keyboard.current.spaceKey.wasPressedThisFrame) SceneManager.LoadScene(0);
-    }
-
     private void StartBattle()
     {
         battle.SetupBattle(allyParty, enemyParty);
     }
-
     private void CheckPokemon(Pokemon pokemon)
     {
         StringBuilder finalLog = new();
@@ -120,4 +121,75 @@ public class TestScript : MonoBehaviour
 
         Logger.Log(finalLog.ToString(), LogFlags.DataCheck);
     }
+    #endregion
+
+    #region Items
+    private void GenerateItems()
+    {
+        LoadingScreen.onDoneLoading -= GenerateItems;
+        LoadingScreen.onDoneLoading += StartBattle;
+        itemsLoaded = new(3);
+        LoadingScreen.AddOrChangeQueue(itemsLoaded, "Loading items...");
+    }
+
+    private void GenerateHealItems()
+    {
+        List<string> itemList = new();
+        itemList.Add("potion");
+        itemList.Add("super-potion");
+        itemList.Add("hyper-potion");
+        itemList.Add("max-potion");
+        
+        itemsLoaded.FinishStep();
+    }
+
+    private void GenerateBattleItems()
+    {
+        List<string> itemList = new();
+        itemList.Add("x-attack");
+        itemList.Add("x-defense");
+        itemList.Add("x-sp-atk");
+        itemList.Add("x-sp-def");
+        itemList.Add("x-speed");
+        itemList.Add("x-accuracy");
+        
+        itemsLoaded.FinishStep();
+    }
+
+    private void GenerateTMs()
+    {
+        int tmPerPokemon = 4;
+        List<string> itemList = new();
+        itemList.Add("solar-beam");
+        itemList.Add("earthquake");
+
+        List<MoveReference> possibleTMs = MoveHelper.GetPossibleMoves(allyParty[0], new[] { MoveLearnMethod.TM });
+        Checklist loadedTMs = new(possibleTMs.Count);
+        StringBuilder log = new($"{allyParty[0].name} TM moves are:");
+        //if (possibleTMs.Count > 0) LoadTMs(possibleTMs[0]);
+        void LoadTMs(MoveReference moveReference)
+        {
+            PokeAPI.GetMove(moveReference.move.url, LoadMoveData);
+
+            void LoadMoveData(MoveData moveData)
+            {
+                PokeAPI.GetTM(moveData, (tm) =>
+                {
+                    log.Append($"\n{tm.name} => {tm.data.moveData.name}");
+
+                    loadedTMs.FinishStep();
+                    if (loadedTMs.isDone)
+                    {
+                        Logger.Log(log.ToString(), LogFlags.Tests);
+                        return;
+                    }
+
+                    LoadTMs(possibleTMs[loadedTMs.currentSteps]);
+                });
+            }
+        }
+
+        itemsLoaded.FinishStep();
+    }
+    #endregion
 }
