@@ -162,7 +162,7 @@ public class TestScript : MonoBehaviour
                 loaded.FinishStep();
                 if (loaded.isDone)
                 {
-                    Logger.Log(log.ToString(), LogFlags.Tests);
+                    Logger.Log(log.ToString(), LogFlags.DataCheck);
                     itemsLoaded.FinishStep();
                     return;
                 }
@@ -200,7 +200,7 @@ public class TestScript : MonoBehaviour
                 loaded.FinishStep();
                 if (loaded.isDone)
                 {
-                    Logger.Log(log.ToString(), LogFlags.Tests);
+                    Logger.Log(log.ToString(), LogFlags.DataCheck);
                     itemsLoaded.FinishStep();
                     return;
                 }
@@ -243,7 +243,7 @@ public class TestScript : MonoBehaviour
                         LoadTMs(TMs[loadedTMs.currentSteps]);
                         return;
                     }
-                    Logger.Log(log.ToString(), LogFlags.Tests);
+                    Logger.Log(log.ToString(), LogFlags.DataCheck);
                     itemsLoaded.FinishStep();
                 });
             }

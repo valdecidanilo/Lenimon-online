@@ -16,6 +16,7 @@ public class BagMenu : ContextMenu<Bag>
     
     private const int screenCount = 4;
 
+    private Bag bag;
     private int currentScreen = -1;
     private InputAction navigateAction;
     private InputAction confirmAction;
@@ -31,7 +32,7 @@ public class BagMenu : ContextMenu<Bag>
 
     public override void OpenMenu(Bag data)
     {
-        Logger.Log($"{data == null}", LogFlags.Tests);
+        bag = data;
         gameObject.SetActive(true);
         UpdateScreen();
     }
@@ -67,7 +68,20 @@ public class BagMenu : ContextMenu<Bag>
 
     private void LoadScreenData()
     {
-        
+        List<ItemModel> itemList = currentScreen switch
+        {
+            0 => bag.items,
+            1 => bag.pokeballs,
+            2 => bag.battleItems,
+            _ => null,
+        };
+
+        if(itemList == null)
+        {
+
+            return;
+        }
+
     }
 
     private string ScreenText(int id)
