@@ -75,7 +75,7 @@ public static class PokeAPI
         WebConnection.GetTexture(route, onSuccess);
     }
 
-    public static void GetMove(string route, Action<MoveData> onSuccess)
+    public static void GetMoveData(string route, Action<MoveData> onSuccess)
     {
         Logger.Log($"move route: {route}", LogFlags.API);
         if (PokeDatabase.moves.TryGetValue(route, out var move)) SetMoveType(move);

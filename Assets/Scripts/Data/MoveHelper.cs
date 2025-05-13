@@ -53,7 +53,7 @@ public static class MoveHelper
             int moveId = Random.Range(0, possibleMoves.Count);
             newMoves[loadedMoves.currentSteps] = possibleMoves[moveId];
             possibleMoves.RemoveAt(moveId);
-            PokeAPI.GetMove(newMoves[loadedMoves.currentSteps].move.url, LoadMove);
+            PokeAPI.GetMoveData(newMoves[loadedMoves.currentSteps].move.url, LoadMove);
 
             void LoadMove(MoveData data)
             {

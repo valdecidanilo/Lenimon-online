@@ -31,6 +31,7 @@ public class BattleSetup : MonoBehaviour
 
     //Ally
     private Pokemon[] allyParty;
+    private Bag playerBag;
 
     private void Awake()
     {
@@ -51,11 +52,12 @@ public class BattleSetup : MonoBehaviour
         if(Keyboard.current.tabKey.wasPressedThisFrame) OpenPokemonSummary(enemyParty[0]);
     }
 
-    public void SetupBattle(Pokemon[] allies, Pokemon[] enemies)
+    public void SetupBattle(Pokemon[] allies, Pokemon[] enemies, Bag bag)
     {
         //setup enemy
         allyParty = allies;
         enemyParty = enemies;
+        playerBag = bag;
         fightMenu.SetupBattle(allyParty[0], enemyParty[0]);
         OpenChoiceMenu();
     }
@@ -147,7 +149,7 @@ public class BattleSetup : MonoBehaviour
     private void OpenBag()
     {
         battleMenu.SetActive(false);
-        bag.OpenMenu(null);
+        bag.OpenMenu(playerBag);
     }
 
     private void OpenParty()

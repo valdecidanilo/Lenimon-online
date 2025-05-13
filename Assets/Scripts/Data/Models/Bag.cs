@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class Bag
 {
-    public List<ItemModel> items;
-    public List<ItemModel> pokeballs;
-    public List<ItemModel> battleItems;
-    public List<TMModel> TMs;
+    public List<ItemModel> items = new();
+    public List<ItemModel> pokeballs = new();
+    public List<ItemModel> battleItems = new();
+    public List<TMModel> TMs = new();
 }

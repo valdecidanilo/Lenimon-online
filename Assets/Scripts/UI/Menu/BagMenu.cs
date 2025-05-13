@@ -4,6 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using LenixSO.Logger;
+using Logger = LenixSO.Logger.Logger;
 
 public class BagMenu : ContextMenu<Bag>
 {
@@ -29,6 +31,7 @@ public class BagMenu : ContextMenu<Bag>
 
     public override void OpenMenu(Bag data)
     {
+        Logger.Log($"{data == null}", LogFlags.Tests);
         gameObject.SetActive(true);
         UpdateScreen();
     }

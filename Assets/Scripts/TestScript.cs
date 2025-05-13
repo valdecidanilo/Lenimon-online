@@ -18,6 +18,7 @@ public class TestScript : MonoBehaviour
 
     private Pokemon[] allyParty;
     private Pokemon[] enemyParty;
+    private Bag bag;
 
     private Checklist itemsLoaded;
 
@@ -37,6 +38,10 @@ public class TestScript : MonoBehaviour
         LoadingScreen.onDoneLoading -= Setup;
         LoadingScreen.onDoneLoading += GenerateItems;
         GenerateParties();
+    }
+    private void StartBattle()
+    {
+        battle.SetupBattle(allyParty, enemyParty, bag);
     }
 
     #region Pokemon
@@ -92,10 +97,6 @@ public class TestScript : MonoBehaviour
     {
         PokeAPI.GetPokemonData(pokemonId, (data) => { Pokemon.GetLoadedPokemon(data, level, onFinished); });
     }
-    private void StartBattle()
-    {
-        battle.SetupBattle(allyParty, enemyParty);
-    }
     private void CheckPokemon(Pokemon pokemon)
     {
         StringBuilder finalLog = new();
@@ -128,68 +129,125 @@ public class TestScript : MonoBehaviour
     {
         LoadingScreen.onDoneLoading -= GenerateItems;
         LoadingScreen.onDoneLoading += StartBattle;
-        itemsLoaded = new(3);
+        bag = new();
+        itemsLoaded = new(0);
+        GenerateHealItems();
+        GenerateBattleItems();
+        GenerateTMs();
         LoadingScreen.AddOrChangeQueue(itemsLoaded, "Loading items...");
     }
 
     private void GenerateHealItems()
     {
-        List<string> itemList = new();
-        itemList.Add("potion");
-        itemList.Add("super-potion");
-        itemList.Add("hyper-potion");
-        itemList.Add("max-potion");
+        itemsLoaded.AddStep();
+        List<string> itemList = new()
+        {
+            "potion",
+            "super-potion",
+            "hyper-potion",
+            "max-potion"
+        };
+
+        Checklist loaded = new(itemList.Count);
+        StringBuilder log = new($"loaded heal items are:");
+        LoadHealItem();
+
+        void LoadHealItem()
+        {
+            string route = $"{PokeAPI.baseRoute}item/{itemList[loaded.currentSteps]}";
+            PokeAPI.GetItem(route, (item) =>
+            {
+                bag.items.Add(item);
+                log.Append($"\n{item.name}");
+                loaded.FinishStep();
+                if (loaded.isDone)
+                {
+                    Logger.Log(log.ToString(), LogFlags.Tests);
+                    itemsLoaded.FinishStep();
+                    return;
+                }
+                LoadHealItem();
+            });
+        }
         
         itemsLoaded.FinishStep();
     }
 
     private void GenerateBattleItems()
     {
-        List<string> itemList = new();
-        itemList.Add("x-attack");
-        itemList.Add("x-defense");
-        itemList.Add("x-sp-atk");
-        itemList.Add("x-sp-def");
-        itemList.Add("x-speed");
-        itemList.Add("x-accuracy");
-        
-        itemsLoaded.FinishStep();
+        itemsLoaded.AddStep();
+        List<string> itemList = new()
+        {
+            "x-attack",
+            "x-defense",
+            "x-sp-atk",
+            "x-sp-def",
+            "x-speed",
+            "x-accuracy"
+        };
+
+        Checklist loaded = new(itemList.Count);
+        StringBuilder log = new($"loaded battle items are:");
+        LoadBattleItem();
+
+        void LoadBattleItem()
+        {
+            string route = $"{PokeAPI.baseRoute}item/{itemList[loaded.currentSteps]}";
+            PokeAPI.GetItem(route, (item) =>
+            {
+                bag.battleItems.Add(item);
+                log.Append($"\n{item.name}");
+                loaded.FinishStep();
+                if (loaded.isDone)
+                {
+                    Logger.Log(log.ToString(), LogFlags.Tests);
+                    itemsLoaded.FinishStep();
+                    return;
+                }
+                LoadBattleItem();
+            });
+        }
     }
 
     private void GenerateTMs()
     {
-        int tmPerPokemon = 4;
-        List<string> itemList = new();
-        itemList.Add("solar-beam");
-        itemList.Add("earthquake");
+        itemsLoaded.AddStep();
+        const int tmPerPokemon = 4;
+        List<string> itemList = new()
+        {
+            "solar-beam",
+            "earthquake",
+        };
 
-        List<MoveReference> possibleTMs = MoveHelper.GetPossibleMoves(allyParty[0], new[] { MoveLearnMethod.TM });
-        Checklist loadedTMs = new(possibleTMs.Count);
-        StringBuilder log = new($"{allyParty[0].name} TM moves are:");
-        //if (possibleTMs.Count > 0) LoadTMs(possibleTMs[0]);
+        List<MoveReference> TMs = new(itemList.Count);
+        for (int i = 0; i < TMs.Capacity; i++)
+            TMs.Add(new() { move = new() { url = $"{PokeAPI.baseRoute}move/{itemList[i]}" } });
+
+        //TMs = MoveHelper.GetPossibleMoves(allyParty[0], new[] { MoveLearnMethod.TM });
+        Checklist loadedTMs = new(TMs.Count);
+        StringBuilder log = new($"loaded TMs are:");
+        if (TMs.Count > 0) LoadTMs(TMs[0]);
         void LoadTMs(MoveReference moveReference)
         {
-            PokeAPI.GetMove(moveReference.move.url, LoadMoveData);
+            PokeAPI.GetMoveData(moveReference.move.url, LoadMoveData);
 
             void LoadMoveData(MoveData moveData)
             {
                 PokeAPI.GetTM(moveData, (tm) =>
                 {
+                    bag.TMs.Add(tm);
                     log.Append($"\n{tm.name} => {tm.data.moveData.name}");
-
                     loadedTMs.FinishStep();
-                    if (loadedTMs.isDone)
+                    if (!loadedTMs.isDone)
                     {
-                        Logger.Log(log.ToString(), LogFlags.Tests);
+                        LoadTMs(TMs[loadedTMs.currentSteps]);
                         return;
                     }
-
-                    LoadTMs(possibleTMs[loadedTMs.currentSteps]);
+                    Logger.Log(log.ToString(), LogFlags.Tests);
+                    itemsLoaded.FinishStep();
                 });
             }
         }
-
-        itemsLoaded.FinishStep();
     }
     #endregion
 }
