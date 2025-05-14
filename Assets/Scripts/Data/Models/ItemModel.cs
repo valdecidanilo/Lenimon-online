@@ -7,7 +7,7 @@ public class ItemModel : ApiData
 {
     public int? cost => itemData.cost;
 
-    public readonly string effect;
+    public string effect { get; protected set; }
     public int amount;
 
     public Sprite sprite;
@@ -32,5 +32,14 @@ public class TMModel : ItemModel
     {
         sprite = data.itemData.sprite;
         this.data = data;
+        for (int i = 0; i < data.itemData.effectTexts.Count; i++)
+        {
+            EffectText effectText = data.itemData.effectTexts[i];
+            if (effectText.language.name == "en")
+            {
+                effect = effectText.text;
+                break;
+            }
+        }
     }
 }
