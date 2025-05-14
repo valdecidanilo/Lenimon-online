@@ -28,6 +28,12 @@ public class FlavorText
     public ApiReference language { get; set; }
 }
 
+public class ItemFlavorText
+{
+    public string text { get; set; }
+    public ApiReference language { get; set; }
+}
+
 public class EffectText
 {
     [JsonProperty("effect")] public string text { get; set; }

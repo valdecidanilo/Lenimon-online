@@ -6,5 +6,5 @@ public class Bag
     public List<ItemModel> items = new();
     public List<ItemModel> pokeballs = new();
     public List<ItemModel> battleItems = new();
-    public List<TMModel> TMs = new();
+    public List<ItemModel> TMs = new();
 }

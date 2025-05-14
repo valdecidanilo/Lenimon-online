@@ -53,7 +53,6 @@ public class ContextSelection : MonoBehaviour
 
     private void OnSelect(SelectionItem item)
     {
-        //Debug.Log($"{item.name} selected");
         Vector2 anchor = item.rectTransform.anchoredPosition + arrowOffset;
 
         arrow.anchorMax = item.rectTransform.anchorMax;

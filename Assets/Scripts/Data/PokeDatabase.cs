@@ -51,6 +51,7 @@ public static class PokeDatabase
 
     //Utility methods
     #region Resources
+    public static Sprite emptySprite;
     public static Sprite genericIcon;
     public static Sprite genericTM;
     public static Sprite maleIcon;
@@ -88,6 +89,12 @@ public static class PokeDatabase
         }
 
         //Generic sprites
+        preloadedAssets.AddStep();
+        AAAsset<Sprite>.LoadAsset("Empty", (sprite) =>
+        {
+            emptySprite = sprite;
+            preloadedAssets.FinishStep();
+        });
         preloadedAssets.AddStep();
         AAAsset<Sprite>.LoadAsset(genericIconKey, (sprite) =>
         {

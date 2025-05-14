@@ -157,6 +157,7 @@ public class TestScript : MonoBehaviour
             string route = $"{PokeAPI.baseRoute}item/{itemList[loaded.currentSteps]}";
             PokeAPI.GetItem(route, (item) =>
             {
+                item.amount = 5;
                 bag.items.Add(item);
                 log.Append($"\n{item.name}");
                 loaded.FinishStep();

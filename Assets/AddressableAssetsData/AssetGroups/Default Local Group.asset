@@ -42,6 +42,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1fb4ae213d9cbfb4f80013e796b2d135
+    m_Address: Empty
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 217fa9b0ea8b94843b34e272c32a949d
     m_Address: icon_ball_LUREBALL
     m_ReadOnly: 0

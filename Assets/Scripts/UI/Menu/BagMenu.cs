@@ -17,6 +17,10 @@ public class BagMenu : ContextMenu<Bag>
     private const int screenCount = 4;
 
     private Bag bag;
+    private BagItem[] bagItems;
+    private List<ItemModel> itemList;
+    private int itemOffset = 0;
+    
     private int currentScreen = -1;
     private InputAction navigateAction;
     private InputAction confirmAction;
@@ -25,6 +29,10 @@ public class BagMenu : ContextMenu<Bag>
     {
         base.Awake();
         navigateAction = InputSystem.actions.FindAction("UI/Navigate");
+
+        bagItems = new BagItem[contextSelection.itemCount];
+        for (int i = 0; i < bagItems.Length; i++)
+            bagItems[i] = contextSelection[i].GetComponent<BagItem>();
 
         contextSelection.onSelect += ShowItemDetails;
         contextSelection.onItemPick += OpenItemOptions;
@@ -62,26 +70,28 @@ public class BagMenu : ContextMenu<Bag>
         screenName.text = ScreenText(currentScreen);
         for (int i = 0; i < screenIndicator.Length; i++) screenIndicator[i].interactable = false;
         screenIndicator[currentScreen].interactable = true;
-        contextSelection.Select(0);
         LoadScreenData();
     }
 
     private void LoadScreenData()
     {
-        List<ItemModel> itemList = currentScreen switch
+        itemList = currentScreen switch
         {
             0 => bag.items,
             1 => bag.pokeballs,
             2 => bag.battleItems,
-            _ => null,
+            _ => bag.TMs,
         };
+        if(itemList == null) return;
 
-        if(itemList == null)
+        for (int i = 0; i < contextSelection.itemCount; i++)
         {
-
-            return;
+            int id = i + itemOffset;
+            bagItems[i].SetupItem(itemList.Count > id ? itemList[id] : null);
+            if(id == itemList.Count) bagItems[i].SetAsCloseBag();
         }
-
+        contextSelection.Select(0);
+        ShowItemDetails(0);
     }
 
     private string ScreenText(int id)
@@ -97,7 +107,17 @@ public class BagMenu : ContextMenu<Bag>
 
     private void ShowItemDetails(int id)
     {
-        
+        int itemId = id + itemOffset;
+        if (itemId >= itemList.Count)
+        {
+            itemIcon.sprite = PokeDatabase.emptySprite;
+            itemDescription.text = string.Empty;
+            return;
+        }
+
+        ItemModel item = itemList[itemId];
+        itemIcon.sprite = item.sprite;
+        itemDescription.text = item.effect;
     }
 
     private void OpenItemOptions(int id)

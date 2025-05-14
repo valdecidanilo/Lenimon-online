@@ -19,7 +19,7 @@ public class ItemModel : ApiData
         itemData = data;
         id = itemData.id;
         name = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(data.name.Replace("-", " "));
-        effect = PokeAPI.SmallestFlavorText(data.flavorTexts);
+        effect = PokeAPI.SmallestFlavorText(data.flavorTexts).Replace('\n',' ');
         this.amount = amount;
     }
 }
@@ -30,6 +30,7 @@ public class TMModel : ItemModel
 
     public TMModel(TMData data) : base(data.itemData, 1)
     {
+        sprite = data.itemData.sprite;
         this.data = data;
     }
 }

@@ -10,7 +10,7 @@ public class ItemData : ApiData
     public int? cost;
 
     [JsonProperty("effect_entries")] public List<EffectText> effectTexts;
-    [JsonProperty("flavor_text_entries")] public List<FlavorText> flavorTexts;
+    [JsonProperty("flavor_text_entries")] public List<ItemFlavorText> flavorTexts;
 
     [JsonProperty("fling_effect")] public ApiReference flingEffect;
     [JsonProperty("fling_power")] public int? flinPower;
