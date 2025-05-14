@@ -11,9 +11,16 @@ public class SelectionItem : MonoBehaviour, IPointerEnterHandler, ISelectHandler
 
     public Selectable selectable => button;
 
+    private bool mouseSelection = true;
+
     public RectTransform rectTransform => _rectTransform ??= (RectTransform)transform;
     public Action<SelectionItem> onSelected;
     public Action onPick;
+
+    private void OnEnable()
+    {
+        MouseSelection(mouseSelection);
+    }
 
     private void Awake()
     {
@@ -22,6 +29,7 @@ public class SelectionItem : MonoBehaviour, IPointerEnterHandler, ISelectHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if(!mouseSelection) return;
         button.Select();
         OnSelected();
     }
@@ -35,6 +43,12 @@ public class SelectionItem : MonoBehaviour, IPointerEnterHandler, ISelectHandler
         }
 
         OnSelected();
+    }
+
+    public void MouseSelection(bool active)
+    {
+        mouseSelection = active;
+        button.interactable = active;
     }
 
     private void OnSelected() => onSelected?.Invoke(this);

@@ -85,9 +85,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     {
         instances = new PartyPokemon[contextSelection.itemCount - 1];
         for (int i = 0; i < instances.Length; i++)
-        {
             instances[i] = contextSelection[i].GetComponent<PartyPokemon>();
-        }
     }
 
     protected override void Awake()
@@ -103,6 +101,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         party = pokemons;
         SetupNavigation(pokemons);
         gameObject.SetActive(true);
+        contextSelection.MouseSelection(true);
         contextSelection.Select(0);
     }
 
@@ -115,6 +114,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         }
 
         text.SetActive(false);
+        contextSelection.MouseSelection(false);
         optionsWindow.SetActive(true);
         pokemonOptions.Select(0);
     }
@@ -148,6 +148,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         {
             text.SetActive(true);
             optionsWindow.SetActive(false);
+            contextSelection.MouseSelection(true);
             contextSelection.Focus();
         }
     }

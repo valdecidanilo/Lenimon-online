@@ -41,6 +41,12 @@ public class ContextSelection : MonoBehaviour
         Focus();
     }
 
+    public void MouseSelection(bool active)
+    {
+        for (int i = 0; i < selectionItems.Count; i++)
+            selectionItems[i].MouseSelection(active);
+    }
+
     public void ReleaseSelection()
     {
         EventSystem.current.SetSelectedGameObject(null);

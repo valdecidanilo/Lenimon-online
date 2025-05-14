@@ -13,6 +13,7 @@ public class BagMenu : ContextMenu<Bag>
     [SerializeField] private Selectable[] screenIndicator;
     [SerializeField] private Image itemIcon;
     [SerializeField] private TMP_Text itemDescription;
+    [SerializeField] private ContextSelection optionsContext;
     
     private const int screenCount = 4;
 
@@ -36,12 +37,15 @@ public class BagMenu : ContextMenu<Bag>
 
         contextSelection.onSelect += ShowItemDetails;
         contextSelection.onItemPick += OpenItemOptions;
+        optionsContext.onItemPick += OnPickOption;
     }
 
     public override void OpenMenu(Bag data)
     {
+        contextSelection.MouseSelection(true);
         bag = data;
         gameObject.SetActive(true);
+        optionsContext.gameObject.SetActive(false);
         UpdateScreen();
     }
 
@@ -147,5 +151,45 @@ public class BagMenu : ContextMenu<Bag>
             onReturn?.Invoke();
             return;
         }
+        
+        OpenOptions();
+    }
+
+    protected override void ReturnCall()
+    {
+        if (optionsContext.gameObject.activeSelf)
+        {
+            CloseOptions();
+            return;
+        }
+        base.ReturnCall();
+    }
+
+    private void OpenOptions()
+    {
+        contextSelection.MouseSelection(false);
+        optionsContext.gameObject.SetActive(true);
+        optionsContext.Select(0);
+    }
+
+    private void OnPickOption(int id)
+    {
+        switch (id)
+        {
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                CloseOptions();
+                break;
+        }
+    }
+
+    private void CloseOptions()
+    {
+        contextSelection.MouseSelection(true);
+        optionsContext.gameObject.SetActive(false);
+        contextSelection.Focus();
     }
 }
