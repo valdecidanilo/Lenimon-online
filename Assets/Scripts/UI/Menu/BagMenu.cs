@@ -70,7 +70,10 @@ public class BagMenu : ContextMenu<Bag>
         screenName.text = ScreenText(currentScreen);
         for (int i = 0; i < screenIndicator.Length; i++) screenIndicator[i].interactable = false;
         screenIndicator[currentScreen].interactable = true;
+        itemOffset = 0;
         LoadScreenData();
+        contextSelection.Select(0);
+        ShowItemDetails(0);
     }
 
     private void LoadScreenData()
@@ -90,8 +93,6 @@ public class BagMenu : ContextMenu<Bag>
             bagItems[i].SetupItem(itemList.Count > id ? itemList[id] : null);
             if(id == itemList.Count) bagItems[i].SetAsCloseBag();
         }
-        contextSelection.Select(0);
-        ShowItemDetails(0);
     }
 
     private string ScreenText(int id)
@@ -114,14 +115,37 @@ public class BagMenu : ContextMenu<Bag>
             itemDescription.text = string.Empty;
             return;
         }
+        
+        if (id >= bagItems.Length - 1)
+        {
+            StartCoroutine(ScrollDelay(1));
+            return;
+        }
+        else if(id == 0 && itemOffset > 0)
+        {
+            StartCoroutine(ScrollDelay(-1));
+            return;
+        }
 
         ItemModel item = itemList[itemId];
         itemIcon.sprite = item.sprite;
         itemDescription.text = item.effect;
     }
 
+    private IEnumerator ScrollDelay(int offset)
+    {
+        itemOffset += offset;
+        yield return null;
+        contextSelection.Select(contextSelection.selectedId - offset);
+        LoadScreenData();
+    }
+
     private void OpenItemOptions(int id)
     {
-        
+        if (id + itemOffset >= itemList.Count)
+        {
+            onReturn?.Invoke();
+            return;
+        }
     }
 }

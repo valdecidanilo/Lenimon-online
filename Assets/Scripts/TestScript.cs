@@ -144,6 +144,10 @@ public class TestScript : MonoBehaviour
         {
             "potion",
             "super-potion",
+            "fresh-water",
+            "soda-pop",
+            "lemonade",
+            "moomoo-milk",
             "hyper-potion",
             "max-potion"
         };
