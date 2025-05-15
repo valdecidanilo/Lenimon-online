@@ -41,11 +41,7 @@ public class Pokemon : ApiData
     {
         data = pokemonData;
         name = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(pokemonData.species.name);
-        int formId = name.IndexOf('-');
-        if (formId > 0)
-        {
-            name = name.Remove(formId);
-        }
+        name = name.Replace('-', ' ');
         id = pokemonData.id;
 
         stats = new(
