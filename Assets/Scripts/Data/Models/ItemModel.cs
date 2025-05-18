@@ -1,3 +1,4 @@
+using Battle;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,6 +14,8 @@ public class ItemModel : ApiData
     public Sprite sprite;
 
     public readonly ItemData itemData;
+
+    public Effect battleEffect;
 
     public ItemModel(ItemData data, int amount = 1)
     {

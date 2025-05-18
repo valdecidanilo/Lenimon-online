@@ -31,9 +31,18 @@ namespace Battle
 
         public enum HealType
         {
-            Raw,//raw value
-            Hp,//percentage of hp
-            Drain//percentage of damage dealt
+            /// <summary>
+            /// raw value
+            /// </summary>
+            Raw,
+            /// <summary>
+            /// percentage of hp
+            /// </summary>
+            Hp,
+            /// <summary>
+            /// percentage of damage dealt
+            /// </summary>
+            Drain
         }
     }
 }
