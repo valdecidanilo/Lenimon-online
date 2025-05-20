@@ -14,6 +14,7 @@ public class BagMenu : ContextMenu<Bag>
     [SerializeField] private Image itemIcon;
     [SerializeField] private TMP_Text itemDescription;
     [SerializeField] private ContextSelection optionsContext;
+    [SerializeField] private PartyMenu partyMenu;
     
     private const int screenCount = 4;
 
@@ -177,6 +178,7 @@ public class BagMenu : ContextMenu<Bag>
         switch (id)
         {
             case 0:
+                UseBattleItem(itemList[itemOffset + contextSelection.selectedId]);
                 break;
             case 1:
                 break;
@@ -184,6 +186,11 @@ public class BagMenu : ContextMenu<Bag>
                 CloseOptions();
                 break;
         }
+    }
+
+    private void UseBattleItem(ItemModel item)
+    {
+        Logger.Log(item.name);
     }
 
     private void CloseOptions()

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +18,14 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     public event Action<int> onChangePokemon;
     public event Action<int> onSummaryCall;
     public event Action onItemCall;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        if (instances == null) GetPartyPokemon();
+        contextSelection.onItemPick += OnPickPokemon;
+        pokemonOptions.onItemPick += OnPickOption;
+    }
 
     private void SetupNavigation(Pokemon[] pokemons)
     {
@@ -87,14 +96,6 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         for (int i = 0; i < instances.Length; i++)
             instances[i] = contextSelection[i].GetComponent<PartyPokemon>();
     }
-
-    protected override void Awake()
-    {
-        base.Awake();
-        if (instances == null) GetPartyPokemon();
-        contextSelection.onItemPick += OnPickPokemon;
-        pokemonOptions.onItemPick += OnPickOption;
-    }
     
     public override void OpenMenu(Pokemon[] pokemons)
     {
@@ -157,4 +158,44 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     {
         gameObject.SetActive(false);
     }
+
+    public IEnumerator PickPokemon(PickPokemonEvent evt)
+    {
+        //setup
+        bool selected = false;
+        OpenMenu(party);
+        contextSelection.onItemPick -= OnPickPokemon;
+        contextSelection.onItemPick += SelectPokemon;
+
+        if (evt.move != null)
+        {
+            for (int i = 0; i < instances.Length; i++)
+                instances[i].LearnMoveMode(evt.move.data.moveData);
+        }
+
+        yield return new WaitUntil(PokemonSelected);
+        
+        //reset
+        contextSelection.onItemPick += OnPickPokemon;
+        contextSelection.onItemPick -= SelectPokemon;
+        yield break;
+
+        void SelectPokemon(int id)
+        {
+            if (evt.move == null)
+            {
+                
+            }
+        }
+
+        bool PokemonSelected() => selected;
+    }
+}
+
+public class PickPokemonEvent
+{
+    public Pokemon pickedPokemon;
+    public TMModel move;
+
+    public PickPokemonEvent(TMModel tm) => move = tm;
 }

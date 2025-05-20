@@ -17,6 +17,10 @@ public class PartyPokemon : MonoBehaviour
     [SerializeField] private Image icon;
     [SerializeField] private Image gender;
     [SerializeField] private GameObject itemIcon;
+    //Modes
+    [Header("Modes"),SerializeField] private GameObject defaultMode;
+    [SerializeField] private GameObject learnMode;
+    [SerializeField] private TMP_Text canLearnText;
 
     public Pokemon pokemon { get; private set; }
     
@@ -31,6 +35,8 @@ public class PartyPokemon : MonoBehaviour
 
     public void SetupPokemon(Pokemon newPokemon)
     {
+        defaultMode.SetActive(true);
+        learnMode.SetActive(false);
         pokemon = newPokemon;
 
         nickname.text = pokemon.name;
@@ -40,5 +46,11 @@ public class PartyPokemon : MonoBehaviour
         icon.sprite = pokemon.icon;
         PokeDatabase.SetGenderSprite(gender, pokemon.gender);
         itemIcon.SetActive(newPokemon.heldItem != null);
+    }
+
+    public void LearnMoveMode(MoveData move)
+    {
+        defaultMode.SetActive(false);
+        learnMode.SetActive(true);
     }
 }
