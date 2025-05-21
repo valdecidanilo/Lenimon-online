@@ -59,6 +59,8 @@ public class BattleSetup : MonoBehaviour
         enemyParty = enemies;
         playerBag = bag;
         fightMenu.SetupBattle(allyParty[0], enemyParty[0]);
+        OpenParty();
+        OpenBag();
         OpenChoiceMenu();
     }
 

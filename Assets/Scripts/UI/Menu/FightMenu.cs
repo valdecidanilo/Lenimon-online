@@ -48,6 +48,7 @@ public class FightMenu : ContextMenu<Pokemon>
 
     public override void OpenMenu(Pokemon data)
     {
+        base.OpenMenu(data);
         Announcer.ChangeAnnouncer(battleAnnouncer);
         gameObject.SetActive(true);
         for (int i = 0; i < moves.Length; i++)
@@ -63,6 +64,7 @@ public class FightMenu : ContextMenu<Pokemon>
     public override void CloseMenu()
     {
         gameObject.SetActive(false);
+        base.CloseMenu();
     }
 
     #region Moves

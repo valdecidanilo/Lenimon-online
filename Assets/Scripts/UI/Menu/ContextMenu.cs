@@ -1,6 +1,10 @@
+using LenixSO.Logger;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using LenixSO.Logger;
+using Logger = LenixSO.Logger.Logger;
+using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
 public abstract class ContextMenu<T> : MonoBehaviour
 {
@@ -8,22 +12,27 @@ public abstract class ContextMenu<T> : MonoBehaviour
 
     protected InputAction cancelAction;
 
-    public Action onReturn;
+    public event Action onReturn;
 
     protected virtual void Awake()
     {
         cancelAction = InputSystem.actions.FindAction("UI/Cancel");
     }
 
-    public abstract void OpenMenu(T data);
-    
-    protected virtual void Update()
+    public virtual void OpenMenu(T data)
     {
-        if (cancelAction.WasPressedThisFrame())
-            ReturnCall();
+        if (cancelAction == null) return;
+        cancelAction.performed += ReturnCall;
     }
 
-    protected virtual void ReturnCall() => onReturn?.Invoke();
+    protected virtual void ReturnCall(CallbackContext context)
+    {
+        onReturn?.Invoke();
+    }
 
-    public abstract void CloseMenu();
+    public virtual void CloseMenu()
+    {
+        if (cancelAction == null) return;
+        cancelAction.performed -= ReturnCall;
+    }
 }

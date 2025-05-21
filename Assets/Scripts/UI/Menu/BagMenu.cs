@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using LenixSO.Logger;
 using Logger = LenixSO.Logger.Logger;
+using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
 public class BagMenu : ContextMenu<Bag>
 {
@@ -48,22 +49,21 @@ public class BagMenu : ContextMenu<Bag>
         gameObject.SetActive(true);
         optionsContext.gameObject.SetActive(false);
         UpdateScreen();
+        base.OpenMenu(data);
+        navigateAction.performed += ChangeScreen;
     }
 
     public override void CloseMenu()
     {
         currentScreen = -1;
         gameObject.SetActive(false);
+        base.CloseMenu();
+        navigateAction.performed -= ChangeScreen;
     }
 
-    protected override void Update()
+    private void ChangeScreen(CallbackContext context)
     {
-        base.Update();
-        if (navigateAction.WasPressedThisFrame()) ChangeScreen(navigateAction.ReadValue<Vector2>());
-    }
-
-    private void ChangeScreen(Vector2 direction)
-    {
+        Vector2 direction = context.ReadValue<Vector2>();
         int screenId = (currentScreen + screenCount + Mathf.FloorToInt(direction.x)) % screenCount;
         if(screenId == currentScreen) return;
         UpdateScreen(screenId);
@@ -149,21 +149,21 @@ public class BagMenu : ContextMenu<Bag>
     {
         if (id + itemOffset >= itemList.Count)
         {
-            onReturn?.Invoke();
+            base.ReturnCall(new());
             return;
         }
         
         OpenOptions();
     }
 
-    protected override void ReturnCall()
+    protected override void ReturnCall(CallbackContext context)
     {
         if (optionsContext.gameObject.activeSelf)
         {
             CloseOptions();
             return;
         }
-        base.ReturnCall();
+        base.ReturnCall(context);
     }
 
     private void OpenOptions()
@@ -178,7 +178,7 @@ public class BagMenu : ContextMenu<Bag>
         switch (id)
         {
             case 0:
-                UseBattleItem(itemList[itemOffset + contextSelection.selectedId]);
+                StartCoroutine(UseBattleItem(itemList[itemOffset + contextSelection.selectedId]));
                 break;
             case 1:
                 break;
@@ -188,9 +188,40 @@ public class BagMenu : ContextMenu<Bag>
         }
     }
 
-    private void UseBattleItem(ItemModel item)
+    private IEnumerator UseBattleItem(ItemModel item)
     {
-        Logger.Log(item.name);
+        DisableNavigation();
+        PickPokemonEvent evt = new();
+        yield return partyMenu.PickPokemon(evt);
+        EnableNavigation();
+        partyMenu.CloseMenu();
+        OpenOptions();
+        if(evt.pickedPokemon == null)
+        {
+            Logger.Log("Canceled");
+            yield break;
+        }
+
+        if (evt.isCurrent)
+        {
+            //close bag and mockup a move
+        }
+        else
+        {
+            //animate on party then close
+        }
+    }
+
+    private void DisableNavigation()
+    {
+        cancelAction.performed -= ReturnCall;
+        navigateAction.performed -= ChangeScreen;
+    }
+
+    private void EnableNavigation()
+    {
+        cancelAction.performed += ReturnCall;
+        navigateAction.performed += ChangeScreen;
     }
 
     private void CloseOptions()

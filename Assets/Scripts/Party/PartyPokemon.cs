@@ -23,18 +23,13 @@ public class PartyPokemon : MonoBehaviour
     [SerializeField] private TMP_Text canLearnText;
 
     public Pokemon pokemon { get; private set; }
-    
-    private void OnEnable()
-    {
-        gameObject.SetActive(pokemon != null);
-        if(pokemon == null) return;
-        selectionItem.currentState = pokemon.battleStats[StatType.hp] == 0 ? 
-            PokemonSelectionItem.PokemonState.Faint :
-            PokemonSelectionItem.PokemonState.Normal;
-    }
 
     public void SetupPokemon(Pokemon newPokemon)
     {
+        gameObject.SetActive(newPokemon != null);
+
+        if (newPokemon == null) return;
+
         defaultMode.SetActive(true);
         learnMode.SetActive(false);
         pokemon = newPokemon;
@@ -46,6 +41,9 @@ public class PartyPokemon : MonoBehaviour
         icon.sprite = pokemon.icon;
         PokeDatabase.SetGenderSprite(gender, pokemon.gender);
         itemIcon.SetActive(newPokemon.heldItem != null);
+        selectionItem.currentState = pokemon.battleStats[StatType.hp] == 0 ?
+            PokemonSelectionItem.PokemonState.Faint :
+            PokemonSelectionItem.PokemonState.Normal;
     }
 
     public void LearnMoveMode(MoveData move)

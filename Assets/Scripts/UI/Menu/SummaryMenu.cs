@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
 public class SummaryMenu : ContextMenu<Pokemon>
 {
@@ -123,18 +124,15 @@ public class SummaryMenu : ContextMenu<Pokemon>
 
         gameObject.SetActive(true);
         UpdateScreen(currentScreen);
+        base.OpenMenu(target);
+        navigateAction.performed += ChangeScreen;
+        confirmAction.performed += OpenMoveDetails;
     }
 
-    protected override void Update()
+    private void ChangeScreen(CallbackContext context)
     {
-        base.Update();
-        if(navigateAction.WasPressedThisFrame()) ChangeScreen(navigateAction.ReadValue<Vector2>());
-        if(confirmAction.WasPressedThisFrame()) OpenMoveDetails();
-    }
-
-    private void ChangeScreen(Vector2 direction)
-    {
-        if(selectMove.activeSelf) return;
+        Vector2 direction = context.ReadValue<Vector2>();
+        if (selectMove.activeSelf) return;
         UpdateScreen((currentScreen + screenCount + Mathf.FloorToInt(direction.x)) % screenCount);
         onShiftPokemon?.Invoke(Mathf.FloorToInt(direction.y));
     }
@@ -147,7 +145,7 @@ public class SummaryMenu : ContextMenu<Pokemon>
             screens[i].SetActive(currentScreen == i);
     }
 
-    private void OpenMoveDetails()
+    private void OpenMoveDetails(CallbackContext context)
     {
         if(currentScreen != 2) return;
 
@@ -178,12 +176,12 @@ public class SummaryMenu : ContextMenu<Pokemon>
         contextSelection.ReleaseSelection();
     }
 
-    protected override void ReturnCall()
+    protected override void ReturnCall(CallbackContext context)
     {
         if (selectMove.activeSelf)
             ExitMoveSelection();
         else
-            base.ReturnCall();
+            base.ReturnCall(context);
     }
 
     public override void CloseMenu()
@@ -191,5 +189,8 @@ public class SummaryMenu : ContextMenu<Pokemon>
         currentScreen = 0;
         selectMove.SetActive(false);
         gameObject.SetActive(false);
+        base.CloseMenu();
+        navigateAction.performed -= ChangeScreen;
+        confirmAction.performed -= OpenMoveDetails;
     }
 }

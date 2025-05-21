@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
 public class PartyMenu : ContextMenu<Pokemon[]>
 {
@@ -22,21 +24,22 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     protected override void Awake()
     {
         base.Awake();
-        if (instances == null) GetPartyPokemon();
+        GetPartyPokemon();
         contextSelection.onItemPick += OnPickPokemon;
         pokemonOptions.onItemPick += OnPickOption;
     }
 
-    private void SetupNavigation(Pokemon[] pokemons)
+    private void SetupNavigation()
     {
         #region Pokemon Navigation
         Selectable backButton = contextSelection[contextSelection.itemCount-1].selectable;
-        if (instances == null) GetPartyPokemon();
-        List<Selectable> navigationItems = new(pokemons.Length);
-        for (int i = 0; i < pokemons.Length; i++)
+        List<Selectable> navigationItems = new(party.Length);
+        for (int i = 0; i < instances.Length; i++)
         {
             PartyPokemon item = instances[i];
-            item.SetupPokemon(pokemons[i]);
+            item.SetupPokemon(i < party.Length ? party[i] : null);
+
+            if (i >= party.Length) continue;
 
             Selectable selectable = contextSelection[i].selectable;
             navigationItems.Add(selectable);
@@ -100,17 +103,18 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     public override void OpenMenu(Pokemon[] pokemons)
     {
         party = pokemons;
-        SetupNavigation(pokemons);
+        SetupNavigation();
         gameObject.SetActive(true);
         contextSelection.MouseSelection(true);
         contextSelection.Select(0);
+        base.OpenMenu(party);
     }
 
     private void OnPickPokemon(int id)
     {
         if (id == contextSelection.itemCount - 1)
         {
-            ReturnCall();
+            ReturnCall(new());
             return;
         }
 
@@ -122,7 +126,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
 
     private void OnPickOption(int id)
     {
-        ReturnCall();
+        ReturnCall(new());
         switch (id)
         {
             case 0:
@@ -141,10 +145,10 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         }
     }
 
-    protected override void ReturnCall()
+    protected override void ReturnCall(CallbackContext context)
     {
         if (!optionsWindow.activeSelf)
-            base.ReturnCall();
+            base.ReturnCall(context);
         else
         {
             text.SetActive(true);
@@ -156,6 +160,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
 
     public override void CloseMenu()
     {
+        base.CloseMenu();
         gameObject.SetActive(false);
     }
 
@@ -166,6 +171,8 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         OpenMenu(party);
         contextSelection.onItemPick -= OnPickPokemon;
         contextSelection.onItemPick += SelectPokemon;
+        cancelAction.performed -= ReturnCall;
+        cancelAction.performed += CancelSelection;
 
         if (evt.move != null)
         {
@@ -178,17 +185,24 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         //reset
         contextSelection.onItemPick += OnPickPokemon;
         contextSelection.onItemPick -= SelectPokemon;
+        cancelAction.performed += ReturnCall;
+        cancelAction.performed -= CancelSelection;
         yield break;
 
         void SelectPokemon(int id)
         {
+            if (id < contextSelection.itemCount - 1) evt.pickedPokemon = party[id];
+            selected = true;
+            evt.isCurrent = id == 0;
             if (evt.move == null)
             {
-                
+
             }
         }
 
         bool PokemonSelected() => selected;
+
+        void CancelSelection(CallbackContext context) => selected = true;
     }
 }
 
@@ -196,6 +210,7 @@ public class PickPokemonEvent
 {
     public Pokemon pickedPokemon;
     public TMModel move;
+    public bool isCurrent;
 
-    public PickPokemonEvent(TMModel tm) => move = tm;
+    public PickPokemonEvent(TMModel tm = null) => move = tm;
 }

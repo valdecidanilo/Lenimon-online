@@ -442,9 +442,9 @@ RectTransform:
   m_Children:
   - {fileID: 1061072132}
   - {fileID: 1465134119}
+  - {fileID: 1829824935}
   - {fileID: 1089288817}
   - {fileID: 1313677551}
-  - {fileID: 1829824935}
   - {fileID: 2115061946}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -979,7 +979,7 @@ PrefabInstance:
     - target: {fileID: 1844756486062223458, guid: a21dbe68fd13be0409b93545706bba53,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5053266589182140045, guid: a21dbe68fd13be0409b93545706bba53,
         type: 3}
@@ -1625,7 +1625,7 @@ PrefabInstance:
     - target: {fileID: 4349812450381346015, guid: 781e30ce65bb0bb4f8809f48aa01b13b,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
