@@ -84,11 +84,16 @@ public class FightMenu : ContextMenu<Pokemon>
     {
         Logger.Log($"{allyPokemon.name} will use {allyPokemon.moves[id].name}", LogFlags.Game);
         //onPickMove?.Invoke(id);
-        StartCoroutine(BattleSequence(allyPokemon.moves[id], null));
+        BeginBattle(allyPokemon.moves[id]);
     }
     #endregion
 
     #region Battle
+    public void BeginBattle(MoveModel playerMove)
+    {
+        MoveModel opponentMove = null;//chose a move for opponent
+        StartCoroutine(BattleSequence(playerMove, null));
+    }
     private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
     {
         BattleEvent evtBattle = new();
