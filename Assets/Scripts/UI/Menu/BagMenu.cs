@@ -13,7 +13,7 @@ public class BagMenu : ContextMenu<Bag>
     [SerializeField] private TMP_Text screenName;
     [SerializeField] private Selectable[] screenIndicator;
     [SerializeField] private Image itemIcon;
-    [SerializeField] private TMP_Text itemDescription;
+    [SerializeField] private Announcer itemDescription;
     [SerializeField] private ContextSelection optionsContext;
     [SerializeField] private PartyMenu partyMenu;
     
@@ -44,6 +44,7 @@ public class BagMenu : ContextMenu<Bag>
 
     public override void OpenMenu(Bag data)
     {
+        Announcer.ChangeAnnouncer(itemDescription);
         contextSelection.MouseSelection(true);
         bag = data;
         gameObject.SetActive(true);
@@ -117,7 +118,7 @@ public class BagMenu : ContextMenu<Bag>
         if (itemId >= itemList.Count)
         {
             itemIcon.sprite = PokeDatabase.emptySprite;
-            itemDescription.text = string.Empty;
+            Announcer.CloseAnnouncement();
             return;
         }
         
@@ -134,7 +135,7 @@ public class BagMenu : ContextMenu<Bag>
 
         ItemModel item = itemList[itemId];
         itemIcon.sprite = item.sprite;
-        itemDescription.text = item.effect;
+        StartCoroutine(Announcer.Announce(item.effect));
     }
 
     private IEnumerator ScrollDelay(int offset)
@@ -168,6 +169,7 @@ public class BagMenu : ContextMenu<Bag>
 
     private void OpenOptions()
     {
+        navigateAction.performed -= ChangeScreen;
         contextSelection.MouseSelection(false);
         optionsContext.gameObject.SetActive(true);
         optionsContext.Select(0);
@@ -178,7 +180,9 @@ public class BagMenu : ContextMenu<Bag>
         switch (id)
         {
             case 0:
-                StartCoroutine(UseBattleItem(itemList[itemOffset + contextSelection.selectedId]));
+                ItemModel item = itemList[itemOffset + contextSelection.selectedId];
+                IEnumerator coroutine = item.battleEffect == null ? NotUsableAnnouncement(id) : UseBattleItem(item);
+                StartCoroutine(coroutine);
                 break;
             case 1:
                 break;
@@ -188,27 +192,51 @@ public class BagMenu : ContextMenu<Bag>
         }
     }
 
+    private IEnumerator NotUsableAnnouncement(int id)
+    {
+        yield return Announcer.Announce("Can't use this item!", holdTime: .8f);
+        ShowItemDetails(id);
+    }
+
     private IEnumerator UseBattleItem(ItemModel item)
     {
         DisableNavigation();
-        PickPokemonEvent evt = new();
-        yield return partyMenu.PickPokemon(evt);
-        EnableNavigation();
-        partyMenu.CloseMenu();
-        OpenOptions();
-        if(evt.pickedPokemon == null)
+        bool pokemonSelected = false;
+        while (!pokemonSelected)
         {
-            Logger.Log("Canceled");
-            yield break;
-        }
+            PickPokemonEvent evt = new();
+            yield return partyMenu.PickPokemon(evt);
+        
+            if(evt.pickedPokemon == null)
+            {
+                EnableNavigation();
+                partyMenu.CloseMenu();
+                Announcer.ChangeAnnouncer(itemDescription);
+                yield return Announcer.Announce(item.effect);
+                OpenOptions();
+                Logger.Log("Canceled");
+                yield break;
+            }
+            
+            if (evt.isCurrent)
+            {
+                //close bag and mockup a move
+                pokemonSelected = true;
+            }
+            else
+            {
+                //animate on party then close
+                if (item.activePokemonOnly)
+                {
+                    yield return Announcer.Announce("This item can only be used on the pokemon in battle!", true);
+                    Announcer.CloseAnnouncement();
+                }
+                else
+                {
 
-        if (evt.isCurrent)
-        {
-            //close bag and mockup a move
-        }
-        else
-        {
-            //animate on party then close
+                    pokemonSelected = true;
+                }
+            }
         }
     }
 
@@ -226,6 +254,7 @@ public class BagMenu : ContextMenu<Bag>
 
     private void CloseOptions()
     {
+        navigateAction.performed += ChangeScreen;
         contextSelection.MouseSelection(true);
         optionsContext.gameObject.SetActive(false);
         contextSelection.Focus();

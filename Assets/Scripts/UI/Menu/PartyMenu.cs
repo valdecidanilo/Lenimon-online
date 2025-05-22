@@ -8,6 +8,7 @@ using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
 public class PartyMenu : ContextMenu<Pokemon[]>
 {
+    [SerializeField] private Announcer partyAnnouncer;
     [Header("Text")]
     [SerializeField] private GameObject text;
     [Header("Options")]
@@ -102,6 +103,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     
     public override void OpenMenu(Pokemon[] pokemons)
     {
+        Announcer.ChangeAnnouncer(partyAnnouncer);
         party = pokemons;
         SetupNavigation();
         gameObject.SetActive(true);
@@ -168,7 +170,8 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     {
         //setup
         bool selected = false;
-        OpenMenu(party);
+        if (!gameObject.activeSelf) OpenMenu(party);
+        else contextSelection.Focus();
         contextSelection.onItemPick -= OnPickPokemon;
         contextSelection.onItemPick += SelectPokemon;
         cancelAction.performed -= ReturnCall;

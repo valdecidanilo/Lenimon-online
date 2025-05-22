@@ -1,7 +1,7 @@
 using Battle;
 using System.Collections.Generic;
 
-public static class ItemEffec
+public static class ItemEffect
 {
     public static Effect GenerateItemEffect(ItemModel item)
     {
@@ -24,36 +24,42 @@ public static class ItemEffec
                 return new HealEffect(100, HealEffect.HealType.Hp);
 
             case "X Attack":
+                item.activePokemonOnly = true;
                 return new StatChangeEffect(new List<StatChange>{ new StatChange()
                 {
                     change = 2,
                     stat = StatToApi(StatType.atk)
                 }});
             case "X Defense":
+                item.activePokemonOnly = true;
                 return new StatChangeEffect(new List<StatChange>{ new StatChange()
                 {
                     change = 2,
                     stat = StatToApi(StatType.def)
                 }});
             case "X Sp Atk":
+                item.activePokemonOnly = true;
                 return new StatChangeEffect(new List<StatChange>{ new StatChange()
                 {
                     change = 2,
                     stat = StatToApi(StatType.sAtk)
                 }});
             case "X Sp Def":
+                item.activePokemonOnly = true;
                 return new StatChangeEffect(new List<StatChange>{ new StatChange()
                 {
                     change = 2,
                     stat = StatToApi(StatType.sDef)
                 }});
             case "X Speed":
+                item.activePokemonOnly = true;
                 return new StatChangeEffect(new List<StatChange>{ new StatChange()
                 {
                     change = 2,
                     stat = StatToApi(StatType.spd)
                 }});
             case "X Accuracy":
+                item.activePokemonOnly = true;
                 return new StatChangeEffect(new List<StatChange>{ new StatChange()
                 {
                     change = 2,

@@ -71,7 +71,6 @@ public class FightMenu : ContextMenu<Pokemon>
     private void OnSelectionChanged(int id)
     {
         if (id < 0 || id >= allyPokemon.moves.Length) return;
-
         UpdateMoveData(allyPokemon.moves[id]);
     }
     private void UpdateMoveData(MoveModel move)
@@ -92,7 +91,7 @@ public class FightMenu : ContextMenu<Pokemon>
     public void BeginBattle(MoveModel playerMove)
     {
         MoveModel opponentMove = null;//chose a move for opponent
-        StartCoroutine(BattleSequence(playerMove, null));
+        StartCoroutine(BattleSequence(playerMove, opponentMove));
     }
     private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
     {

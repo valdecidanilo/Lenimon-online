@@ -8,7 +8,6 @@ public class PartyPokemon : MonoBehaviour
 {
     [SerializeField] private PokemonSelectionItem selectionItem;
 
-    [FormerlySerializedAs("pokemonName")]
     [Header("Data Reference")] 
     [SerializeField] private TMP_Text nickname;
     [SerializeField] private TMP_Text level;

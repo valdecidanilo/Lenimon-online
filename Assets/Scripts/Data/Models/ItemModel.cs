@@ -15,6 +15,7 @@ public class ItemModel : ApiData
 
     public readonly ItemData itemData;
 
+    public bool activePokemonOnly;
     public Effect battleEffect;
 
     public ItemModel(ItemData data, int amount = 1)

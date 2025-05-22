@@ -163,6 +163,7 @@ public class TestScript : MonoBehaviour
             {
                 item.amount = 5;
                 bag.items.Add(item);
+                item.battleEffect = ItemEffect.GenerateItemEffect(item);
                 log.Append($"\n{item.name}");
                 loaded.FinishStep();
                 if (loaded.isDone)
@@ -201,6 +202,7 @@ public class TestScript : MonoBehaviour
             PokeAPI.GetItem(route, (item) =>
             {
                 bag.battleItems.Add(item);
+                item.battleEffect = ItemEffect.GenerateItemEffect(item);
                 log.Append($"\n{item.name}");
                 loaded.FinishStep();
                 if (loaded.isDone)
