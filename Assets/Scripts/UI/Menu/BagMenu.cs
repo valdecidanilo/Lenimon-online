@@ -226,6 +226,7 @@ public class BagMenu : ContextMenu<Bag>
             else
             {
                 //animate on party then close
+                //may also need to be a move
                 if (item.activePokemonOnly)
                 {
                     yield return Announcer.Announce("This item can only be used on the pokemon in battle!", true);
@@ -233,7 +234,7 @@ public class BagMenu : ContextMenu<Bag>
                 }
                 else
                 {
-
+                    
                     pokemonSelected = true;
                 }
             }

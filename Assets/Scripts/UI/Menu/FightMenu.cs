@@ -101,7 +101,7 @@ public class FightMenu : ContextMenu<Pokemon>
         evtBattle.target = GetTarget(evtBattle.move.Data.target.name, allyPokemon, enemyPokemon);
         evtBattle.attackEvent = new(allyPokemon, enemyPokemon, evtBattle.move);
 
-        bool hit = evtBattle.attackEvent.CheckHit(out bool missed, out bool evaded);
+        bool hit = evtBattle.attackEvent.CheckHit(out bool missed);
 
         contextSelection.ReleaseSelection();
         if (hit)
@@ -188,7 +188,6 @@ public class FightMenu : ContextMenu<Pokemon>
     #endregion
 
     #region Visual
-
     public void SetupBattle(Pokemon ally, Pokemon opponent)
     {
         //setup enemy

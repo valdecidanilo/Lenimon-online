@@ -5,8 +5,8 @@ public class CoroutineAction<T>
 {
     private Func<T, IEnumerator> action;
 
-    public void Add(Func<T, IEnumerator> coroutine) => action += coroutine;
-    public void Remove(Func<T, IEnumerator> coroutine) => action -= coroutine;
+    public void RegisterCallback(Func<T, IEnumerator> coroutine) => action += coroutine;
+    public void RemoveCallback(Func<T, IEnumerator> coroutine) => action -= coroutine;
 
     public IEnumerator Invoke(T value)
     {

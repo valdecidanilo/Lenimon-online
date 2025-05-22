@@ -36,10 +36,9 @@ namespace Battle
             defenderStats = CalculateModifiers(defender);
         }
 
-        public bool CheckHit(out bool missed, out bool evaded)
+        public bool CheckHit(out bool missed)
         {
             missed = false;
-            evaded = false;
             return true;
         }
 

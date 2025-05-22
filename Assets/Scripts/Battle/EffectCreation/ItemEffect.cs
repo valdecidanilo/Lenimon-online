@@ -1,3 +1,4 @@
+using System.Collections;
 using Battle;
 using System.Collections.Generic;
 
@@ -8,7 +9,12 @@ public static class ItemEffect
         switch (item.name)
         {
             case "Potion":
-                return new HealEffect(20);
+                IEnumerator HealItemSequence(BattleEvent evt)
+                {
+                    yield return Announcer.Announce($"You used {item.name}.");
+                    yield return new HealEffect(20).EffectSequence(evt);
+                }
+                return new CustomEffect(HealItemSequence);
             case "Super Potion":
             case "Fresh Water":
                 return new HealEffect(50);
