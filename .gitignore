@@ -27,6 +27,7 @@ sysinfo.txt
 *.user
 *.userprefs
 *.pidb
+*.sln
 .DS_Store
 
 ###
@@ -42,4 +43,3 @@ ehthumbs.db
 Thumbs.db
 /.idea
 /UserSettings/Layouts
-testes.sln
