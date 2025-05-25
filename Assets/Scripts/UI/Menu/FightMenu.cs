@@ -39,8 +39,11 @@ public class FightMenu : ContextMenu<Pokemon>
 
     public event Action<int> onPickMove;
 
+    private static FightMenu instance;
+
     protected override void Awake()
     {
+        instance = this;
         base.Awake();
         contextSelection.onSelect += OnSelectionChanged;
         contextSelection.onItemPick += OnMovePick;
@@ -88,10 +91,14 @@ public class FightMenu : ContextMenu<Pokemon>
     #endregion
 
     #region Battle
-    public void BeginBattle(MoveModel playerMove)
+    public static void BeginBattle(MoveModel playerMove)
     {
-        MoveModel opponentMove = null;//chose a move for opponent
-        StartCoroutine(BattleSequence(playerMove, opponentMove));
+        MoveModel opponentMove = ChoseOpponentMove(playerMove);
+        instance.StartCoroutine(instance.BattleSequence(playerMove, opponentMove));
+    }
+    private static MoveModel ChoseOpponentMove(MoveModel playerMove)
+    {
+        return null;
     }
     private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
     {
@@ -106,7 +113,7 @@ public class FightMenu : ContextMenu<Pokemon>
         contextSelection.ReleaseSelection();
         if (hit)
         {
-            yield return Announcer.Announce($"Allied {allyPokemon.name} used {allyMove.name}", holdTime: 1f);
+            yield return Announcer.Announce($"Allied {allyPokemon.name} used {allyMove.name}.", holdTime: 1f);
             yield return evtBattle.move.effect.EffectSequence(evtBattle);
             if (evtBattle.failed)
             {
@@ -118,7 +125,7 @@ public class FightMenu : ContextMenu<Pokemon>
             //missed/evaded text
             if (missed)
             {
-                yield return Announcer.Announce($"{allyPokemon.name} attack missed", holdTime: 1f);
+                yield return Announcer.Announce($"{allyPokemon.name} attack missed.", holdTime: 1f);
             }
             else
             {
@@ -128,7 +135,7 @@ public class FightMenu : ContextMenu<Pokemon>
         
 
         //next move
-        yield return Announcer.Announce($"{enemyPokemon.name} attacks", holdTime: 1.5f);
+        yield return Announcer.Announce($"{enemyPokemon.name} attacks.", holdTime: 1.5f);
         contextSelection.Focus();
         yield return allyPokemon.DamagePokemon(50);
         Announcer.CloseAnnouncement();
