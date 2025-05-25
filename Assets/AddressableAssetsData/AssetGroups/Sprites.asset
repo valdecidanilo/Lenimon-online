@@ -32,6 +32,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 64aa42aebb197a5428a949f708d5753a
+    m_Address: Hp_Bar
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 760680af0a011d244a7559a97a6213c5
     m_Address: Sprite/Icons
     m_ReadOnly: 0
