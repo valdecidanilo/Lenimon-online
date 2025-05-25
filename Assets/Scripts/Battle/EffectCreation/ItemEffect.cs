@@ -11,7 +11,7 @@ public static class ItemEffect
             case "Potion":
                 IEnumerator HealItemSequence(BattleEvent evt)
                 {
-                    yield return Announcer.Announce($"You used {item.name}.");
+                    yield return Announcer.Announce($"You used {item.name}.", holdTime: .6f);
                     yield return new HealEffect(20).EffectSequence(evt);
                 }
                 return new CustomEffect(HealItemSequence);

@@ -22,8 +22,11 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     public event Action<int> onSummaryCall;
     public event Action onItemCall;
 
+    private static PartyMenu instance;
+
     protected override void Awake()
     {
+        instance = this;
         base.Awake();
         GetPartyPokemon();
         contextSelection.onItemPick += OnPickPokemon;
@@ -166,35 +169,35 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         gameObject.SetActive(false);
     }
 
-    public IEnumerator PickPokemon(PickPokemonEvent evt)
+    public static IEnumerator PickPokemon(PickPokemonEvent evt)
     {
         //setup
         bool selected = false;
-        if (!gameObject.activeSelf) OpenMenu(party);
-        else contextSelection.Focus();
-        contextSelection.onItemPick -= OnPickPokemon;
-        contextSelection.onItemPick += SelectPokemon;
-        cancelAction.performed -= ReturnCall;
-        cancelAction.performed += CancelSelection;
+        if (!instance.gameObject.activeSelf) instance.OpenMenu(instance.party);
+        else instance.contextSelection.Focus();
+        instance.contextSelection.onItemPick -= instance.OnPickPokemon;
+        instance.contextSelection.onItemPick += SelectPokemon;
+        instance.cancelAction.performed -= instance.ReturnCall;
+        instance.cancelAction.performed += CancelSelection;
 
         if (evt.move != null)
         {
-            for (int i = 0; i < instances.Length; i++)
-                instances[i].LearnMoveMode(evt.move.data.moveData);
+            for (int i = 0; i < instance.instances.Length; i++)
+                instance.instances[i].LearnMoveMode(evt.move.data.moveData);
         }
 
         yield return new WaitUntil(PokemonSelected);
-        
+
         //reset
-        contextSelection.onItemPick += OnPickPokemon;
-        contextSelection.onItemPick -= SelectPokemon;
-        cancelAction.performed += ReturnCall;
-        cancelAction.performed -= CancelSelection;
+        instance.contextSelection.onItemPick += instance.OnPickPokemon;
+        instance.contextSelection.onItemPick -= SelectPokemon;
+        instance.cancelAction.performed += instance.ReturnCall;
+        instance.cancelAction.performed -= CancelSelection;
         yield break;
 
         void SelectPokemon(int id)
         {
-            if (id < contextSelection.itemCount - 1) evt.pickedPokemon = party[id];
+            if (id < instance.contextSelection.itemCount - 1) evt.pickedPokemon = instance.party[id];
             selected = true;
             evt.isCurrent = id == 0;
             if (evt.move == null)

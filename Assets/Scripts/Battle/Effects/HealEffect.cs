@@ -26,6 +26,18 @@ namespace Battle
                 _ => healAmount,
             };
             yield return evt.target.HealPokemon(heal);
+            switch (healType)
+            {
+                case HealType.Raw:
+                    yield return Announcer.Announce($"{evt.target.name} recovered {heal} hit point{(heal > 1 ? "s" : "")}.", holdTime: 2f);
+                    break;
+                case HealType.Hp:
+                    yield return Announcer.Announce($"{evt.target.name} recovered Hp.", holdTime: 2f);
+                    break;
+                case HealType.Drain:
+                    yield return Announcer.Announce($"{evt.attackEvent.defender} got its enegy drained.", holdTime: 2f);
+                    break;
+            }
             Logger.Log($"{evt.target.name} healed by {heal} ({evt.target.battleStats.hp}/{evt.target.stats.hp})", LogFlags.Game);
         }
 
