@@ -6,34 +6,34 @@ using Logger = LenixSO.Logger.Logger;
 
 namespace Battle
 {
-    public abstract class MoveEffectCreator
+    public static class MoveEffectCreator
     {
         public static void AddEffectToMove(MoveModel move)
         {
-            MoveEffectCreator effectCreation = null;
+            Effect moveEffect = EffectNotImplemented();
             switch (move.Data.meta.category.name)
             {
                 case "damage":
                     //Logger.Log("damage move", LogFlags.DataCheck);
-                    effectCreation = new DamageMoveEffect();
+                    moveEffect = new DamageEffect();
                     break;
                 case "damage+ailment":
                     //Logger.Log("damage and ailment move", LogFlags.DataCheck);
                     break;
                 case "damage+heal":
                     //Logger.Log("damage and heal move", LogFlags.DataCheck);
-                    effectCreation = new DamageMoveEffect(new HealEffect
+                    moveEffect = new DamageEffect(new HealEffect
                         (move.Data.meta.drain, HealEffect.HealType.Drain),
                         subEffectSetup: (evt) => evt.target = evt.origin);
                     break;
                 case "damage+lower":
                     //Logger.Log("damage and target's stats move", LogFlags.DataCheck);
-                    effectCreation = new DamageMoveEffect(new StatChangeEffect
+                    moveEffect = new DamageEffect(new StatChangeEffect
                         (move.Data.statChanges), move.Data.meta.statChance ?? 0);
                     break;
                 case "damage+raise":
                     //Logger.Log("damage and self stats move", LogFlags.DataCheck);
-                    effectCreation = new DamageMoveEffect(new StatChangeEffect
+                    moveEffect = new DamageEffect(new StatChangeEffect
                         (move.Data.statChanges), move.Data.meta.statChance ?? 0,
                         (evt) => evt.target = evt.origin);
                     break;
@@ -41,11 +41,13 @@ namespace Battle
                     //Logger.Log("ailment move", LogFlags.DataCheck);
                     break;
                 case "net-good-stats":
-                    effectCreation = new StatusChangeMoveEffect();
+                    moveEffect = new StatChangeEffect(move.Data.statChanges);
                     break;
                 case "heal":
                     //Logger.Log("heal move", LogFlags.DataCheck);
-                    effectCreation = new HealMoveEffect();
+                    MoveMetaData meta = move.Data.meta;
+                    if (meta.healing > 0) moveEffect = new HealEffect(meta.healing, HealEffect.HealType.Hp);
+                    else moveEffect = new HealEffect(meta.drain, HealEffect.HealType.Drain);
                     break;
                 case "swagger":
                     //Logger.Log("swagger move", LogFlags.DataCheck);
@@ -66,9 +68,14 @@ namespace Battle
                     //unique
                     break;
             }
-            effectCreation?.AddEffect(move);
+            move.effect = moveEffect;
         }
 
-        public abstract void AddEffect(MoveModel move);
+        private static Effect EffectNotImplemented() => new CustomEffect(NotImplementedMessage);
+        private static IEnumerator NotImplementedMessage(BattleEvent evt)
+        {
+            evt.failed = true;
+            yield return Announcer.Announce("But it failed (this effect was not yet implemented)", holdTime: .6f);
+        }
     }
 }
