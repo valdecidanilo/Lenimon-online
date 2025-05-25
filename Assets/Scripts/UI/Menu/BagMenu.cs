@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using LenixSO.Logger;
 using Logger = LenixSO.Logger.Logger;
 using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
+using Battle;
 
 public class BagMenu : ContextMenu<Bag>
 {
@@ -209,8 +210,7 @@ public class BagMenu : ContextMenu<Bag>
         
             if(evt.pickedPokemon == null)
             {
-                EnableNavigation();
-                partyMenu.CloseMenu();
+                ClosePartyMenu();
                 Announcer.ChangeAnnouncer(itemDescription);
                 yield return Announcer.Announce(item.effect);
                 OpenOptions();
@@ -221,6 +221,7 @@ public class BagMenu : ContextMenu<Bag>
             if (evt.isCurrent)
             {
                 //close bag and mockup a move
+                ClosePartyMenu();
                 pokemonSelected = true;
             }
             else
@@ -234,10 +235,20 @@ public class BagMenu : ContextMenu<Bag>
                 }
                 else
                 {
-                    
+                    BattleEvent battleEvt = new();
+                    battleEvt.target = evt.pickedPokemon;
+                    battleEvt.origin = evt.pickedPokemon;
+                    yield return item.battleEffect.EffectSequence(battleEvt);
+                    ClosePartyMenu();
                     pokemonSelected = true;
                 }
             }
+        }
+        yield break;
+        void ClosePartyMenu()
+        {
+            EnableNavigation();
+            partyMenu.CloseMenu();
         }
     }
 

@@ -24,6 +24,7 @@ public static class PokeDatabase
     private const string genericTMKey = "Item_Icons[TM_Generic]";
     private const string maleIconKey = "maleIcon";
     private const string femaleIconKey = "femaleIcon";
+    private const string hpBarKey = "Hp_Bar";
     private static readonly string[] types = 
     {
         "bug",
@@ -57,6 +58,7 @@ public static class PokeDatabase
     public static Sprite maleIcon;
     public static Sprite femaleIcon;
     public static Dictionary<string, Sprite> typeSprites = new();
+    public static Sprite[] hpBars;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void PreloadAssets()
@@ -107,6 +109,19 @@ public static class PokeDatabase
             genericTM = sprite;
             preloadedAssets.FinishStep();
         });
+
+        //hp bar
+        hpBars = new Sprite[3];
+        preloadedAssets.AddStep(3);
+        for (int i = 0; i < hpBars.Length; i++)
+        {
+            int id = i;
+            AAAsset<Sprite>.LoadAsset($"{hpBarKey}[{id}]", sprite =>
+            {
+                hpBars[id] = sprite;
+                preloadedAssets.FinishStep();
+            });
+        }
 
         //Natures
         preloadedAssets.AddStep();

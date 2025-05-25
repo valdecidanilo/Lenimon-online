@@ -1,4 +1,5 @@
 using AddressableAsyncInstances;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -31,12 +32,13 @@ public class PartyPokemon : MonoBehaviour
 
         defaultMode.SetActive(true);
         learnMode.SetActive(false);
+        if(pokemon != null) pokemon.onHpChanged.RemoveCallback(OnPokemonHpChanged);
         pokemon = newPokemon;
+        pokemon.onHpChanged.RegisterCallback(OnPokemonHpChanged);
 
         nickname.text = pokemon.name;
         level.text = $"Lv{pokemon.level}";
-        hp.text = $"{pokemon.battleStats[StatType.hp]}/{pokemon.stats[StatType.hp]}";
-        hpBar.fillAmount = (float)pokemon.battleStats[StatType.hp] / pokemon.stats[StatType.hp];
+        BattleVFX.ChangeHpBar(pokemon, hpBar, pokemon.battleStats[StatType.hp], hp);
         icon.sprite = pokemon.icon;
         PokeDatabase.SetGenderSprite(gender, pokemon.gender);
         itemIcon.SetActive(newPokemon.heldItem != null);
@@ -49,5 +51,10 @@ public class PartyPokemon : MonoBehaviour
     {
         defaultMode.SetActive(false);
         learnMode.SetActive(true);
+    }
+
+    private IEnumerator OnPokemonHpChanged(int initialValue, int currentValue)
+    {
+        yield return BattleVFX.LerpHpBar(pokemon, initialValue, currentValue, hpBar, hp);
     }
 }

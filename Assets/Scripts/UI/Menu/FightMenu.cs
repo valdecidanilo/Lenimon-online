@@ -132,6 +132,8 @@ public class FightMenu : ContextMenu<Pokemon>
         contextSelection.Focus();
         yield return allyPokemon.DamagePokemon(50);
         Announcer.CloseAnnouncement();
+        ReturnCall(new());
+        
     }
     private Pokemon GetTarget(string target, Pokemon self, Pokemon opponent)
     {
@@ -146,44 +148,11 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     private IEnumerator AllyHpChanged(int initialValue, int currentValue)
     {
-        float moveTime = .6f;
-        float time = 0;
-        while (time < moveTime)
-        {
-            int currentHp = Mathf.RoundToInt(Mathf.Lerp(initialValue, currentValue, time / moveTime));
-            hpValue.text = $"{currentHp}/{allyPokemon.stats.hp}";
-            ChangeHpBar(allyPokemon, hp, currentHp);
-            yield return null;
-            time += Time.deltaTime;
-        }
-        ChangeHpBar(allyPokemon, hp, currentValue);
-        hpValue.text = $"{currentValue}/{allyPokemon.stats.hp}";
+        yield return BattleVFX.LerpHpBar(allyPokemon, initialValue, currentValue, hp, hpValue);
     }
     private IEnumerator OpponentHpChanged(int initialValue, int currentValue)
     {
-        float moveTime = .6f;
-        float time = 0;
-        while (time < moveTime) 
-        {
-            ChangeHpBar(enemyPokemon, enemyHp, (int)Mathf.Lerp(initialValue, currentValue, time / moveTime));
-            yield return null;
-            time += Time.deltaTime;
-        }
-        ChangeHpBar(enemyPokemon, enemyHp, currentValue);
-    }
-
-    private void ChangeHpBar(Pokemon pokemon, Image hpImage, int hpValue)
-    {
-        hpValue = Mathf.Clamp(hpValue, 0, pokemon.stats.hp);
-        float percentage = (float)hpValue / pokemon.stats.hp;
-        hpImage.fillAmount = percentage;
-
-        int healthState = 0;
-        if (percentage <= .5f) healthState++;
-        if (percentage <= .25f) healthState++;
-
-        //change color
-        hpImage.sprite = healthStates[healthState];
+        yield return BattleVFX.LerpHpBar(enemyPokemon, initialValue, currentValue, enemyHp);
     }
     #endregion
 
@@ -206,8 +175,7 @@ public class FightMenu : ContextMenu<Pokemon>
         pokemonImage.sprite = allyPokemon.backSprite;
         pokemonName.text = allyPokemon.name;
         level.text = $"Lv{allyPokemon.level}";
-        hpValue.text = $"{allyPokemon.battleStats[StatType.hp]}/{allyPokemon.stats[StatType.hp]}";
-        hp.fillAmount = allyPokemon.battleStats[StatType.hp] / (float)allyPokemon.stats[StatType.hp];
+        BattleVFX.ChangeHpBar(allyPokemon, hp, allyPokemon.battleStats[StatType.hp], hpValue);
         xp.fillAmount = Random.Range(0, 1);
 
         PokeDatabase.SetGenderSprite(gender, allyPokemon.gender);
@@ -218,7 +186,7 @@ public class FightMenu : ContextMenu<Pokemon>
         enemyImage.sprite = enemyPokemon.frontSprite;
         enemyName.text = enemyPokemon.name;
         enemyLevel.text = $"Lv{enemyPokemon.level}";
-        enemyHp.fillAmount = enemy.battleStats[StatType.hp] / (float)enemy.stats[StatType.hp];
+        BattleVFX.ChangeHpBar(enemyPokemon, enemyHp, enemyPokemon.battleStats[StatType.hp]);
 
         PokeDatabase.SetGenderSprite(gender, enemyPokemon.gender);
     }
