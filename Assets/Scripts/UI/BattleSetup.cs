@@ -38,7 +38,6 @@ public class BattleSetup : MonoBehaviour
         enemySummaryButton.onClick.AddListener(() => OpenPokemonSummary(enemyParty[0]));
         battleChoice.onItemPick += OnChoicePick;
         fightMenu.onReturn += OpenChoiceMenu;
-        fightMenu.onPickMove += OnMovePick;
         partyChoice.onReturn += OpenChoiceMenu;
         partyChoice.onChangePokemon += OnAllyChanged;
         partyChoice.onSummaryCall += OnPokemonSummaryRequest;
@@ -71,11 +70,6 @@ public class BattleSetup : MonoBehaviour
         allyParty[0] = cashe;
         fightMenu.ChangeAllyPokemon(allyParty[0], true);
         OpenChoiceMenu();
-    }
-
-    private void OnMovePick(int id)
-    {
-        //StartCoroutine(BattleSequence(allyPokemon.moves[id], null));
     }
 
     #region Summary
