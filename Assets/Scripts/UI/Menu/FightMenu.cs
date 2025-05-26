@@ -100,6 +100,13 @@ public class FightMenu : ContextMenu<Pokemon>
     {
         return null;
     }
+
+    public static IEnumerator DelayedStartBattle(MoveModel allyMove)
+    {
+        instance.OpenMenu(instance.allyPokemon);
+        yield return null;
+        BeginBattle(allyMove);
+    }
     private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
     {
         BattleEvent evtBattle = new();

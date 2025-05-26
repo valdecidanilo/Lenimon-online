@@ -31,7 +31,7 @@ public class Pokemon : ApiData
     public ItemModel heldItem;
     public string natureName;
 
-    public CoroutineAction<int, int> onHpChanged = new();
+    public CoroutineAction<int, int> onHpChanged = new(null);
 
     //Data loading
     private Checklist dataChecklist;

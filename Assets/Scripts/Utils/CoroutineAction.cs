@@ -4,7 +4,7 @@ using System.Collections;
 public class CoroutineAction<T>
 {
     private Func<T, IEnumerator> action;
-
+    public CoroutineAction(Func<T, IEnumerator> action) => this.action += action;
     public void RegisterCallback(Func<T, IEnumerator> coroutine) => action += coroutine;
     public void RemoveCallback(Func<T, IEnumerator> coroutine) => action -= coroutine;
 
@@ -20,7 +20,7 @@ public class CoroutineAction<T>
 public class CoroutineAction<T, T2>
 {
     private Func<T, T2, IEnumerator> action;
-
+    public CoroutineAction(Func<T, T2, IEnumerator> action) => this.action += action;
     public void RegisterCallback(Func<T, T2, IEnumerator> coroutine) => action += coroutine;
     public void RemoveCallback(Func<T, T2, IEnumerator> coroutine) => action -= coroutine;
 
@@ -35,7 +35,7 @@ public class CoroutineAction<T, T2>
 public class CoroutineAction<T, T2, T3>
 {
     private Func<T, T2, T3, IEnumerator> action;
-
+    public CoroutineAction(Func<T, T2, T3, IEnumerator> action) => this.action += action;
     public void RegisterCallback(Func<T, T2, T3, IEnumerator> coroutine) => action += coroutine;
     public void RemoveCallback(Func<T, T2, T3, IEnumerator> coroutine) => action -= coroutine;
 
@@ -50,7 +50,7 @@ public class CoroutineAction<T, T2, T3>
 public class CoroutineAction<T, T2, T3, T4>
 {
     private Func<T, T2, T3, T4, IEnumerator> action;
-
+    public CoroutineAction(Func<T, T2, T3, T4, IEnumerator> action) => this.action += action;
     public void RegisterCallback(Func<T, T2, T3, T4, IEnumerator> coroutine) => action += coroutine;
     public void RemoveCallback(Func<T, T2, T3, T4, IEnumerator> coroutine) => action -= coroutine;
 

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
@@ -171,6 +170,12 @@ public class PartyMenu : ContextMenu<Pokemon[]>
 
     public static IEnumerator PickPokemon(PickPokemonEvent evt)
     {
+        if (evt.currentPokemonOnly)
+        {
+            evt.pickedPokemon = instance.party[0];
+            evt.isCurrent = true;
+            yield break;
+        }
         //setup
         bool selected = false;
         if (!instance.gameObject.activeSelf) instance.OpenMenu(instance.party);
@@ -214,9 +219,14 @@ public class PartyMenu : ContextMenu<Pokemon[]>
 
 public class PickPokemonEvent
 {
+    public bool currentPokemonOnly;
     public Pokemon pickedPokemon;
     public TMModel move;
     public bool isCurrent;
 
-    public PickPokemonEvent(TMModel tm = null) => move = tm;
+    public PickPokemonEvent(bool currentOnly, TMModel tm = null)
+    {
+        currentPokemonOnly = currentOnly;
+        move = tm;
+    }
 }

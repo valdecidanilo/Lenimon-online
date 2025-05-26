@@ -11,8 +11,7 @@ namespace Battle
         public static void AddEffectToMove(MoveModel move)
         {
             Effect moveEffect = EffectNotImplemented();
-            CoroutineAction<BattleEvent> moveMessage = new();
-            moveMessage.RegisterCallback(MoveMessage);
+            CoroutineAction<BattleEvent> moveMessage = new(MoveMessage);
             move.effectMessage = moveMessage;
             switch (move.Data.meta.category.name)
             {
@@ -85,6 +84,35 @@ namespace Battle
         {
             evt.failed = true;
             yield return Announcer.Announce("But it failed (this effect was not yet implemented)", holdTime: .6f);
+        }
+
+        public static MoveModel EmptyMove(int priority = 99)
+        {
+            MoveData data = new();
+            data.id = -1;
+            data.name = "?";
+            data.pp = 1;
+            data.priority = priority;
+            data.type = new() { name = "unknown" };
+            data.target = new() { name = "user" };
+            data.moveTypeData = new() { id = MoveType.Status };
+            data.flavorTexts = new() {
+                new FlavorText() {
+                    text = "??",
+                    language = new(){name = "en"}
+                }
+            };
+            data.meta = new() {
+                category = new() { name = "unique" }
+            };
+        
+            MoveModel model = new(data);
+            model.effect = new CustomEffect(Empty);
+            model.effectMessage = new(Empty);
+
+            return model;
+
+            IEnumerator Empty(BattleEvent evt) { yield break; }
         }
     }
 }

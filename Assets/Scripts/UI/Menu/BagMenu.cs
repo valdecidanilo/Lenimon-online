@@ -205,9 +205,9 @@ public class BagMenu : ContextMenu<Bag>
         bool pokemonSelected = false;
         while (!pokemonSelected)
         {
-            PickPokemonEvent evt = new();
+            PickPokemonEvent evt = new(item.activePokemonOnly, item as TMModel);
             yield return PartyMenu.PickPokemon(evt);
-        
+            
             if(evt.pickedPokemon == null)
             {
                 ClosePartyMenu();
@@ -221,26 +221,28 @@ public class BagMenu : ContextMenu<Bag>
             if (evt.isCurrent)
             {
                 //close bag and mockup a move
+                yield return FightMenu.DelayedStartBattle(ItemEffect.CreateMockMove(item));
                 ClosePartyMenu();
+                CloseMenu();
                 pokemonSelected = true;
             }
             else
             {
                 //animate on party then close
-                //may also need to be a move
-                if (item.activePokemonOnly)
+                if (evt.move == null)
                 {
-                    yield return Announcer.Announce("This item can only be used on the pokemon in battle!", true);
-                    Announcer.CloseAnnouncement();
+                    BattleEvent battleEvt = new();
+                    battleEvt.target = battleEvt.origin = evt.pickedPokemon;
+                    yield return item.battleEffect.EffectSequence(battleEvt);
+                    yield return FightMenu.DelayedStartBattle(MoveEffectCreator.EmptyMove());
+                    ClosePartyMenu();
+                    CloseMenu();
+                    pokemonSelected = true;
                 }
                 else
                 {
-                    BattleEvent battleEvt = new();
-                    battleEvt.target = evt.pickedPokemon;
-                    battleEvt.origin = evt.pickedPokemon;
-                    yield return item.battleEffect.EffectSequence(battleEvt);
-                    ClosePartyMenu();
-                    pokemonSelected = true;
+                    yield return Announcer.Announce("This item can only be used on the pokemon in battle!", true);
+                    Announcer.CloseAnnouncement();
                 }
             }
         }

@@ -91,7 +91,7 @@ public static class ItemEffect
         return new () { name = apiName };
     }
 
-    private static MoveModel CreateMockMove(ItemModel item)
+    public static MoveModel CreateMockMove(ItemModel item)
     {
         MoveData data = new();
         data.id = -1;
@@ -113,6 +113,7 @@ public static class ItemEffect
         
         MoveModel model = new(data);
         model.effect = item.battleEffect;
+        model.effectMessage = new(ItemMessage);
 
         return model;
     }
