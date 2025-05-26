@@ -15,7 +15,7 @@ public class MoveModel
     public MoveType typeOfMove;
     public string description;
 
-    public readonly int maxPP;
+    public int maxPP { get; private set; }
 
     private MoveData data;
     public MoveData Data => data;
