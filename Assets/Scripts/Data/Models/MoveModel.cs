@@ -21,6 +21,7 @@ public class MoveModel
     public MoveData Data => data;
 
     public Effect effect;
+    public CoroutineAction<BattleEvent> effectMessage;
 
     public MoveModel(MoveData data)
     {

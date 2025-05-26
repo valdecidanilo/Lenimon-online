@@ -11,6 +11,9 @@ namespace Battle
         public static void AddEffectToMove(MoveModel move)
         {
             Effect moveEffect = EffectNotImplemented();
+            CoroutineAction<BattleEvent> moveMessage = new();
+            moveMessage.RegisterCallback(MoveMessage);
+            move.effectMessage = moveMessage;
             switch (move.Data.meta.category.name)
             {
                 case "damage":
@@ -69,6 +72,12 @@ namespace Battle
                     break;
             }
             move.effect = moveEffect;
+        }
+
+        private static IEnumerator MoveMessage(BattleEvent evt)
+        {
+            string side = evt.user == "You" ? "Allied" : $"{evt.user}'s";
+            yield return Announcer.Announce($"{side} {evt.origin.name} used {evt.move.name}.", holdTime: 1f);
         }
 
         private static Effect EffectNotImplemented() => new CustomEffect(NotImplementedMessage);

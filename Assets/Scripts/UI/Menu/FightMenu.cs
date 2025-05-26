@@ -103,6 +103,7 @@ public class FightMenu : ContextMenu<Pokemon>
     private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
     {
         BattleEvent evtBattle = new();
+        evtBattle.user = "You";//or "Opponent"
         evtBattle.move = allyMove;
         evtBattle.origin = allyPokemon;
         evtBattle.target = GetTarget(evtBattle.move.Data.target.name, allyPokemon, enemyPokemon);
@@ -113,7 +114,7 @@ public class FightMenu : ContextMenu<Pokemon>
         contextSelection.ReleaseSelection();
         if (hit)
         {
-            yield return Announcer.Announce($"Allied {allyPokemon.name} used {allyMove.name}.", holdTime: 1f);
+            yield return evtBattle.move.effectMessage.Invoke(evtBattle);
             yield return evtBattle.move.effect.EffectSequence(evtBattle);
             if (evtBattle.failed)
             {

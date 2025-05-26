@@ -9,12 +9,7 @@ public static class ItemEffect
         switch (item.name)
         {
             case "Potion":
-                IEnumerator HealItemSequence(BattleEvent evt)
-                {
-                    yield return Announcer.Announce($"You used {item.name}.", holdTime: .6f);
-                    yield return new HealEffect(20).EffectSequence(evt);
-                }
-                return new CustomEffect(HealItemSequence);
+                return new HealEffect(20);
             case "Super Potion":
             case "Fresh Water":
                 return new HealEffect(50);
@@ -76,6 +71,11 @@ public static class ItemEffect
         return null;
     }
 
+    public static IEnumerator ItemMessage(BattleEvent evt)
+    {
+        yield return Announcer.Announce($"{evt.user} used a {evt.move.name}.", holdTime: .6f);
+    }
+
     private static ApiReference StatToApi(StatType type)
     {
         string apiName = type switch
@@ -89,5 +89,31 @@ public static class ItemEffect
             StatType.eva => "evasion",
         };
         return new () { name = apiName };
+    }
+
+    private static MoveModel CreateMockMove(ItemModel item)
+    {
+        MoveData data = new();
+        data.id = -1;
+        data.name = item.name;
+        data.pp = 1;
+        data.priority = 99;
+        data.type = new() { name = "unknown" };
+        data.target = new() { name = "user" };
+        data.moveTypeData = new() { id = MoveType.Status };
+        data.flavorTexts = new() {
+            new FlavorText() {
+                text = item.effect,
+                language = new(){name = "en"}
+            }
+        };
+        data.meta = new() {
+            category = new() { name = "unique" }
+        };
+        
+        MoveModel model = new(data);
+        model.effect = item.battleEffect;
+
+        return model;
     }
 }

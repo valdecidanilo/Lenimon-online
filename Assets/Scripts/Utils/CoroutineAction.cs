@@ -36,8 +36,8 @@ public class CoroutineAction<T, T2, T3>
 {
     private Func<T, T2, T3, IEnumerator> action;
 
-    public void Add(Func<T, T2, T3, IEnumerator> coroutine) => action += coroutine;
-    public void Remove(Func<T, T2, T3, IEnumerator> coroutine) => action -= coroutine;
+    public void RegisterCallback(Func<T, T2, T3, IEnumerator> coroutine) => action += coroutine;
+    public void RemoveCallback(Func<T, T2, T3, IEnumerator> coroutine) => action -= coroutine;
 
     public IEnumerator Invoke(T value, T2 value2, T3 value3)
     {
@@ -51,8 +51,8 @@ public class CoroutineAction<T, T2, T3, T4>
 {
     private Func<T, T2, T3, T4, IEnumerator> action;
 
-    public void Add(Func<T, T2, T3, T4, IEnumerator> coroutine) => action += coroutine;
-    public void Remove(Func<T, T2, T3, T4, IEnumerator> coroutine) => action -= coroutine;
+    public void RegisterCallback(Func<T, T2, T3, T4, IEnumerator> coroutine) => action += coroutine;
+    public void RemoveCallback(Func<T, T2, T3, T4, IEnumerator> coroutine) => action -= coroutine;
 
     public IEnumerator Invoke(T value, T2 value2, T3 value3, T4 value4)
     {
