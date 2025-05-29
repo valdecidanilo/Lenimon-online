@@ -182,7 +182,7 @@ public class BagMenu : ContextMenu<Bag>
         {
             case 0:
                 ItemModel item = itemList[itemOffset + contextSelection.selectedId];
-                IEnumerator coroutine = item.battleEffect == null ? NotUsableAnnouncement(id) : PickItemTarget(item);
+                IEnumerator coroutine = item.battleEffect == null ? NotUsableAnnouncement(id) : UseBattleItem(item);
                 StartCoroutine(coroutine);
                 break;
             case 1:
@@ -199,7 +199,7 @@ public class BagMenu : ContextMenu<Bag>
         ShowItemDetails(id);
     }
 
-    private IEnumerator PickItemTarget(ItemModel item)
+    private IEnumerator UseBattleItem(ItemModel item)
     {
         DisableNavigation();
         bool pokemonSelected = false;
@@ -207,46 +207,43 @@ public class BagMenu : ContextMenu<Bag>
         {
             PickPokemonEvent evt = new(item.activePokemonOnly, item as TMModel);
             yield return PartyMenu.PickPokemon(evt);
-            yield return UseItemOnTarget(item, evt);
-            pokemonSelected = evt.pickedPokemon != null;
-        }
-    }
-
-    private IEnumerator UseItemOnTarget(ItemModel item, PickPokemonEvent evt)
-    {
-        if(evt.pickedPokemon == null)
-        {
-            ClosePartyMenu();
-            Announcer.ChangeAnnouncer(itemDescription);
-            yield return Announcer.Announce(item.effect);
-            OpenOptions();
-            Logger.Log("Canceled");
-            yield break;
-        }
             
-        if (evt.isCurrent)
-        {
-            //close bag and mockup a move
-            yield return FightMenu.DelayedStartBattle(ItemEffect.CreateMockMove(item));
-            ClosePartyMenu();
-            CloseMenu();
-        }
-        else
-        {
-            //animate on party then close
-            if (evt.move == null)
+            if(evt.pickedPokemon == null)
             {
-                BattleEvent battleEvt = new();
-                battleEvt.target = battleEvt.origin = evt.pickedPokemon;
-                yield return item.battleEffect.EffectSequence(battleEvt);
-                yield return FightMenu.DelayedStartBattle(MoveEffectCreator.EmptyMove());
+                ClosePartyMenu();
+                Announcer.ChangeAnnouncer(itemDescription);
+                yield return Announcer.Announce(item.effect);
+                OpenOptions();
+                Logger.Log("Canceled");
+                yield break;
+            }
+            
+            if (evt.isCurrent)
+            {
+                //close bag and mockup a move
+                yield return FightMenu.DelayedStartBattle(ItemEffect.CreateMockMove(item));
                 ClosePartyMenu();
                 CloseMenu();
+                pokemonSelected = true;
             }
             else
             {
-                yield return Announcer.Announce("This item can only be used on the pokemon in battle!", true);
-                Announcer.CloseAnnouncement();
+                //animate on party then close
+                if (evt.move == null)
+                {
+                    BattleEvent battleEvt = new();
+                    battleEvt.target = battleEvt.origin = evt.pickedPokemon;
+                    yield return item.battleEffect.EffectSequence(battleEvt);
+                    yield return FightMenu.DelayedStartBattle(MoveEffectCreator.EmptyMove());
+                    ClosePartyMenu();
+                    CloseMenu();
+                    pokemonSelected = true;
+                }
+                else
+                {
+                    yield return Announcer.Announce("This item can only be used on the pokemon in battle!", true);
+                    Announcer.CloseAnnouncement();
+                }
             }
         }
         yield break;
@@ -255,11 +252,6 @@ public class BagMenu : ContextMenu<Bag>
             EnableNavigation();
             partyMenu.CloseMenu();
         }
-    }
-
-    public static IEnumerator UseBattleItem(ItemModel item, Pokemon target)
-    {
-        yield return FightMenu.DelayedStartBattle(ItemEffect.CreateMockMove(item));
     }
 
     private void DisableNavigation()
