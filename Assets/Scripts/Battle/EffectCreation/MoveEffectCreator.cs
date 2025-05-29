@@ -107,12 +107,14 @@ namespace Battle
             };
         
             MoveModel model = new(data);
-            model.effect = new CustomEffect(Empty);
+            model.effect = EmptyEffect();
             model.effectMessage = new(Empty);
 
             return model;
-
-            IEnumerator Empty(BattleEvent evt) { yield break; }
         }
+        
+        private static IEnumerator Empty(BattleEvent evt) { yield break; }
+        
+        public static Effect EmptyEffect() => new CustomEffect(Empty);
     }
 }

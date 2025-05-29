@@ -178,6 +178,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         }
         //setup
         bool selected = false;
+        List<bool> moveLearnability = new(instance.party.Length);
         if (!instance.gameObject.activeSelf) instance.OpenMenu(instance.party);
         else instance.contextSelection.Focus();
         instance.contextSelection.onItemPick -= instance.OnPickPokemon;
@@ -187,8 +188,8 @@ public class PartyMenu : ContextMenu<Pokemon[]>
 
         if (evt.move != null)
         {
-            for (int i = 0; i < instance.instances.Length; i++)
-                instance.instances[i].LearnMoveMode(evt.move.data.moveData);
+            for (int i = 0; i < instance.party.Length; i++)
+                moveLearnability.Add(instance.instances[i].LearnMoveMode(evt.move.data.moveData));
         }
 
         yield return new WaitUntil(PokemonSelected);
@@ -205,24 +206,31 @@ public class PartyMenu : ContextMenu<Pokemon[]>
             if (id < instance.contextSelection.itemCount - 1) evt.pickedPokemon = instance.party[id];
             selected = true;
             evt.isCurrent = id == 0;
-            if (evt.move == null)
-            {
-
-            }
+            if (evt.move == null) return;
+            evt.canLearnTM = moveLearnability[id];
         }
 
         bool PokemonSelected() => selected;
 
         void CancelSelection(CallbackContext context) => selected = true;
     }
+
+    public static void ClosePartyMenu()
+    {
+        instance.CloseMenu();
+    }
 }
 
 public class PickPokemonEvent
 {
+    //setup
     public bool currentPokemonOnly;
-    public Pokemon pickedPokemon;
     public TMModel move;
+    
+    //feedback
     public bool isCurrent;
+    public Pokemon pickedPokemon;
+    public bool canLearnTM;
 
     public PickPokemonEvent(bool currentOnly, TMModel tm = null)
     {

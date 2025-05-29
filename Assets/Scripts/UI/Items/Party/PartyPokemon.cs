@@ -1,8 +1,7 @@
-using AddressableAsyncInstances;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class PartyPokemon : MonoBehaviour
@@ -21,6 +20,9 @@ public class PartyPokemon : MonoBehaviour
     [Header("Modes"),SerializeField] private GameObject defaultMode;
     [SerializeField] private GameObject learnMode;
     [SerializeField] private TMP_Text canLearnText;
+
+    private const string canLearn = "ABLE";
+    private const string cantLearn = "UNABLE";
 
     public Pokemon pokemon { get; private set; }
 
@@ -47,10 +49,33 @@ public class PartyPokemon : MonoBehaviour
             PokemonSelectionItem.PokemonState.Normal;
     }
 
-    public void LearnMoveMode(MoveData move)
+    public bool LearnMoveMode(MoveData move)
     {
+        if(pokemon == null) return false;
         defaultMode.SetActive(false);
         learnMode.SetActive(true);
+
+        bool learnableMove = false;
+        for (int i = 0; i < pokemon.data.moves.Count; i++)
+        {
+            MoveReference moveRef = pokemon.data.moves[i];
+            if(!moveRef.move.name.Equals(move.name, StringComparison.CurrentCultureIgnoreCase)) continue;
+            bool tmMove = false;
+            for (int j = 0; j < moveRef.learningDetails.Count; j++)
+            {
+                var learnDetails = moveRef.learningDetails[j];
+                if(learnDetails.learnMethod != MoveLearnMethod.TM) continue;
+                tmMove = true;
+                break;
+            }
+            if(!tmMove) continue;
+            learnableMove = true;
+            break;
+        }
+
+        canLearnText.text = learnableMove ? canLearn : cantLearn;
+        selectionItem.ChangeState(learnableMove ? PokemonSelectionItem.PokemonState.Swap : selectionItem.currentState);
+        return learnableMove;
     }
 
     private IEnumerator OnPokemonHpChanged(int initialValue, int currentValue)

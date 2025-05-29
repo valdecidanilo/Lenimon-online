@@ -392,8 +392,8 @@ MonoBehaviour:
   normalSprite: {fileID: 21300000, guid: fd216b3e67cfdb34da51041eafbb58b4, type: 3}
   selectedSprite: {fileID: 21300000, guid: 8607d36cf3fc6be4d8705dd10548c43b, type: 3}
   currentState: 0
-  normalSwap: {fileID: 21300000, guid: f8009fc60ec15df4b96b4bf6d46af918, type: 3}
-  selectedSwap: {fileID: 21300000, guid: 316aed8e4f1b04c4a854beb89e260134, type: 3}
+  normalSwap: {fileID: 21300000, guid: 316aed8e4f1b04c4a854beb89e260134, type: 3}
+  selectedSwap: {fileID: 21300000, guid: f8009fc60ec15df4b96b4bf6d46af918, type: 3}
   normalFaint: {fileID: 21300000, guid: 6173756e6df9fd84a81d5cce488003be, type: 3}
   selectedFaint: {fileID: 21300000, guid: 2916d361817fecf41a0ca96bf0834281, type: 3}
 --- !u!1 &745099890638388086

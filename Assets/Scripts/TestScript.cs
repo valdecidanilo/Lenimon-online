@@ -243,6 +243,7 @@ public class TestScript : MonoBehaviour
                 PokeAPI.GetTM(moveData, (tm) =>
                 {
                     bag.TMs.Add(tm);
+                    tm.battleEffect = MoveEffectCreator.EmptyEffect();
                     log.Append($"\n{tm.name} => {tm.data.moveData.name}");
                     loadedTMs.FinishStep();
                     if (!loadedTMs.isDone)

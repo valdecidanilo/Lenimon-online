@@ -35,4 +35,10 @@ public class PokemonSelectionItem : PartySelectionItem
                 break;
         }
     }
+
+    public void ChangeState(PokemonState newState)
+    {
+        currentState = newState;
+        OnSelection(context.selectedId);
+    }
 }

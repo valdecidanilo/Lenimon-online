@@ -217,20 +217,33 @@ public class BagMenu : ContextMenu<Bag>
                 Logger.Log("Canceled");
                 yield break;
             }
-            
-            if (evt.isCurrent)
+
+            if (evt.move != null)
             {
-                //close bag and mockup a move
-                yield return FightMenu.DelayedStartBattle(ItemEffect.CreateMockMove(item));
-                ClosePartyMenu();
-                CloseMenu();
-                pokemonSelected = true;
+                if (evt.canLearnTM)
+                {
+                    //open move pick
+                    ClosePartyMenu();
+                }
+                else
+                {
+                    yield return Announcer.Announce($"{evt.pickedPokemon.name} can't learn this move!", true);
+                    Announcer.CloseAnnouncement();
+                }
             }
             else
             {
-                //animate on party then close
-                if (evt.move == null)
+                if (evt.isCurrent)
                 {
+                    //close bag and mockup a move
+                    yield return FightMenu.DelayedStartBattle(ItemEffect.CreateMockMove(item));
+                    ClosePartyMenu();
+                    CloseMenu();
+                    pokemonSelected = true;
+                }
+                else if (evt.move == null)
+                {
+                    //animate on party then close
                     BattleEvent battleEvt = new();
                     battleEvt.target = battleEvt.origin = evt.pickedPokemon;
                     yield return item.battleEffect.EffectSequence(battleEvt);
@@ -239,18 +252,13 @@ public class BagMenu : ContextMenu<Bag>
                     CloseMenu();
                     pokemonSelected = true;
                 }
-                else
-                {
-                    yield return Announcer.Announce("This item can only be used on the pokemon in battle!", true);
-                    Announcer.CloseAnnouncement();
-                }
             }
         }
         yield break;
         void ClosePartyMenu()
         {
             EnableNavigation();
-            partyMenu.CloseMenu();
+            PartyMenu.ClosePartyMenu();
         }
     }
 
