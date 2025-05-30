@@ -223,7 +223,8 @@ public class BagMenu : ContextMenu<Bag>
                 if (evt.canLearnTM)
                 {
                     //open move pick
-                    ClosePartyMenu();
+                    yield return MoveHelper.LearnMoveSequence(evt.pickedPokemon, evt.move.data.moveData);
+                    //ClosePartyMenu();
                 }
                 else
                 {

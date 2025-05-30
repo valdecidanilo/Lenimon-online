@@ -40,7 +40,7 @@ public static class MoveHelper
         //test
         possibleMoves = new List<MoveReference>();
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/recover" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/drain-punch" } });
+        //possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/drain-punch" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/pin-missile" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/rock-tomb" } });
 
@@ -70,5 +70,26 @@ public static class MoveHelper
                 GetRandomMove();
             }
         }
+    }
+
+    public static IEnumerator LearnMoveSequence(Pokemon pokemon, MoveData moveData)
+    {
+        MoveModel move = new(moveData);
+        int freeSlot = -1;
+        for (int i = 0; i < pokemon.moves.Length; i++)
+        {
+            if(pokemon.moves[i] != null) continue;
+            freeSlot = i;
+            break;
+        }
+
+        if (freeSlot < 0)
+        {
+            yield return Announcer.Announce($"{pokemon.name} wants to learn {move.name}.", true, .2f);
+            yield return Announcer.Announce($"But {pokemon.name} already knows 4 moves.", true, .2f);
+            yield return Announcer.Announce($"Choose a move to be overwritten by {move.name}.", true, .2f);
+        }
+
+        yield return Announcer.Announce($"{pokemon.name} learned {move.name}!", true, .2f);
     }
 }
