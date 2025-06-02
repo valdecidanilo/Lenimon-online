@@ -40,7 +40,7 @@ public static class MoveHelper
         //test
         possibleMoves = new List<MoveReference>();
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/recover" } });
-        //possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/drain-punch" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/drain-punch" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/pin-missile" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/rock-tomb" } });
 
@@ -72,24 +72,49 @@ public static class MoveHelper
         }
     }
 
-    public static IEnumerator LearnMoveSequence(Pokemon pokemon, MoveData moveData)
+    public static IEnumerator LearnMoveSequence(MoveLearnEvent evt)
     {
-        MoveModel move = new(moveData);
+        MoveModel move = new(evt.move);
         int freeSlot = -1;
-        for (int i = 0; i < pokemon.moves.Length; i++)
+        for (int i = 0; i < evt.pokemon.moves.Length; i++)
         {
-            if(pokemon.moves[i] != null) continue;
+            if (evt.pokemon.moves[i] != null) continue;
             freeSlot = i;
             break;
         }
 
-        if (freeSlot < 0)
+        bool learnMove = freeSlot >= 0;
+        if (!learnMove)
         {
-            yield return Announcer.Announce($"{pokemon.name} wants to learn {move.name}.", true, .2f);
-            yield return Announcer.Announce($"But {pokemon.name} already knows 4 moves.", true, .2f);
-            yield return Announcer.Announce($"Choose a move to be overwritten by {move.name}.", true, .2f);
+            //yield return Announcer.Announce($"{pokemon.name} wants to learn {move.name}.", true, .2f);
+            //yield return Announcer.Announce($"But {pokemon.name} already knows 4 moves.", true, .2f);
+            //yield return Announcer.Announce($"Choose a move to be overwritten by {move.name}.", true, .2f);
+            
+            PickMoveEvent pickMoveEvent = new(evt.pokemon);
+            yield return SummaryMenu.ChoseMove(pickMoveEvent);
+            evt.overridenMove = pickMoveEvent.pickedMove;
+            learnMove = pickMoveEvent.pickedMove != null;
+            Debug.Log($"learn: {learnMove}");
         }
 
-        yield return Announcer.Announce($"{pokemon.name} learned {move.name}!", true, .2f);
+        if (!learnMove) yield break;
+        yield return Announcer.Announce($"{evt.pokemon.name} learned {move.name}!", true, .2f);
+        SummaryMenu.CloseSummaryMenu();
+    }
+}
+
+public class MoveLearnEvent
+{
+    //setup
+    public MoveData move;
+    public Pokemon pokemon;
+    
+    //feedback
+    public MoveModel overridenMove;
+
+    public MoveLearnEvent(MoveData moveData, Pokemon pokemon)
+    {
+        move = moveData;
+        this.pokemon = pokemon;
     }
 }

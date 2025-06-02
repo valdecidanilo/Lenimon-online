@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,6 +12,7 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
     [Header("Screens")]
     [SerializeField] private GameObject[] screens;
     [SerializeField] private Button backButton;
+    [SerializeField] private Announcer announcer;
     //All sceens: front sprite, nickname/name, lv, gender, pokeball?
     #region General
     [Header("General")]
@@ -58,23 +60,28 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
     public event Action<int> onShiftPokemon;
 
     private const int screenCount = 3;
+    private const int moveScreen = 2;
     private Sprite emptyIcon;
 
     private Pokemon pokemon;
     private int currentScreen = 0;
 
+    private static SummaryMenu instance;
+
     protected override void Awake()
     {
+        instance = this;
         base.Awake();
 
         contextSelection.onSelect += UpdateScreen;
         contextSelection.onItemPick += OpenMoveDetails;
         moveSelection.onSelect += OnMoveSelect;
-        backButton.onClick.AddListener(() => base.ReturnCall(new()));
+        backButton.onClick.AddListener(BaseReturnCall);
     }
 
     public override void OpenMenu((bool showHp, Pokemon pokemon) data)
     {
+        Announcer.ChangeAnnouncer(announcer);
         emptyIcon ??= itemImage.sprite;
         if(moves == null)
         {
@@ -170,6 +177,7 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
         contextSelection.Focus();
     }
 
+    private void BaseReturnCall() => ReturnCall(new());
     protected override void ReturnCall(CallbackContext context)
     {
         if (selectMove.activeSelf)
@@ -184,5 +192,64 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
         selectMove.SetActive(false);
         gameObject.SetActive(false);
         base.CloseMenu();
+    }
+
+    public static IEnumerator ChoseMove(PickMoveEvent evt)
+    {
+        bool selected = false;
+        if (!instance.gameObject.activeSelf) instance.OpenMenu((false,evt.pickedPokemon));
+        instance.contextSelection.Select(moveScreen);
+        instance.OpenMoveDetails(moveScreen);
+        instance.contextSelection.MouseSelection(false);
+        instance.moveSelection.onItemPick -= instance.OpenMoveDetails;
+        instance.moveSelection.onItemPick += PickMove;
+        instance.cancelAction.performed -= instance.ReturnCall;
+        instance.cancelAction.performed += CancelSelection;
+        instance.backButton.onClick.RemoveListener(instance.BaseReturnCall);
+        instance.backButton.onClick.AddListener(BaseCancel);
+
+        yield return new WaitUntil(MoveSelected);
+        
+        instance.contextSelection.MouseSelection(true);
+        instance.moveSelection.onItemPick += instance.OpenMoveDetails;
+        instance.moveSelection.onItemPick -= PickMove;
+        instance.cancelAction.performed += instance.ReturnCall;
+        instance.cancelAction.performed -= CancelSelection;
+        instance.backButton.onClick.AddListener(instance.BaseReturnCall);
+        instance.backButton.onClick.RemoveListener(BaseCancel);
+        
+        yield break;
+
+        bool MoveSelected() => selected;
+
+        void PickMove(int id)
+        {
+            if (id < instance.moveSelection.itemCount - 1)
+                evt.pickedMove = evt.pickedPokemon.moves[id];
+
+            selected = true;
+        }
+
+        void BaseCancel() => CancelSelection(new());
+        void CancelSelection(CallbackContext context) => selected = true;
+    }
+    
+    public static void CloseSummaryMenu()
+    {
+        instance.CloseMenu();
+    }
+}
+
+public class PickMoveEvent
+{
+    //setup
+    public Pokemon pickedPokemon;
+    
+    //feedback
+    public MoveModel pickedMove;
+
+    public PickMoveEvent(Pokemon pokemon)
+    {
+        pickedPokemon = pokemon;
     }
 }

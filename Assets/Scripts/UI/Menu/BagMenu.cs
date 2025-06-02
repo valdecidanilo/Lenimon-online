@@ -16,7 +16,6 @@ public class BagMenu : ContextMenu<Bag>
     [SerializeField] private Image itemIcon;
     [SerializeField] private Announcer itemDescription;
     [SerializeField] private ContextSelection optionsContext;
-    [SerializeField] private PartyMenu partyMenu;
     
     private const int screenCount = 4;
 
@@ -214,17 +213,25 @@ public class BagMenu : ContextMenu<Bag>
                 Announcer.ChangeAnnouncer(itemDescription);
                 yield return Announcer.Announce(item.effect);
                 OpenOptions();
-                Logger.Log("Canceled");
                 yield break;
             }
 
             if (evt.move != null)
             {
-                if (evt.canLearnTM)
+                if (evt.canLearnTM || true)
                 {
                     //open move pick
-                    yield return MoveHelper.LearnMoveSequence(evt.pickedPokemon, evt.move.data.moveData);
-                    //ClosePartyMenu();
+                    PartyMenu.ClosePartyMenu();
+                    MoveLearnEvent moveLearn = new(evt.move.data.moveData, evt.pickedPokemon);
+                    yield return MoveHelper.LearnMoveSequence(moveLearn);
+                    Debug.Log(moveLearn.overridenMove == null);
+                    if (moveLearn.overridenMove != null)
+                    {
+                        Debug.Log("learned");
+                        ClosePartyMenu();
+                        CloseOptions();
+                        pokemonSelected = true;
+                    }
                 }
                 else
                 {

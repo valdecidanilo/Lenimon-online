@@ -206,7 +206,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
             if (id < instance.contextSelection.itemCount - 1) evt.pickedPokemon = instance.party[id];
             selected = true;
             evt.isCurrent = id == 0;
-            if (evt.move == null) return;
+            if (evt.move == null || id >= moveLearnability.Count) return;
             evt.canLearnTM = moveLearnability[id];
         }
 
