@@ -78,12 +78,14 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     private void UpdateMoveData(MoveModel move)
     {
-        moveType.text = move.moveType;
-        int ppAmount = move.pp;
-        movePp.text = $"{ppAmount}/{ppAmount}";
+        moveType.text = move?.moveType ?? "-";
+        string currentPP = move?.pp.ToString() ?? "-";
+        string maxPP = move?.Data.pp.ToString() ?? "-";
+        movePp.text = $"{currentPP}/{maxPP}";
     }
     private void OnMovePick(int id)
     {
+        if(allyPokemon.moves[id] == null) return;
         Logger.Log($"{allyPokemon.name} will use {allyPokemon.moves[id].name}", LogFlags.Game);
         //onPickMove?.Invoke(id);
         BeginBattle(allyPokemon.moves[id]);
