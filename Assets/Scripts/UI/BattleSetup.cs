@@ -160,7 +160,7 @@ public class BattleSetup : MonoBehaviour
         battleChoice.ReleaseSelection();
         battleMenu.SetActive(false);
         partyChoice.CloseMenu();
-        summary.OpenMenu(pokemon);
+        summary.OpenMenu(new(summaryFromParty, pokemon));
     }
 
     private void Run()

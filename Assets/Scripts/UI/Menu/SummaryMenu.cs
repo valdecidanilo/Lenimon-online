@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using Random = UnityEngine.Random;
 using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
-public class SummaryMenu : ContextMenu<Pokemon>
+public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
 {
     [Header("Screens")]
     [SerializeField] private GameObject[] screens;
@@ -73,7 +73,7 @@ public class SummaryMenu : ContextMenu<Pokemon>
         backButton.onClick.AddListener(() => base.ReturnCall(new()));
     }
 
-    public override void OpenMenu(Pokemon target)
+    public override void OpenMenu((bool showHp, Pokemon pokemon) data)
     {
         emptyIcon ??= itemImage.sprite;
         if(moves == null)
@@ -85,47 +85,47 @@ public class SummaryMenu : ContextMenu<Pokemon>
             }
         }
 
-        pokemon = target;
+        pokemon = data.pokemon;
         //set general
-        pokemonImage.sprite = target.frontSprite;
-        PokeDatabase.SetGenderSprite(gender, target.gender);
-        nickname.text = target.name;
-        species.text = $"/{target.name}";
-        level.text = $"{target.level}";
+        pokemonImage.sprite = pokemon.frontSprite;
+        PokeDatabase.SetGenderSprite(gender, pokemon.gender);
+        nickname.text = pokemon.name;
+        species.text = $"/{pokemon.name}";
+        level.text = $"{pokemon.level}";
         //set screen 1
         for (int i = 0; i < types.Length; i++)
         {
-            types[i].gameObject.SetActive(i < target.data.types.Count);
-            if (i < target.data.types.Count)
-                types[i].sprite = PokeDatabase.typeSprites[target.data.types[i].type.name];
+            types[i].gameObject.SetActive(i < pokemon.data.types.Count);
+            if (i < pokemon.data.types.Count)
+                types[i].sprite = PokeDatabase.typeSprites[pokemon.data.types[i].type.name];
         }
-        abilityName.text = target.ability.abilityName;
-        abilityDesc.text = target.ability.flavorText;
+        abilityName.text = pokemon.ability.abilityName;
+        abilityDesc.text = pokemon.ability.flavorText;
         //nature
-        memo.text = $"<color=red>{target.natureName.ToUpper()}</color> nature,\nmet at Lv<color=red>{Random.Range(1, target.level + 1)}</color>," +
+        memo.text = $"<color=red>{pokemon.natureName.ToUpper()}</color> nature,\nmet at Lv<color=red>{Random.Range(1, pokemon.level + 1)}</color>," +
             $"\n<color=red>ROUTE {Random.Range(1, 200)}</color>.";
         //set screen 2
         //item
-        itemImage.sprite = target.heldItem?.sprite ?? emptyIcon;
-        item.text = target.heldItem?.name ?? "NONE";
-        hp.text = $"{target.battleStats.hp}/{target.stats.hp}";
-        atk.text = $"{target.stats.atk}";
-        def.text = $"{target.stats.def}";
-        sAtk.text = $"{target.stats.sAtk}";
-        sDef.text = $"{target.stats.sDef}";
-        spd.text = $"{target.stats.spd}";
+        itemImage.sprite = pokemon.heldItem?.sprite ?? emptyIcon;
+        item.text = pokemon.heldItem?.name ?? "NONE";
+        hp.text = data.showHp ? $"{pokemon.battleStats.hp}/{pokemon.stats.hp}" : $"-/{pokemon.stats.hp}";
+        atk.text = $"{pokemon.stats.atk}";
+        def.text = $"{pokemon.stats.def}";
+        sAtk.text = $"{pokemon.stats.sAtk}";
+        sDef.text = $"{pokemon.stats.sDef}";
+        spd.text = $"{pokemon.stats.spd}";
         //xp, next lv, and bar
         //set screen 3
         power.text = "-";
         accuracy.text = "-";
         description.text = "-";
         for (int i = 0; i < moves.Length; i++)
-            moves[i].SetupMove(target.moves[i]);
+            moves[i].SetupMove(pokemon.moves[i]);
 
         gameObject.SetActive(true);
         contextSelection.Select(currentScreen);
         //UpdateScreen(currentScreen);
-        base.OpenMenu(target);
+        base.OpenMenu(data);
     }
 
     private void UpdateScreen(int screenId = 0)
