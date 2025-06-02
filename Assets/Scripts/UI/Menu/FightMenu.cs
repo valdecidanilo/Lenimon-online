@@ -5,6 +5,7 @@ using LenixSO.Logger;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 using Logger = LenixSO.Logger.Logger;
 using Random = UnityEngine.Random;
 
@@ -14,6 +15,7 @@ public class FightMenu : ContextMenu<Pokemon>
     [SerializeField] private TMP_Text movePp;
     [SerializeField] private TMP_Text[] moves;
     [SerializeField] private Announcer battleAnnouncer;
+    [SerializeField] private Button backButton;
 
     #region Battle Visuals
     [Header("Battle Visuals")]
@@ -47,6 +49,7 @@ public class FightMenu : ContextMenu<Pokemon>
         base.Awake();
         contextSelection.onSelect += OnSelectionChanged;
         contextSelection.onItemPick += OnMovePick;
+        backButton.onClick.AddListener(() => ReturnCall(new()));
     }
 
     public override void OpenMenu(Pokemon data)
