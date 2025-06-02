@@ -10,6 +10,7 @@ public class SummaryMenu : ContextMenu<Pokemon>
 {
     [Header("Screens")]
     [SerializeField] private GameObject[] screens;
+    [SerializeField] private Button backButton;
     //All sceens: front sprite, nickname/name, lv, gender, pokeball?
     #region General
     [Header("General")]
@@ -50,6 +51,7 @@ public class SummaryMenu : ContextMenu<Pokemon>
     [SerializeField] private TMP_Text power;
     [SerializeField] private TMP_Text accuracy;
     [SerializeField] private TMP_Text description;
+    [SerializeField] private ContextSelection moveSelection;
     private SummaryMove[] moves;
     #endregion
 
@@ -61,16 +63,14 @@ public class SummaryMenu : ContextMenu<Pokemon>
     private Pokemon pokemon;
     private int currentScreen = 0;
 
-    private InputAction navigateAction;
-    private InputAction confirmAction;
-
     protected override void Awake()
     {
         base.Awake();
-        navigateAction = InputSystem.actions.FindAction("UI/Navigate");
-        confirmAction = InputSystem.actions.FindAction("UI/Submit");
 
-        contextSelection.onSelect += OnMoveSelect;
+        contextSelection.onSelect += UpdateScreen;
+        contextSelection.onItemPick += OpenMoveDetails;
+        moveSelection.onSelect += OnMoveSelect;
+        backButton.onClick.AddListener(() => base.ReturnCall(new()));
     }
 
     public override void OpenMenu(Pokemon target)
@@ -81,7 +81,7 @@ public class SummaryMenu : ContextMenu<Pokemon>
             moves = new SummaryMove[4];
             for (int i = 0; i < moves.Length; i++)
             {
-                moves[i] = contextSelection[i].GetComponent<SummaryMove>();
+                moves[i] = moveSelection[i].GetComponent<SummaryMove>();
             }
         }
 
@@ -123,44 +123,37 @@ public class SummaryMenu : ContextMenu<Pokemon>
             moves[i].SetupMove(target.moves[i]);
 
         gameObject.SetActive(true);
-        UpdateScreen(currentScreen);
+        contextSelection.Select(currentScreen);
+        //UpdateScreen(currentScreen);
         base.OpenMenu(target);
-        navigateAction.performed += ChangeScreen;
-        confirmAction.performed += OpenMoveDetails;
-    }
-
-    private void ChangeScreen(CallbackContext context)
-    {
-        Vector2 direction = context.ReadValue<Vector2>();
-        if (selectMove.activeSelf) return;
-        UpdateScreen((currentScreen + screenCount + Mathf.FloorToInt(direction.x)) % screenCount);
-        onShiftPokemon?.Invoke(Mathf.FloorToInt(direction.y));
     }
 
     private void UpdateScreen(int screenId = 0)
     {
+        if (currentScreen == 2 && screenId != 2) selectMove.SetActive(false);
         if(screenId >= screens.Length) return;
         currentScreen = screenId;
         for (int i = 0; i < screens.Length; i++)
             screens[i].SetActive(currentScreen == i);
     }
 
-    private void OpenMoveDetails(CallbackContext context)
+    private void OpenMoveDetails(int windowId)
     {
-        if(currentScreen != 2) return;
+        if(windowId != 2) return;
 
         if (selectMove.activeSelf &&
-            contextSelection.selectedId == contextSelection.itemCount - 1)
+            moveSelection.selectedId == moveSelection.itemCount - 1)
         {
             ExitMoveSelection();
             return;
         }
         selectMove.SetActive(true);
-        contextSelection.Select(0);
+        moveSelection.Select(0);
     }
 
     private void OnMoveSelect(int id)
     {
+        selectMove.SetActive(true);
         MoveModel move = id < 4 ? pokemon.moves[id] : null;
         power.text = move is { power: > 0 } ? $"{move.power}" : "-";
         accuracy.text = move is { accuracy: > 0 } ? $"{move.accuracy}" : "-";
@@ -173,7 +166,8 @@ public class SummaryMenu : ContextMenu<Pokemon>
         accuracy.text = "-";
         description.text = "-";
         selectMove.SetActive(false);
-        contextSelection.ReleaseSelection();
+        moveSelection.ReleaseSelection();
+        contextSelection.Focus();
     }
 
     protected override void ReturnCall(CallbackContext context)
@@ -190,7 +184,5 @@ public class SummaryMenu : ContextMenu<Pokemon>
         selectMove.SetActive(false);
         gameObject.SetActive(false);
         base.CloseMenu();
-        navigateAction.performed -= ChangeScreen;
-        confirmAction.performed -= OpenMoveDetails;
     }
 }

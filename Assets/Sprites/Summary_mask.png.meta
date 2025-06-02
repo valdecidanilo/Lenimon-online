@@ -173,7 +173,7 @@ TextureImporter:
         width: 111
         height: 38
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -181,6 +181,69 @@ TextureImporter:
       bones: []
       spriteID: d87a783a4bba7b34aa509b580628f97b
       internalID: -1475860009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Summary_mask_3
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 316
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c9af3a729c1c7d4ba33906e8c5c535a
+      internalID: -1645768763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Summary_mask_4
+      rect:
+        serializedVersion: 2
+        x: 187
+        y: 316
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5b8ef22be5fa0a43a7345be47b03292
+      internalID: -1204824447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Summary_mask_5
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 276
+        width: 24
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3de950449783e054cb1aec7fc4943da5
+      internalID: -2090380402
       vertices: []
       indices: 
       edges: []
@@ -199,6 +262,9 @@ TextureImporter:
       Summary_mask_0: -411759424
       Summary_mask_1: 2085893585
       Summary_mask_2: -1475860009
+      Summary_mask_3: -1645768763
+      Summary_mask_4: -1204824447
+      Summary_mask_5: -2090380402
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
