@@ -102,9 +102,9 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
         //set screen 1
         for (int i = 0; i < types.Length; i++)
         {
-            types[i].gameObject.SetActive(i < pokemon.data.types.Count);
+            types[i].gameObject.SetActive(i < pokemon.types.Length);
             if (i < pokemon.data.types.Count)
-                types[i].sprite = PokeDatabase.typeSprites[pokemon.data.types[i].type.name];
+                types[i].sprite = PokeDatabase.typeSprites[pokemon.types[i].name];
         }
         abilityName.text = pokemon.ability.abilityName;
         abilityDesc.text = pokemon.ability.flavorText;

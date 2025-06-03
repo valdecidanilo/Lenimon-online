@@ -230,5 +230,8 @@ public static class PokeDatabase
         name = natureNames[Random.Range(0, natureNames.Count)];
         return natures[name];
     }
+
+    public static TypeChartEntry GetType(string type) => typeChart.GetValueOrDefault(type, typeChart[types[^1]]);
+
     #endregion
 }

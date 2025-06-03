@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using LenixSO.Logger;
@@ -30,6 +29,7 @@ public class Pokemon : ApiData
     public MoveModel[] moves;
     public ItemModel heldItem;
     public string natureName;
+    public TypeChartEntry[] types;
 
     public CoroutineAction<int, int> onHpChanged = new(null);
 
@@ -43,6 +43,9 @@ public class Pokemon : ApiData
         name = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(pokemonData.species.name);
         name = name.Replace('-', ' ');
         id = pokemonData.id;
+        types = new TypeChartEntry[data.types.Count];
+        for (int i = 0; i < types.Length; i++)
+            types[i] = PokeDatabase.GetType(data.types[i].type.name);
 
         stats = new(
             pokemonData.hpStat,

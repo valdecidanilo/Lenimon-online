@@ -81,7 +81,7 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     private void UpdateMoveData(MoveModel move)
     {
-        moveType.text = move?.moveType ?? "-";
+        moveType.text = move?.moveTypeName ?? "-";
         string currentPP = move?.pp.ToString() ?? "-";
         string maxPP = move?.Data.pp.ToString() ?? "-";
         movePp.text = $"{currentPP}/{maxPP}";
