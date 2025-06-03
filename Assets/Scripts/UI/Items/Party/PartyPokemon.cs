@@ -90,7 +90,7 @@ public class PartyPokemon : MonoBehaviour
         }
 
         selectionItem.ChangeState(learnableMove ? PokemonSelectionItem.PokemonState.Swap : selectionItem.currentState);
-        return learnableMove;
+        return !hasMove && learnableMove;
     }
 
     private IEnumerator OnPokemonHpChanged(int initialValue, int currentValue)

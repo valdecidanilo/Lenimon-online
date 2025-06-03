@@ -12,6 +12,8 @@ using Battle;
 public class BagMenu : ContextMenu<Bag>
 {
     [SerializeField] private TMP_Text screenName;
+    [SerializeField] private Button nextButton;
+    [SerializeField] private Button prevButton;
     [SerializeField] private Selectable[] screenIndicator;
     [SerializeField] private Image itemIcon;
     [SerializeField] private Announcer itemDescription;
@@ -40,6 +42,9 @@ public class BagMenu : ContextMenu<Bag>
         contextSelection.onSelect += ShowItemDetails;
         contextSelection.onItemPick += OpenItemOptions;
         optionsContext.onItemPick += OnPickOption;
+
+        nextButton.onClick.AddListener(() => ShiftScreen(1));
+        prevButton.onClick.AddListener(() => ShiftScreen(-1));
     }
 
     public override void OpenMenu(Bag data)
@@ -62,10 +67,12 @@ public class BagMenu : ContextMenu<Bag>
         navigateAction.performed -= ChangeScreen;
     }
 
-    private void ChangeScreen(CallbackContext context)
+    private void ChangeScreen(CallbackContext context) =>
+        ShiftScreen(Mathf.FloorToInt(context.ReadValue<Vector2>().x));
+
+    private void ShiftScreen(int direction)
     {
-        Vector2 direction = context.ReadValue<Vector2>();
-        int screenId = (currentScreen + screenCount + Mathf.FloorToInt(direction.x)) % screenCount;
+        int screenId = (currentScreen + screenCount + Mathf.FloorToInt(direction)) % screenCount;
         if(screenId == currentScreen) return;
         UpdateScreen(screenId);
     }
