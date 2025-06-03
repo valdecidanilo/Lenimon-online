@@ -171,17 +171,6 @@ public static class PokeDatabase
                     ApplyModifier(2, chartEntry.attackMultiplier, relations.superEffective);
                     ApplyModifier(.5f, chartEntry.attackMultiplier, relations.notEffective);
                     ApplyModifier(0, chartEntry.attackMultiplier, relations.doNotAffect);
-                    
-                    //raw log
-                    StringBuilder sb = new($"type: {typeData.name} => {typeData.attackMultiplier.Count} attacking interactions");
-                    
-                    sb.Append($"\n{relations.superEffective.Count} super effective");
-                    sb.Append($"\n{relations.notEffective.Count} not effective");
-                    sb.Append($"\n{relations.weakTo.Count} weak to");
-                    sb.Append($"\n{relations.resistantTo.Count} resistant to");
-                    sb.Append($"\n{relations.immuneTo.Count} immune to");
-                    sb.Append($"\n{relations.doNotAffect.Count} don't affect");
-                    Logger.Log(sb.ToString(), LogFlags.DataCheck);
 
                     void ApplyModifier(float modifier, Dictionary<TypeChartEntry, float> dictionary, 
                         List<ApiReference> reference)
@@ -193,6 +182,16 @@ public static class PokeDatabase
                             dictionary[otherEntry] = modifier;
                         }
                     }
+                    
+                    //raw log
+                    StringBuilder sb = new($"type: {typeData.name} => {typeData.attackMultiplier.Count} attacking interactions");
+                    sb.Append($"\n{relations.superEffective.Count} super effective");
+                    sb.Append($"\n{relations.notEffective.Count} not effective");
+                    sb.Append($"\n{relations.weakTo.Count} weak to");
+                    sb.Append($"\n{relations.resistantTo.Count} resistant to");
+                    sb.Append($"\n{relations.immuneTo.Count} immune to");
+                    sb.Append($"\n{relations.doNotAffect.Count} don't affect");
+                    Logger.Log(sb.ToString(), LogFlags.DataCheck);
                 }
                 
                 preloadedAssets.FinishStep();
