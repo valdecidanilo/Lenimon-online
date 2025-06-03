@@ -9,9 +9,12 @@ namespace Battle
 {
     public class AttackEvent
     {
+        private const float STAB = 1.5f;
+        
         public Pokemon attacker;
         public Pokemon defender;
         public int power;
+        public MoveModel move;
         public MoveType typeOfMove;
         public float modifier; //burn attack reduction, screens, weather, flashFire like abilities, critical, double damage effect, STAB, type multiplier 1 and 2
 
@@ -26,6 +29,7 @@ namespace Battle
             this.attacker = attacker;
             this.defender = defender;
             power = move.power ?? 0;
+            this.move = move;
             typeOfMove = move.typeOfMove;
             modifier = 1;
 

@@ -21,6 +21,7 @@ namespace Battle
                     break;
                 case "damage+ailment":
                     //Logger.Log("damage and ailment move", LogFlags.DataCheck);
+                    moveEffect = new DamageEffect();
                     break;
                 case "damage+heal":
                     //Logger.Log("damage and heal move", LogFlags.DataCheck);
