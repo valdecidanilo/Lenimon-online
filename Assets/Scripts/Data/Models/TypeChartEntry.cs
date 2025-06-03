@@ -6,7 +6,7 @@ public class TypeChartEntry
     public string name;
     public TypeRelations referenceData;
 
-    public Dictionary<TypeChartEntry, float> attackMultiplier;
+    public readonly Dictionary<TypeChartEntry, float> attackMultiplier;
 
     public TypeChartEntry(PokemonType type)
     {
@@ -19,4 +19,6 @@ public class TypeChartEntry
         multipliersCount += referenceData.doNotAffect?.Count ?? 0;
         attackMultiplier = new(multipliersCount);
     }
+
+    public float GetMultiplier(TypeChartEntry type) => attackMultiplier.GetValueOrDefault(type, 1);
 }

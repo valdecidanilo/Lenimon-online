@@ -1,5 +1,4 @@
 using AddressableAsyncInstances;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -26,7 +25,7 @@ public static class PokeDatabase
     private const string maleIconKey = "maleIcon";
     private const string femaleIconKey = "femaleIcon";
     private const string hpBarKey = "Hp_Bar";
-    private static readonly string[] types = 
+    public static readonly string[] types = 
     {
         "normal",
         "fighting",
@@ -160,11 +159,22 @@ public static class PokeDatabase
             typeList.onCompleted += () =>
             {
                 Logger.Log($"Pokemon Types: {data.results.Count}", LogFlags.DataCheck);
-                foreach (var typeData in typeChart.Values)
+                
+                for (int i = 0; i < types.Length; i++)
                 {
+                    int inGameId = i;
+                    string typeKey = types[inGameId];
+                    var typeData = typeChart[typeKey];
                     TypeRelations relations = typeData.referenceData;
+                    var chartEntry = typeChart[typeKey];
+                    //offensive
+                    ApplyModifier(2, chartEntry.attackMultiplier, relations.superEffective);
+                    ApplyModifier(.5f, chartEntry.attackMultiplier, relations.notEffective);
+                    ApplyModifier(0, chartEntry.attackMultiplier, relations.doNotAffect);
+                    
                     //raw log
-                    StringBuilder sb = new($"type: {typeData.name} =>");
+                    StringBuilder sb = new($"type: {typeData.name} => {typeData.attackMultiplier.Count} attacking interactions");
+                    
                     sb.Append($"\n{relations.superEffective.Count} super effective");
                     sb.Append($"\n{relations.notEffective.Count} not effective");
                     sb.Append($"\n{relations.weakTo.Count} weak to");
@@ -172,26 +182,6 @@ public static class PokeDatabase
                     sb.Append($"\n{relations.immuneTo.Count} immune to");
                     sb.Append($"\n{relations.doNotAffect.Count} don't affect");
                     Logger.Log(sb.ToString(), LogFlags.DataCheck);
-                }
-                
-                preloadedAssets.FinishStep();
-            };
-            for (int i = 0; i < data.results.Count; i++)
-            {
-                WebConnection.GetRequest<PokemonType>(data.results[i].url, (typeData) =>
-                {
-                    TypeRelations relations = typeData.relations;
-                    string typeKey = types[Mathf.Min(typeData.id, types.Length - 1)];
-                    TypeChartEntry chartEntry = new(typeData);
-                    typeChart[typeKey] = chartEntry;
-                    //offsensive
-                    ApplyModifier(2, chartEntry.attackMultiplier, relations.superEffective);
-                    ApplyModifier(.5f, chartEntry.attackMultiplier, relations.notEffective);
-                    ApplyModifier(0, chartEntry.attackMultiplier, relations.doNotAffect);
-                    //defensive
-                    ApplyModifier(2, null, typeData.relations.weakTo);
-                    ApplyModifier(.5f, null, typeData.relations.resistantTo);
-                    ApplyModifier(0, null, typeData.relations.immuneTo);
 
                     void ApplyModifier(float modifier, Dictionary<TypeChartEntry, float> dictionary, 
                         List<ApiReference> reference)
@@ -200,11 +190,22 @@ public static class PokeDatabase
                         {
                             string otherKey = reference[id].name;
                             if (!typeChart.TryGetValue(otherKey, out var otherEntry)) continue;
-                            dictionary ??= otherEntry.attackMultiplier;
                             dictionary[otherEntry] = modifier;
                         }
                     }
-                    
+                }
+                
+                preloadedAssets.FinishStep();
+            };
+            
+            for (int i = 0; i < data.results.Count; i++)
+            {
+                int inGameId = i;
+                WebConnection.GetRequest<PokemonType>(data.results[i].url, (typeData) =>
+                {
+                    string typeKey = types[inGameId];
+                    TypeChartEntry chartEntry = new(typeData);
+                    typeChart[typeKey] = chartEntry;
                     typeList.FinishStep();
                 });
             }
