@@ -39,7 +39,7 @@ public class PokemonData : ApiData
     public ApiReference species { get; set; }
     public Sprites sprites { get; set; }
     public List<Stat> stats { get; set; }
-    public List<TypePokemon> types { get; set; }
+    public List<TypePokemonReference> types { get; set; }
     public int weight { get; set; }
 
     public int hpStat => stats[(int)StatType.hp].base_stat;
@@ -69,7 +69,7 @@ public class Stat
     public ApiReference stat { get; set; }
 }
 
-public class TypePokemon
+public class TypePokemonReference
 {
     public int slot { get; set; }
     public ApiReference type { get; set; }

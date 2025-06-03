@@ -40,3 +40,8 @@ public class EffectText
     [JsonProperty("short_effect")] public string shortText { get; set; }
     public ApiReference language { get; set; }
 }
+
+public class ApiRequestList
+{
+    public List<ApiReference> results;
+}

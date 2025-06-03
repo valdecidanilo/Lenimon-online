@@ -648,7 +648,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: types_25
+      name: stellar
       rect:
         serializedVersion: 2
         x: 1
@@ -759,13 +759,13 @@ TextureImporter:
       psychic: -1662675476
       rock: -1970302056
       steel: -900312192
+      stellar: -430099116
       types_18: 1124960619
       types_19: 652882786
       types_20: 2005703738
       types_21: -205032136
       types_22: -1241776771
       types_24: 1057394183
-      types_25: -430099116
       types_26: 935474435
       types_27: -770488969
       types_28: -1795080377

@@ -10,5 +10,5 @@ public class PastAbility
 public class PastType
 {
     public ApiReference generation { get; set; }
-    public List<TypePokemon> types { get; set; }
+    public List<TypePokemonReference> types { get; set; }
 }

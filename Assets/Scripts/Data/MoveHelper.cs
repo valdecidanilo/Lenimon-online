@@ -41,8 +41,8 @@ public static class MoveHelper
         possibleMoves = new List<MoveReference>();
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/recover" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/drain-punch" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/pin-missile" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/rock-tomb" } });
+        //possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/pin-missile" } });
+        //possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/rock-tomb" } });
 
         MoveReference[] newMoves = new MoveReference[4];
         Checklist loadedMoves = new(Mathf.Min(possibleMoves.Count, 4));

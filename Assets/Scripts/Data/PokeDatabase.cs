@@ -1,6 +1,7 @@
 using AddressableAsyncInstances;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using LenixSO.Logger;
@@ -27,44 +28,51 @@ public static class PokeDatabase
     private const string hpBarKey = "Hp_Bar";
     private static readonly string[] types = 
     {
-        "bug",
-        "dark",
-        "dragon",
-        "electric",
-        "fairy",
-        "fighting",
-        "fire",
-        "flying",
-        "ghost",
-        "grass",
-        "ground",
-        "ice",
         "normal",
+        "fighting",
+        "flying",
         "poison",
-        "psychic",
+        "ground",
         "rock",
+        "bug",
+        "ghost",
         "steel",
-        "unknown",
+        "fire",
         "water",
+        "grass",
+        "electric",
+        "psychic",
+        "ice",
+        "dragon",
+        "dark",
+        "fairy",
+        "stellar",
+        "unknown",
     };
     private static readonly List<string> natureNames = new();
     #endregion
 
-    //Utility methods
     #region Resources
     public static Sprite emptySprite;
     public static Sprite genericIcon;
     public static Sprite genericTM;
     public static Sprite maleIcon;
     public static Sprite femaleIcon;
-    public static Dictionary<string, Sprite> typeSprites = new();
     public static Sprite[] hpBars;
+    public static Dictionary<string, Sprite> typeSprites = new(types.Length);
+    public static Dictionary<string, TypeChartEntry> typeChart = new(types.Length);
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void PreloadAssets()
     {
         Checklist preloadedAssets = new(1);
         LoadingScreen.AddOrChangeQueue(preloadedAssets, "Loading assets...");
+        if (emptySprite != null)//already loaded data
+        {
+            preloadedAssets.FinishStep();
+            return;
+        }
+
+        #region LocalSprites
         //gender sprites
         AAAsset<Sprite>.LoadAsset(maleIconKey, (sprite) =>
         {
@@ -122,11 +130,14 @@ public static class PokeDatabase
                 preloadedAssets.FinishStep();
             });
         }
+        #endregion
 
+        #region ApiData
         //Natures
         preloadedAssets.AddStep();
-        WebConnection.GetRequest<Natures>("https://pokeapi.co/api/v2/nature", (data) =>
+        WebConnection.GetRequest<ApiRequestList>("https://pokeapi.co/api/v2/nature", (data) =>
         {
+            Logger.Log($"Pokemon Natures", LogFlags.DataCheck);
             for (int i = 0; i < data.results.Count; i++)
             {
                 string name = data.results[i].name;
@@ -141,8 +152,68 @@ public static class PokeDatabase
             }
             preloadedAssets.FinishStep();
         });
+
+        preloadedAssets.AddStep();
+        WebConnection.GetRequest<ApiRequestList>("https://pokeapi.co/api/v2/type", (data) =>
+        {
+            Checklist typeList = new(data.results.Count);
+            typeList.onCompleted += () =>
+            {
+                Logger.Log($"Pokemon Types: {data.results.Count}", LogFlags.DataCheck);
+                foreach (var typeData in typeChart.Values)
+                {
+                    TypeRelations relations = typeData.referenceData;
+                    //raw log
+                    StringBuilder sb = new($"type: {typeData.name} =>");
+                    sb.Append($"\n{relations.superEffective.Count} super effective");
+                    sb.Append($"\n{relations.notEffective.Count} not effective");
+                    sb.Append($"\n{relations.weakTo.Count} weak to");
+                    sb.Append($"\n{relations.resistantTo.Count} resistant to");
+                    sb.Append($"\n{relations.immuneTo.Count} immune to");
+                    sb.Append($"\n{relations.doNotAffect.Count} don't affect");
+                    Logger.Log(sb.ToString(), LogFlags.DataCheck);
+                }
+                
+                preloadedAssets.FinishStep();
+            };
+            for (int i = 0; i < data.results.Count; i++)
+            {
+                WebConnection.GetRequest<PokemonType>(data.results[i].url, (typeData) =>
+                {
+                    TypeRelations relations = typeData.relations;
+                    string typeKey = types[Mathf.Min(typeData.id, types.Length - 1)];
+                    TypeChartEntry chartEntry = new(typeData);
+                    typeChart[typeKey] = chartEntry;
+                    //offsensive
+                    ApplyModifier(2, chartEntry.attackMultiplier, relations.superEffective);
+                    ApplyModifier(.5f, chartEntry.attackMultiplier, relations.notEffective);
+                    ApplyModifier(0, chartEntry.attackMultiplier, relations.doNotAffect);
+                    //defensive
+                    ApplyModifier(2, null, typeData.relations.weakTo);
+                    ApplyModifier(.5f, null, typeData.relations.resistantTo);
+                    ApplyModifier(0, null, typeData.relations.immuneTo);
+
+                    void ApplyModifier(float modifier, Dictionary<TypeChartEntry, float> dictionary, 
+                        List<ApiReference> reference)
+                    {
+                        for (int id = 0; id < reference.Count; id++)
+                        {
+                            string otherKey = reference[id].name;
+                            if (!typeChart.TryGetValue(otherKey, out var otherEntry)) continue;
+                            dictionary ??= otherEntry.attackMultiplier;
+                            dictionary[otherEntry] = modifier;
+                        }
+                    }
+                    
+                    typeList.FinishStep();
+                });
+            }
+        });
+
+        #endregion
     }
 
+    //Utility methods
     public static void SetGenderSprite(Image image, Gender gender)
     {
         image.gameObject.SetActive(gender != Gender.NonBinary);
@@ -160,9 +231,4 @@ public static class PokeDatabase
         return natures[name];
     }
     #endregion
-
-    public struct Natures
-    {
-        public List<ApiReference> results;
-    }
 }
