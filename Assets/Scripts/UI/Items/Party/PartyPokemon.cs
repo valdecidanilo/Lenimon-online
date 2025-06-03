@@ -23,6 +23,7 @@ public class PartyPokemon : MonoBehaviour
 
     private const string canLearn = "ABLE";
     private const string cantLearn = "UNABLE";
+    private const string learned = "LEARNED";
 
     public Pokemon pokemon { get; private set; }
 
@@ -55,25 +56,39 @@ public class PartyPokemon : MonoBehaviour
         defaultMode.SetActive(false);
         learnMode.SetActive(true);
 
-        bool learnableMove = false;
-        for (int i = 0; i < pokemon.data.moves.Count; i++)
+        bool hasMove = false;
+        for (int i = 0; i < pokemon.moves.Length; i++)
         {
-            MoveReference moveRef = pokemon.data.moves[i];
-            if(!moveRef.move.name.Equals(move.name, StringComparison.CurrentCultureIgnoreCase)) continue;
-            bool tmMove = false;
-            for (int j = 0; j < moveRef.learningDetails.Count; j++)
+            MoveModel pkmMove = pokemon.moves[i];
+            if (pkmMove == null || pkmMove.Data.name != move.name) continue;
+
+            hasMove = true;
+            canLearnText.text = learned;
+        }
+        bool learnableMove = false;
+        if (!hasMove)
+        {
+            for (int i = 0; i < pokemon.data.moves.Count; i++)
             {
-                var learnDetails = moveRef.learningDetails[j];
-                if(learnDetails.learnMethod != MoveLearnMethod.TM) continue;
-                tmMove = true;
+                MoveReference moveRef = pokemon.data.moves[i];
+                if (!moveRef.move.name.Equals(move.name, StringComparison.CurrentCultureIgnoreCase)) continue;
+                bool tmMove = false;
+                for (int j = 0; j < moveRef.learningDetails.Count; j++)
+                {
+                    var learnDetails = moveRef.learningDetails[j];
+                    if (learnDetails.learnMethod != MoveLearnMethod.TM) continue;
+                    tmMove = true;
+                    break;
+                }
+
+                if (!tmMove) continue;
+                learnableMove = true;
                 break;
             }
-            if(!tmMove) continue;
-            learnableMove = true;
-            break;
+
+            canLearnText.text = learnableMove ? canLearn : cantLearn;
         }
 
-        canLearnText.text = learnableMove ? canLearn : cantLearn;
         selectionItem.ChangeState(learnableMove ? PokemonSelectionItem.PokemonState.Swap : selectionItem.currentState);
         return learnableMove;
     }

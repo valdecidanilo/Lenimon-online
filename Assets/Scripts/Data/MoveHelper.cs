@@ -86,18 +86,28 @@ public static class MoveHelper
         bool learnMove = freeSlot >= 0;
         if (!learnMove)
         {
-            //yield return Announcer.Announce($"{pokemon.name} wants to learn {move.name}.", true, .2f);
-            //yield return Announcer.Announce($"But {pokemon.name} already knows 4 moves.", true, .2f);
-            //yield return Announcer.Announce($"Choose a move to be overwritten by {move.name}.", true, .2f);
+            yield return Announcer.Announce($"{evt.pokemon.name} wants to learn {move.name}.", true, .2f);
+            yield return Announcer.Announce($"But {evt.pokemon.name} already knows 4 moves.", true, .2f);
+            yield return Announcer.Announce($"Choose a move to be overwritten by {move.name}.", true, .2f);
             
+            PartyMenu.ClosePartyMenu();
             PickMoveEvent pickMoveEvent = new(evt.pokemon);
             yield return SummaryMenu.ChoseMove(pickMoveEvent);
             evt.overridenMove = pickMoveEvent.pickedMove;
             learnMove = pickMoveEvent.pickedMove != null;
-            Debug.Log($"learn: {learnMove}");
+
+            if (learnMove)
+            {
+                freeSlot = pickMoveEvent.moveSlot;
+                yield return Announcer.Announce($"Poof.", true, .1f);
+                yield return Announcer.Announce($"{evt.pokemon.name} forgot {evt.overridenMove.name}.", true, .2f);
+                yield return Announcer.Announce($"And", true, .1f);
+            }
         }
 
         if (!learnMove) yield break;
+        evt.pokemon.moves[freeSlot] = move;
+        evt.moveLearnt = true;
         yield return Announcer.Announce($"{evt.pokemon.name} learned {move.name}!", true, .2f);
         SummaryMenu.CloseSummaryMenu();
     }
@@ -111,6 +121,7 @@ public class MoveLearnEvent
     
     //feedback
     public MoveModel overridenMove;
+    public bool moveLearnt;
 
     public MoveLearnEvent(MoveData moveData, Pokemon pokemon)
     {

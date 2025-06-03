@@ -225,7 +225,10 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
         void PickMove(int id)
         {
             if (id < instance.moveSelection.itemCount - 1)
+            {
+                evt.moveSlot = id;
                 evt.pickedMove = evt.pickedPokemon.moves[id];
+            }
 
             selected = true;
         }
@@ -246,6 +249,7 @@ public class PickMoveEvent
     public Pokemon pickedPokemon;
     
     //feedback
+    public int moveSlot;
     public MoveModel pickedMove;
 
     public PickMoveEvent(Pokemon pokemon)

@@ -218,20 +218,17 @@ public class BagMenu : ContextMenu<Bag>
 
             if (evt.move != null)
             {
-                if (evt.canLearnTM || true)
+                if (evt.canLearnTM)
                 {
                     //open move pick
-                    PartyMenu.ClosePartyMenu();
                     MoveLearnEvent moveLearn = new(evt.move.data.moveData, evt.pickedPokemon);
                     yield return MoveHelper.LearnMoveSequence(moveLearn);
-                    Debug.Log(moveLearn.overridenMove == null);
-                    if (moveLearn.overridenMove != null)
+                    if (moveLearn.moveLearnt)
                     {
-                        Debug.Log("learned");
                         ClosePartyMenu();
                         CloseOptions();
                         pokemonSelected = true;
-                    }
+                    }else SummaryMenu.CloseSummaryMenu();
                 }
                 else
                 {
