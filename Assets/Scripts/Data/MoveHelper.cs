@@ -39,10 +39,10 @@ public static class MoveHelper
 
         //test
         possibleMoves = new List<MoveReference>();
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/recover" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/flamethrower" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/pin-missile" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/rock-tomb" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/tail-whip" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/dragon-dance" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/poison-jab" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/drain-punch" } });
 
         MoveReference[] newMoves = new MoveReference[4];
         Checklist loadedMoves = new(Mathf.Min(possibleMoves.Count, 4));

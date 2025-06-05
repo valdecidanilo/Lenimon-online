@@ -127,7 +127,50 @@ public class FightMenu : ContextMenu<Pokemon>
         if (hit)
         {
             yield return evtBattle.move.effectMessage.Invoke(evtBattle);
-            yield return evtBattle.move.effect.EffectSequence(evtBattle);
+
+            #region Type Shenanigans
+            //Add type chart and STAB modifiers
+            //add type modifiers
+            Pokemon attacker = evtBattle.origin;
+            Pokemon defender = evtBattle.target;
+            MoveModel move = evtBattle.move;
+            float typeMod = 1;
+            //type modifiers
+            for (int i = 0; i < defender.types.Length; i++)
+                typeMod *= move.moveType.GetMultiplier(defender.types[i]);
+            
+            //attack type effectiveness text
+            string typeEffectMessage = typeMod switch
+            {
+                1 => string.Empty,
+                > 1 => "It's super effective!",
+                < 1 and > 0 => "It's not very effective...",
+                _ => $"It doesn't affect {defender.name}..."
+            };
+
+            //STAB
+            for (int i = 0; i < attacker.types.Length; i++)
+            {
+                if(attacker.types[i] != move.moveType) continue;
+                typeMod *= 1.5f;
+                break;
+            }
+            //apply modifier
+            evtBattle.attackEvent.modifier *= typeMod;
+            #endregion
+
+            bool targetSelf = evtBattle.target == evtBattle.origin;
+
+            if (typeMod != 0 || targetSelf)
+                yield return evtBattle.move.effect.EffectSequence(evtBattle);
+
+            if (!targetSelf && (typeMod <= 0 || evtBattle.attackEvent.damageDealt > 0) &&
+                !string.IsNullOrEmpty(typeEffectMessage))
+            {
+                if (typeMod <= 0 || evtBattle.attackEvent.damageDealt > 0)
+                    yield return Announcer.Announce(typeEffectMessage, holdTime: 1);
+            }
+
             if (evtBattle.failed)
             {
                 //fail text
