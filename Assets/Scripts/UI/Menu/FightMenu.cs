@@ -160,12 +160,11 @@ public class FightMenu : ContextMenu<Pokemon>
             #endregion
 
             bool targetSelf = evtBattle.target == evtBattle.origin;
-
             if (typeMod != 0 || targetSelf)
                 yield return evtBattle.move.effect.EffectSequence(evtBattle);
 
             typeMod = evtBattle.attackEvent.modifier;//resultant modifier
-            bool attackHits = (typeMod != 0 && evtBattle.attackEvent.damageDealt == 0) || 
+            bool attackHits = (typeMod != 0 && evtBattle.attackEvent.damageDealt >= 0) || 
                               (typeMod == 0 && evtBattle.attackEvent.damageDealt < 0);
             if (attackHits && !string.IsNullOrEmpty(typeEffectMessage))
                 yield return Announcer.Announce(typeEffectMessage, holdTime: 1);
