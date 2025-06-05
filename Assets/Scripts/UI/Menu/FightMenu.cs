@@ -120,6 +120,37 @@ public class FightMenu : ContextMenu<Pokemon>
         evtBattle.origin = allyPokemon;
         evtBattle.target = GetTarget(evtBattle.move.Data.target.name, allyPokemon, enemyPokemon);
         evtBattle.attackEvent = new(allyPokemon, enemyPokemon, evtBattle.move);
+        
+        #region Type Shenanigans
+        //Add type chart and STAB modifiers
+        //add type modifiers
+        Pokemon attacker = evtBattle.origin;
+        Pokemon defender = evtBattle.target;
+        MoveModel move = evtBattle.move;
+        float typeMod = 1;
+        //type modifiers
+        for (int i = 0; i < defender.types.Length; i++)
+            typeMod *= move.moveType.GetMultiplier(defender.types[i]);
+            
+        //attack type effectiveness text
+        string typeEffectMessage = typeMod switch
+        {
+            1 => string.Empty,
+            > 1 => "It's super effective!",
+            < 1 and > 0 => "It's not very effective...",
+            _ => $"It doesn't affect {defender.name}..."
+        };
+
+        //STAB
+        for (int i = 0; i < attacker.types.Length; i++)
+        {
+            if(attacker.types[i] != move.moveType) continue;
+            typeMod *= 1.5f;
+            break;
+        }
+        //apply modifier
+        evtBattle.attackEvent.modifier *= typeMod;
+        #endregion
 
         bool hit = evtBattle.attackEvent.CheckHit(out bool missed);
 
@@ -127,37 +158,6 @@ public class FightMenu : ContextMenu<Pokemon>
         if (hit)
         {
             yield return evtBattle.move.effectMessage.Invoke(evtBattle);
-
-            #region Type Shenanigans
-            //Add type chart and STAB modifiers
-            //add type modifiers
-            Pokemon attacker = evtBattle.origin;
-            Pokemon defender = evtBattle.target;
-            MoveModel move = evtBattle.move;
-            float typeMod = 1;
-            //type modifiers
-            for (int i = 0; i < defender.types.Length; i++)
-                typeMod *= move.moveType.GetMultiplier(defender.types[i]);
-            
-            //attack type effectiveness text
-            string typeEffectMessage = typeMod switch
-            {
-                1 => string.Empty,
-                > 1 => "It's super effective!",
-                < 1 and > 0 => "It's not very effective...",
-                _ => $"It doesn't affect {defender.name}..."
-            };
-
-            //STAB
-            for (int i = 0; i < attacker.types.Length; i++)
-            {
-                if(attacker.types[i] != move.moveType) continue;
-                typeMod *= 1.5f;
-                break;
-            }
-            //apply modifier
-            evtBattle.attackEvent.modifier *= typeMod;
-            #endregion
 
             bool targetSelf = evtBattle.target == evtBattle.origin;
             if (typeMod != 0 || targetSelf)

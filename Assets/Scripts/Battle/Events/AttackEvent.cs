@@ -40,10 +40,24 @@ namespace Battle
             defenderStats = CalculateModifiers(defender);
         }
 
+        //roll to check = move accuracy*pokemon accuracy
+        //if hit: roll with evasion
         public bool CheckHit(out bool missed)
         {
             missed = false;
-            return true;
+            if (!move.accuracy.HasValue) return true;
+
+            int acc = attacker.battleStats.acc;
+            int eva = defender.battleStats.eva;
+            int stage = Mathf.Clamp(acc - eva, -6, 6);
+            int upper = 3 + Mathf.Max(stage, 0);
+            float lower = 3 - Mathf.Min(stage, 0);
+            float hitMod = upper / lower;
+            
+            //finish it, not accurate (probably)
+            float r = Random.Range(0, 1f);
+            missed = r > (move.accuracy.Value * hitMod) / 100;
+            return r > (move.accuracy.Value * hitMod) / 100;
         }
 
         //https://bulbapedia.bulbagarden.net/wiki/Generation_III
