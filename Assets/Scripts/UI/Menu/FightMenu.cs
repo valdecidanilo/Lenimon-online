@@ -164,11 +164,24 @@ public class FightMenu : ContextMenu<Pokemon>
             if (typeMod != 0 || targetSelf)
                 yield return evtBattle.move.effect.EffectSequence(evtBattle);
 
-            if (!targetSelf && (typeMod <= 0 || evtBattle.attackEvent.damageDealt > 0) &&
-                !string.IsNullOrEmpty(typeEffectMessage))
+            typeMod = evtBattle.attackEvent.modifier;//resultant modifier
+            bool attackHits = (typeMod != 0 && evtBattle.attackEvent.damageDealt == 0) || 
+                              (typeMod == 0 && evtBattle.attackEvent.damageDealt < 0);
+            if (attackHits && !string.IsNullOrEmpty(typeEffectMessage))
+                yield return Announcer.Announce(typeEffectMessage, holdTime: 1);
+            
+            //sub effect
+            if (evtBattle.attackEvent.modifier > 0) yield return TriggerSubEffect(evtBattle.move.effect);
+
+            IEnumerator TriggerSubEffect(Effect effect)
             {
-                if (typeMod <= 0 || evtBattle.attackEvent.damageDealt > 0)
-                    yield return Announcer.Announce(typeEffectMessage, holdTime: 1);
+                if (effect.subEffect == null) yield break;
+                //check chance
+                int r = Random.Range(1, 101);
+                if (r > effect.subEffectChance) yield break;
+                effect.subEffectSetup?.Invoke(evtBattle);
+                yield return effect.subEffect.EffectSequence(evtBattle);
+                yield return TriggerSubEffect(effect.subEffect);
             }
 
             if (evtBattle.failed)

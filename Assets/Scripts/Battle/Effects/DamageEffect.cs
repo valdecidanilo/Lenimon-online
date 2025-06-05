@@ -9,17 +9,6 @@ namespace Battle
 {
     public class DamageEffect : Effect
     {
-        private int subEffectChance;
-        private Effect subEffect;
-        private Action<BattleEvent> subEffectSetup;
-
-        public DamageEffect(Effect subEffect = null, int chance = 100, Action<BattleEvent> subEffectSetup = null)
-        {
-            this.subEffect = subEffect;
-            subEffectChance = chance;
-            this.subEffectSetup = subEffectSetup;
-        }
-
         public override IEnumerator EffectSequence(BattleEvent evt)
         {
             WaitForSeconds attacksDelay = new(.4f);
@@ -34,15 +23,6 @@ namespace Battle
 
             if (evt.attackEvent.damageDealt > 0 && evt.attackEvent.maxHits > evt.attackEvent.minHits)
                 yield return Announcer.Announce($"It hit {hits} times!", holdTime: 1);
-
-            //sub effect
-            //check chance
-            if(evt.attackEvent.damageDealt <= 0) yield break;
-            if (subEffect == null) yield break;
-            int r = Random.Range(1, 101);
-            if (r > subEffectChance) yield break;
-            subEffectSetup?.Invoke(evt);
-            yield return subEffect.EffectSequence(evt);
         }
     }
 }

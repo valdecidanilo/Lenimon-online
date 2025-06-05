@@ -35,7 +35,7 @@ namespace Battle
                     yield return Announcer.Announce($"{evt.target.name} recovered Hp.", holdTime: 2f);
                     break;
                 case HealType.Drain:
-                    yield return Announcer.Announce($"{evt.attackEvent.defender} got its enegy drained.", holdTime: 2f);
+                    yield return Announcer.Announce($"{evt.attackEvent.defender.name} got its enegy drained.", holdTime: 2f);
                     break;
             }
             Logger.Log($"{evt.target.name} healed by {heal} ({evt.target.battleStats.hp}/{evt.target.stats.hp})", LogFlags.Game);

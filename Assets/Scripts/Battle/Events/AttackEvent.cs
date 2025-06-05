@@ -20,7 +20,7 @@ namespace Battle
 
         public int minHits, maxHits;
 
-        public int damageDealt { get; private set; }
+        public int damageDealt { get; private set; } = -1;
         private readonly Stats attackerStats;
         private readonly Stats defenderStats;
 
