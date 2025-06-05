@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using LenixSO.Logger;
 using Logger = LenixSO.Logger.Logger;
 using System.Text;
+using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
 public class BattleSetup : MonoBehaviour
 {
@@ -25,6 +26,8 @@ public class BattleSetup : MonoBehaviour
 
     private bool summaryFromParty;
     private int summaryPokemonId;
+    private InputAction detailsAction;
+    private InputAction summaryNavigationAction;
 
     //Enemy
     private Pokemon[] enemyParty;
@@ -35,20 +38,17 @@ public class BattleSetup : MonoBehaviour
 
     private void Awake()
     {
-        enemySummaryButton.onClick.AddListener(() => OpenPokemonSummary(enemyParty[0]));
+        detailsAction = InputSystem.actions.FindAction("UI/Details");
+        summaryNavigationAction = InputSystem.actions.FindAction("UI/Navigate");
+        summaryNavigationAction.performed += SwitchPokemon;
+        EnableEnemySummary(true);
         battleChoice.onItemPick += OnChoicePick;
         fightMenu.onReturn += OpenChoiceMenu;
         partyChoice.onReturn += OpenChoiceMenu;
         partyChoice.onChangePokemon += OnAllyChanged;
         partyChoice.onSummaryCall += OnPokemonSummaryRequest;
-        summary.onShiftPokemon += SwitchPokemon;
         summary.onReturn += CloseSummary;
         bag.onReturn += OpenChoiceMenu;
-    }
-
-    private void Update()
-    {
-        if(Keyboard.current.tabKey.wasPressedThisFrame) OpenPokemonSummary(enemyParty[0]);
     }
 
     public void SetupBattle(Pokemon[] allies, Pokemon[] enemies, Bag bag)
@@ -80,9 +80,10 @@ public class BattleSetup : MonoBehaviour
         OpenPokemonSummary(allyParty[id]);
     }
 
-    private void SwitchPokemon(int delta)
+    private void SwitchPokemon(CallbackContext context)
     {
-        if (delta == 0 || !summaryFromParty) return;
+        int delta = -Mathf.RoundToInt(context.ReadValue<Vector2>().y);
+        if (delta == 0 || !summaryFromParty || !summary.isOpen) return;
         summaryPokemonId = (summaryPokemonId + delta + allyParty.Length) % allyParty.Length;
         OpenPokemonSummary(allyParty[summaryPokemonId]);
     }
@@ -96,6 +97,23 @@ public class BattleSetup : MonoBehaviour
             OpenChoiceMenu();
         summaryFromParty = false;
     }
+
+    private void EnableEnemySummary(bool enable)
+    {
+        if (enable)
+        {
+            detailsAction.performed += EnemySummaryInput;
+            enemySummaryButton.onClick.AddListener(OpenEnemySummary);
+            return;
+        }
+
+        detailsAction.performed -= EnemySummaryInput;
+        enemySummaryButton.onClick.RemoveListener(OpenEnemySummary);
+    }
+
+    private void OpenEnemySummary() => OpenPokemonSummary(enemyParty[0]);
+
+    private void EnemySummaryInput(CallbackContext context) => OpenEnemySummary();
     #endregion
 
     #region Window Changes

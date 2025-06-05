@@ -12,6 +12,7 @@ public abstract class ContextMenu<T> : MonoBehaviour
 
     protected InputAction cancelAction;
 
+    public bool isOpen { get; protected set; }
     public event Action onReturn;
 
     protected virtual void Awake()
@@ -21,6 +22,7 @@ public abstract class ContextMenu<T> : MonoBehaviour
 
     public virtual void OpenMenu(T data)
     {
+        isOpen = true;
         if (cancelAction == null) return;
         cancelAction.performed += ReturnCall;
     }
@@ -32,6 +34,7 @@ public abstract class ContextMenu<T> : MonoBehaviour
 
     public virtual void CloseMenu()
     {
+        isOpen = true;
         if (cancelAction == null) return;
         cancelAction.performed -= ReturnCall;
     }
