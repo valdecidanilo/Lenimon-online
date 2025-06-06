@@ -39,7 +39,7 @@ public class BattleSetup : MonoBehaviour
     private void Awake()
     {
         detailsAction = InputSystem.actions.FindAction("UI/Details");
-        summaryNavigationAction = InputSystem.actions.FindAction("UI/Navigate");
+        summaryNavigationAction = InputSystem.actions.FindAction("UI/ScrollWheel");
         summaryNavigationAction.performed += SwitchPokemon;
         EnableEnemySummary(true);
         battleChoice.onItemPick += OnChoicePick;
@@ -82,7 +82,9 @@ public class BattleSetup : MonoBehaviour
 
     private void SwitchPokemon(CallbackContext context)
     {
-        int delta = -Mathf.RoundToInt(context.ReadValue<Vector2>().y);
+        Vector2 direction = context.ReadValue<Vector2>();
+        if(direction.y == 0) return;
+        int delta = -Mathf.RoundToInt(Mathf.Sign(direction.y));
         if (delta == 0 || !summaryFromParty || !summary.isOpen) return;
         summaryPokemonId = (summaryPokemonId + delta + allyParty.Length) % allyParty.Length;
         OpenPokemonSummary(allyParty[summaryPokemonId]);
