@@ -130,7 +130,8 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
             moves[i].SetupMove(pokemon.moves[i]);
 
         gameObject.SetActive(true);
-        contextSelection.Select(currentScreen);
+        //contextSelection.Select(currentScreen);
+        contextSelection.Focus();
         //UpdateScreen(currentScreen);
         base.OpenMenu(data);
     }

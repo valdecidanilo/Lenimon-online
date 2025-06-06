@@ -39,8 +39,6 @@ public class FightMenu : ContextMenu<Pokemon>
     [SerializeField] private Image gender;
     #endregion
 
-    public event Action<int> onPickMove;
-
     private static FightMenu instance;
 
     protected override void Awake()

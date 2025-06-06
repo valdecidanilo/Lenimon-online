@@ -26,7 +26,7 @@ public class BagMenu : ContextMenu<Bag>
     private List<ItemModel> itemList;
     private int itemOffset = 0;
     
-    private int currentScreen = -1;
+    private int currentScreen = 0;
     private InputAction navigateAction;
     private InputAction confirmAction;
 
@@ -54,14 +54,13 @@ public class BagMenu : ContextMenu<Bag>
         bag = data;
         gameObject.SetActive(true);
         optionsContext.gameObject.SetActive(false);
-        UpdateScreen();
+        UpdateScreen(currentScreen);
         base.OpenMenu(data);
         navigateAction.performed += ChangeScreen;
     }
 
     public override void CloseMenu()
     {
-        currentScreen = -1;
         gameObject.SetActive(false);
         base.CloseMenu();
         navigateAction.performed -= ChangeScreen;
