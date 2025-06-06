@@ -244,28 +244,33 @@ public class BagMenu : ContextMenu<Bag>
             }
             else
             {
-                if (evt.isCurrent)
-                {
-                    //close bag and mockup a move
-                    yield return FightMenu.DelayedStartBattle(ItemEffect.CreateMockMove(item));
-                    ClosePartyMenu();
-                    CloseMenu();
-                    pokemonSelected = true;
-                }
-                else if (evt.move == null)
+                MoveModel mockMove = evt.isCurrent ? ItemEffect.CreateMockMove(item) : MoveEffectCreator.EmptyMove();
+                if (!evt.isCurrent)
                 {
                     //animate on party then close
                     BattleEvent battleEvt = new();
                     battleEvt.target = battleEvt.origin = evt.pickedPokemon;
                     yield return item.battleEffect.EffectSequence(battleEvt);
-                    yield return FightMenu.DelayedStartBattle(MoveEffectCreator.EmptyMove());
-                    ClosePartyMenu();
-                    CloseMenu();
-                    pokemonSelected = true;
                 }
+
+                yield return UseItemSequence(mockMove);
             }
         }
         yield break;
+
+        IEnumerator UseItemSequence(MoveModel effect)
+        {
+            yield return FightMenu.DelayedStartBattle(effect);
+            UseItem();
+            ClosePartyMenu();
+            CloseMenu();
+            pokemonSelected = true;
+        }
+        void UseItem()
+        {
+            item.amount--;
+            if (item.amount <= 0) itemList.Remove(item);
+        }
         void ClosePartyMenu()
         {
             EnableNavigation();
