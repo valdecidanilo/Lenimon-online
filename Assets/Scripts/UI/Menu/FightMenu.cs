@@ -155,9 +155,9 @@ public class FightMenu : ContextMenu<Pokemon>
         bool hit = evtBattle.attackEvent.CheckHit(out bool missed);
 
         contextSelection.ReleaseSelection();
+        yield return evtBattle.move.effectMessage.Invoke(evtBattle);
         if (hit)
         {
-            yield return evtBattle.move.effectMessage.Invoke(evtBattle);
 
             bool targetSelf = evtBattle.target == evtBattle.origin;
             if (typeMod != 0 || targetSelf)

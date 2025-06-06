@@ -55,9 +55,10 @@ namespace Battle
             float hitMod = upper / lower;
             
             //finish it, not accurate (probably)
+            float hitChance = move.accuracy.Value / 100f;
             float r = Random.Range(0, 1f);
-            missed = r > (move.accuracy.Value * hitMod) / 100;
-            return r > (move.accuracy.Value * hitMod) / 100;
+            missed = r > hitChance;//if base roll would've missed, it means the attack got evaded
+            return r <= hitChance * hitMod;
         }
 
         //https://bulbapedia.bulbagarden.net/wiki/Generation_III
