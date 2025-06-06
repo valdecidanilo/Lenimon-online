@@ -25,11 +25,13 @@ namespace Battle
                 HealType.Drain => Mathf.FloorToInt(evt.attackEvent.damageDealt * (healAmount / 100f)),
                 _ => healAmount,
             };
+            int healedHp = evt.target.battleStats.hp;
             yield return evt.target.HealPokemon(heal);
+            healedHp = evt.target.battleStats.hp - healedHp;
             switch (healType)
             {
                 case HealType.Raw:
-                    yield return Announcer.Announce($"{evt.target.name} recovered {heal} hit point{(heal > 1 ? "s" : "")}.", holdTime: 2f);
+                    yield return Announcer.Announce($"{evt.target.name} recovered {healedHp} hit point{(healedHp > 1 ? "s" : "")}.", holdTime: 2f);
                     break;
                 case HealType.Hp:
                     yield return Announcer.Announce($"{evt.target.name} recovered Hp.", holdTime: 2f);

@@ -1,3 +1,4 @@
+using System;
 using Battle;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ public class ItemModel : ApiData
 
     public bool activePokemonOnly;
     public Effect battleEffect;
+    public delegate bool CheckUseItem(Pokemon pokemon, out string failMessage);
+    public CheckUseItem checkItemUse;
 
     public ItemModel(ItemData data, int amount = 1)
     {

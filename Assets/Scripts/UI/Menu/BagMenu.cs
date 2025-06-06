@@ -242,7 +242,7 @@ public class BagMenu : ContextMenu<Bag>
                     Announcer.CloseAnnouncement();
                 }
             }
-            else
+            else if (item.checkItemUse.Invoke(evt.pickedPokemon, out string failMessage))
             {
                 MoveModel mockMove = evt.isCurrent ? ItemEffect.CreateMockMove(item) : MoveEffectCreator.EmptyMove();
                 if (!evt.isCurrent)
@@ -252,8 +252,12 @@ public class BagMenu : ContextMenu<Bag>
                     battleEvt.target = battleEvt.origin = evt.pickedPokemon;
                     yield return item.battleEffect.EffectSequence(battleEvt);
                 }
-
                 yield return UseItemSequence(mockMove);
+            }
+            else
+            {
+                yield return Announcer.Announce(failMessage, true);
+                Announcer.CloseAnnouncement();
             }
         }
         yield break;

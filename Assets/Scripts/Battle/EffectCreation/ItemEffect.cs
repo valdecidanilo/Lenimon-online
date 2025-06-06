@@ -6,22 +6,32 @@ public static class ItemEffect
 {
     public static Effect GenerateItemEffect(ItemModel item)
     {
+        item.checkItemUse = FreeUseItem;
         switch (item.name)
         {
             case "Potion":
+                item.checkItemUse = HealItemCheck;
                 return new HealEffect(20);
+            case "Revive":
+                item.checkItemUse = RevivalItemCheck;
+                return new HealEffect(50, HealEffect.HealType.Hp);
             case "Super Potion":
-            case "Fresh Water":
+                item.checkItemUse = HealItemCheck;
                 return new HealEffect(50);
             case "Soda Pop":
+                item.checkItemUse = HealItemCheck;
                 return new HealEffect(60);
             case "Lemonade":
+                item.checkItemUse = HealItemCheck;
                 return new HealEffect(80);
             case "Moomoo Milk":
+                item.checkItemUse = HealItemCheck;
                 return new HealEffect(100);
             case "Hyper Potion":
+                item.checkItemUse = HealItemCheck;
                 return new HealEffect(200);
             case "Max Potion":
+                item.checkItemUse = HealItemCheck;
                 return new HealEffect(100, HealEffect.HealType.Hp);
 
             case "X Attack":
@@ -69,6 +79,29 @@ public static class ItemEffect
         }
 
         return null;
+    }
+
+    private static bool FreeUseItem(Pokemon pokemon, out string failMessage)
+    {
+        failMessage = string.Empty;
+        return true;
+    }
+    
+    private static bool HealItemCheck(Pokemon pokemon, out string failMessage)
+    {
+        failMessage = string.Empty;
+        int hp = pokemon.battleStats.hp;
+        if (hp <= 0) failMessage = "You can't heal a fainted pokemon!!";
+        else if(hp >= pokemon.stats.hp) failMessage = $"{pokemon.name} is already at full HP!!";
+        return string.IsNullOrEmpty(failMessage);
+    }
+    
+    private static bool RevivalItemCheck(Pokemon pokemon, out string failMessage)
+    {
+        failMessage = string.Empty;
+        int hp = pokemon.battleStats.hp;
+        if (hp > 0) failMessage = $"{pokemon.name} has not fainted!!";
+        return string.IsNullOrEmpty(failMessage);
     }
 
     public static IEnumerator ItemMessage(BattleEvent evt)
