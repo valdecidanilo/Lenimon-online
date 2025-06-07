@@ -39,7 +39,7 @@ public static class MoveHelper
 
         //test
         possibleMoves = new List<MoveReference>();
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/tail-whip" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/bullet-punch" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/dragon-dance" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/poison-jab" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/drain-punch" } });

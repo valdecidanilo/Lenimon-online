@@ -54,7 +54,7 @@ public class BattleSetup : MonoBehaviour
         opponent = Opponent;
         player.activePokemon = player.party[0];
         opponent.activePokemon = opponent.party[0];
-        fightMenu.SetupBattle(player.activePokemon, opponent.activePokemon);
+        fightMenu.SetupBattle(player, opponent);
         OpenParty();
         OpenBag();
         OpenChoiceMenu();

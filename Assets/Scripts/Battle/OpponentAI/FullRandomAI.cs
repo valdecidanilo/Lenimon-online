@@ -6,6 +6,8 @@ public class FullRandomAI : Opponent
 {
     public override MoveModel ChooseMove(Pokemon pokemon)
     {
-        throw new System.NotImplementedException();
+        MoveModel pickedMove = activePokemon.moves[Random.Range(0, 4)];
+        while (pickedMove == null) pickedMove = activePokemon.moves[Random.Range(0, 4)];
+        return pickedMove;
     }
 }

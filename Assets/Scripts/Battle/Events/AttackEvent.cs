@@ -87,7 +87,7 @@ namespace Battle
             yield return defender.DamagePokemon(finalDamage);
         }
 
-        private Stats CalculateModifiers(Pokemon pokemon)
+        public static Stats CalculateModifiers(Pokemon pokemon)
         {
             Stats stats = Stats.Copy(pokemon.stats);
             StatType type;
@@ -105,20 +105,6 @@ namespace Battle
                 lower = 2 - Mathf.Min(stage, 0);
                 stats[type] = Mathf.FloorToInt(stats[type] * (upper / lower));
             }
-
-            //accuracy
-            type = StatType.acc;
-            stage = pokemon.battleStats[type];
-            upper = 3 + Mathf.Max(stage, 0);
-            lower = 3 - Mathf.Min(stage, 0);
-            stats[type] = Mathf.FloorToInt(stats[type] * (upper / lower));
-
-            //evasion
-            type = StatType.eva;
-            stage = pokemon.battleStats[type];
-            upper = 3 - Mathf.Min(stage, 0);
-            lower = 3 + Mathf.Max(stage, 0);
-            stats[type] = Mathf.FloorToInt(stats[type] * (upper / lower));
 
             return stats;
         }

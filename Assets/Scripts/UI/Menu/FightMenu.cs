@@ -5,7 +5,6 @@ using LenixSO.Logger;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 using Logger = LenixSO.Logger.Logger;
 using Random = UnityEngine.Random;
 
@@ -21,7 +20,7 @@ public class FightMenu : ContextMenu<Pokemon>
     [Header("Battle Visuals")]
     [SerializeField] Sprite[] healthStates;
     //Enemy
-    private Pokemon enemyPokemon;
+    private Opponent enemy;
     [Header("Enemy")] [SerializeField] private Image enemyImage;
     [SerializeField] private TMP_Text enemyName;
     [SerializeField] private TMP_Text enemyLevel;
@@ -29,7 +28,7 @@ public class FightMenu : ContextMenu<Pokemon>
     [SerializeField] private Image enemyGender;
 
     //Ally
-    private Pokemon allyPokemon;
+    private Trainer player;
     [Header("Ally")] [SerializeField] private Image pokemonImage;
     [SerializeField] private TMP_Text pokemonName;
     [SerializeField] private TMP_Text level;
@@ -57,11 +56,11 @@ public class FightMenu : ContextMenu<Pokemon>
         gameObject.SetActive(true);
         for (int i = 0; i < moves.Length; i++)
         {
-            moves[i].text = allyPokemon?.moves[i]?.name ?? "-";
+            moves[i].text = player.activePokemon?.moves[i]?.name ?? "-";
         }
 
         //first selected
-        UpdateMoveData(allyPokemon.moves[0]);
+        UpdateMoveData(player.activePokemon.moves[0]);
         contextSelection.Focus();
     }
 
@@ -74,8 +73,8 @@ public class FightMenu : ContextMenu<Pokemon>
     #region Moves
     private void OnSelectionChanged(int id)
     {
-        if (id < 0 || id >= allyPokemon.moves.Length) return;
-        UpdateMoveData(allyPokemon.moves[id]);
+        if (id < 0 || id >= player.activePokemon.moves.Length) return;
+        UpdateMoveData(player.activePokemon.moves[id]);
     }
     private void UpdateMoveData(MoveModel move)
     {
@@ -86,127 +85,137 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     private void OnMovePick(int id)
     {
-        if(allyPokemon.moves[id] == null) return;
-        Logger.Log($"{allyPokemon.name} will use {allyPokemon.moves[id].name}", LogFlags.Game);
+        if(player.activePokemon.moves[id] == null) return;
+        Logger.Log($"{player.name} will use {player.activePokemon.moves[id].name}", LogFlags.Game);
         //onPickMove?.Invoke(id);
-        BeginBattle(allyPokemon.moves[id]);
+        BeginBattle(player.activePokemon.moves[id]);
     }
     #endregion
 
     #region Battle
     public static void BeginBattle(MoveModel playerMove)
     {
-        MoveModel opponentMove = ChoseOpponentMove(playerMove);
+        MoveModel opponentMove = instance.ChoseOpponentMove();
         instance.StartCoroutine(instance.BattleSequence(playerMove, opponentMove));
     }
-    private static MoveModel ChoseOpponentMove(MoveModel playerMove)
-    {
-        return null;
-    }
+    private MoveModel ChoseOpponentMove() => enemy.ChooseMove(player.activePokemon);
 
     public static IEnumerator DelayedStartBattle(MoveModel allyMove)
     {
-        instance.OpenMenu(instance.allyPokemon);
+        instance.OpenMenu(instance.player.activePokemon);
         yield return null;
         BeginBattle(allyMove);
     }
     private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
     {
-        BattleEvent evtBattle = new();
-        evtBattle.user = "You";//or "Opponent"
-        evtBattle.move = allyMove;
-        evtBattle.origin = allyPokemon;
-        evtBattle.target = GetTarget(evtBattle.move.Data.target.name, allyPokemon, enemyPokemon);
-        evtBattle.attackEvent = new(allyPokemon, enemyPokemon, evtBattle.move);
+        BattleEvent evt = new();
+        evt.user = "You";//or "Opponent"
+        evt.move = allyMove;
+        evt.origin = player.activePokemon;
+        evt.target = GetTarget(evt.move.Data.target.name, player.activePokemon, enemy.activePokemon);
+        evt.attackEvent = new(evt.origin, evt.target, evt.move);
+        yield return TurnSequence(evt);
+
+        evt = new();
+        evt.user = "Opponent";
+        evt.move = opponentMove;
+        evt.origin = enemy.activePokemon;
+        evt.target = GetTarget(evt.move.Data.target.name, enemy.activePokemon, player.activePokemon);
+        evt.attackEvent = new(evt.origin, evt.target, evt.move);
+        yield return TurnSequence(evt);
+
+        //next move
+        //yield return Announcer.Announce($"{enemy.name} attacks.", holdTime: 1.5f);
+        contextSelection.Focus();
+        //yield return player.activePokemon.DamagePokemon(50);
+        Announcer.CloseAnnouncement();
+        ReturnCall(new());
+
+        yield break;
         
-        #region Type Shenanigans
-        //Add type chart and STAB modifiers
-        //add type modifiers
-        Pokemon attacker = evtBattle.origin;
-        Pokemon defender = evtBattle.target;
-        MoveModel move = evtBattle.move;
-        float typeMod = 1;
-        //type modifiers
-        for (int i = 0; i < defender.types.Length; i++)
-            typeMod *= move.moveType.GetMultiplier(defender.types[i]);
-            
-        //attack type effectiveness text
-        string typeEffectMessage = typeMod switch
+        IEnumerator TurnSequence(BattleEvent evtBattle)
         {
-            1 => string.Empty,
-            > 1 => "It's super effective!",
-            < 1 and > 0 => "It's not very effective...",
-            _ => $"It doesn't affect {defender.name}..."
-        };
+            #region Type Shenanigans
+            //Add type chart and STAB modifiers
+            //add type modifiers
+            Pokemon attacker = evtBattle.origin;
+            Pokemon defender = evtBattle.target;
+            MoveModel move = evtBattle.move;
+            float typeMod = 1;
+            //type modifiers
+            for (int i = 0; i < defender.types.Length; i++)
+                typeMod *= move.moveType.GetMultiplier(defender.types[i]);
 
-        //STAB
-        for (int i = 0; i < attacker.types.Length; i++)
-        {
-            if(attacker.types[i] != move.moveType) continue;
-            typeMod *= 1.5f;
-            break;
-        }
-        //apply modifier
-        evtBattle.attackEvent.modifier *= typeMod;
-        #endregion
-
-        bool hit = evtBattle.attackEvent.CheckHit(out bool missed);
-
-        contextSelection.ReleaseSelection();
-        yield return evtBattle.move.effectMessage.Invoke(evtBattle);
-        if (hit)
-        {
-
-            bool targetSelf = evtBattle.target == evtBattle.origin;
-            if (typeMod != 0 || targetSelf)
-                yield return evtBattle.move.effect.EffectSequence(evtBattle);
-
-            typeMod = evtBattle.attackEvent.modifier;//resultant modifier
-            bool attackHits = (typeMod != 0 && evtBattle.attackEvent.damageDealt >= 0) || 
-                              (typeMod == 0 && evtBattle.attackEvent.damageDealt < 0);
-            if (attackHits && !string.IsNullOrEmpty(typeEffectMessage))
-                yield return Announcer.Announce(typeEffectMessage, holdTime: 1);
-            
-            //sub effect
-            if (evtBattle.attackEvent.modifier > 0) yield return TriggerSubEffect(evtBattle.move.effect);
-
-            IEnumerator TriggerSubEffect(Effect effect)
+            //attack type effectiveness text
+            string typeEffectMessage = typeMod switch
             {
-                if (effect.subEffect == null) yield break;
-                //check chance
-                int r = Random.Range(1, 101);
-                if (r > effect.subEffectChance) yield break;
-                effect.subEffectSetup?.Invoke(evtBattle);
-                yield return effect.subEffect.EffectSequence(evtBattle);
-                yield return TriggerSubEffect(effect.subEffect);
+                1 => string.Empty,
+                > 1 => "It's super effective!",
+                < 1 and > 0 => "It's not very effective...",
+                _ => $"It doesn't affect {defender.name}..."
+            };
+
+            //STAB
+            for (int i = 0; i < attacker.types.Length; i++)
+            {
+                if (attacker.types[i] != move.moveType) continue;
+                typeMod *= 1.5f;
+                break;
             }
+            //apply modifier
+            evtBattle.attackEvent.modifier *= typeMod;
+            #endregion
 
-            if (evtBattle.failed)
+            bool hit = evtBattle.attackEvent.CheckHit(out bool missed);
+
+            contextSelection.ReleaseSelection();
+            yield return evtBattle.move.effectMessage.Invoke(evtBattle);
+            if (hit)
             {
-                //fail text
-            }
-        }
-        else
-        {
-            //missed/evaded text
-            if (missed)
-            {
-                yield return Announcer.Announce($"{allyPokemon.name} attack missed.", holdTime: 1f);
+
+                bool targetSelf = evtBattle.target == evtBattle.origin;
+                if (typeMod != 0 || targetSelf)
+                    yield return evtBattle.move.effect.EffectSequence(evtBattle);
+
+                typeMod = evtBattle.attackEvent.modifier;//resultant modifier
+                bool attackHits = (typeMod != 0 && evtBattle.attackEvent.damageDealt >= 0) ||
+                                  (typeMod == 0 && evtBattle.attackEvent.damageDealt < 0);
+                if (attackHits && !string.IsNullOrEmpty(typeEffectMessage))
+                    yield return Announcer.Announce(typeEffectMessage, holdTime: 1);
+
+                //sub effect
+                if (evtBattle.attackEvent.modifier > 0) yield return TriggerSubEffect(evtBattle.move.effect);
+
+                IEnumerator TriggerSubEffect(Effect effect)
+                {
+                    if (effect.subEffect == null) yield break;
+                    //check chance
+                    int r = Random.Range(1, 101);
+                    if (r > effect.subEffectChance) yield break;
+                    effect.subEffectSetup?.Invoke(evtBattle);
+                    yield return effect.subEffect.EffectSequence(evtBattle);
+                    yield return TriggerSubEffect(effect.subEffect);
+                }
+
+                if (evtBattle.failed)
+                {
+                    //fail text
+                    yield return Announcer.Announce($"But it failed!", holdTime: 1f);
+                }
             }
             else
             {
-                yield return Announcer.Announce($"{enemyPokemon.name} avoided the attack", holdTime: 1f);
+                //missed/evaded text
+                if (missed)
+                {
+                    yield return Announcer.Announce($"{evtBattle.origin.name} attack missed.", holdTime: 1f);
+                }
+                else
+                {
+                    yield return Announcer.Announce($"{evtBattle.target.name} avoided the attack", holdTime: 1f);
+                }
             }
         }
-        
-
-        //next move
-        yield return Announcer.Announce($"{enemyPokemon.name} attacks.", holdTime: 1.5f);
-        contextSelection.Focus();
-        yield return allyPokemon.DamagePokemon(50);
-        Announcer.CloseAnnouncement();
-        ReturnCall(new());
-        
     }
     private Pokemon GetTarget(string target, Pokemon self, Pokemon opponent)
     {
@@ -221,73 +230,75 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     private IEnumerator AllyHpChanged(int initialValue, int currentValue)
     {
-        yield return BattleVFX.LerpHpBar(allyPokemon, initialValue, currentValue, hp, hpValue);
+        yield return BattleVFX.LerpHpBar(player.activePokemon, initialValue, currentValue, hp, hpValue);
     }
     private IEnumerator OpponentHpChanged(int initialValue, int currentValue)
     {
-        yield return BattleVFX.LerpHpBar(enemyPokemon, initialValue, currentValue, enemyHp);
+        yield return BattleVFX.LerpHpBar(enemy.activePokemon, initialValue, currentValue, enemyHp);
     }
     #endregion
 
     #region Visual
-    public void SetupBattle(Pokemon ally, Pokemon opponent)
+    public void SetupBattle(Trainer ally, Opponent opponent)
     {
         //setup enemy
-        enemyPokemon = opponent;
-        SetupEnemy(enemyPokemon);
-        enemyPokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
+        enemy = opponent;
+        SetupEnemy(enemy.activePokemon);
+        enemy.activePokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
 
         //setup ally
-        allyPokemon = ally;
-        SetupAlly(allyPokemon);
-        allyPokemon.onHpChanged.RegisterCallback(AllyHpChanged);
+        player = ally;
+        SetupAlly(player.activePokemon);
+        player.activePokemon.onHpChanged.RegisterCallback(AllyHpChanged);
     }
     private void SetupAlly(Pokemon ally)
     {
-        allyPokemon = ally;
-        pokemonImage.sprite = allyPokemon.backSprite;
-        pokemonName.text = allyPokemon.name;
-        level.text = $"Lv{allyPokemon.level}";
-        BattleVFX.ChangeHpBar(allyPokemon, hp, allyPokemon.battleStats[StatType.hp], hpValue);
+        player.activePokemon = ally;
+        var pokemom = ally;
+        pokemonImage.sprite = pokemom.backSprite;
+        pokemonName.text = pokemom.name;
+        level.text = $"Lv{pokemom.level}";
+        BattleVFX.ChangeHpBar(pokemom, hp, pokemom.battleStats[StatType.hp], hpValue);
         xp.fillAmount = Random.Range(0, 1);
 
-        PokeDatabase.SetGenderSprite(gender, allyPokemon.gender);
+        PokeDatabase.SetGenderSprite(gender, pokemom.gender);
     }
-    private void SetupEnemy(Pokemon enemy)
+    private void SetupEnemy(Pokemon newPokemon)
     {
-        enemyPokemon = enemy;
-        enemyImage.sprite = enemyPokemon.frontSprite;
-        enemyName.text = enemyPokemon.name;
-        enemyLevel.text = $"Lv{enemyPokemon.level}";
-        BattleVFX.ChangeHpBar(enemyPokemon, enemyHp, enemyPokemon.battleStats[StatType.hp]);
+        enemy.activePokemon = newPokemon;
+        var pokemon = newPokemon;
+        enemyImage.sprite = pokemon.frontSprite;
+        enemyName.text = pokemon.name;
+        enemyLevel.text = $"Lv{pokemon.level}";
+        BattleVFX.ChangeHpBar(pokemon, enemyHp, pokemon.battleStats[StatType.hp]);
 
-        PokeDatabase.SetGenderSprite(gender, enemyPokemon.gender);
+        PokeDatabase.SetGenderSprite(gender, pokemon.gender);
     }
     public void ChangeAllyPokemon(Pokemon newAlly, bool animate = false)
     {
-        allyPokemon.onHpChanged.RemoveCallback(AllyHpChanged);
+        player.activePokemon.onHpChanged.RemoveCallback(AllyHpChanged);
         if (!animate)
         {
             SetupAlly(newAlly);
-            allyPokemon = newAlly;
-            allyPokemon.onHpChanged.RegisterCallback(AllyHpChanged);
+            player.activePokemon = newAlly;
+            player.activePokemon.onHpChanged.RegisterCallback(AllyHpChanged);
         }
         else
         {
             SetupAlly(newAlly);
-            allyPokemon = newAlly;
-            allyPokemon.onHpChanged.RegisterCallback(AllyHpChanged);
+            player.activePokemon = newAlly;
+            player.activePokemon.onHpChanged.RegisterCallback(AllyHpChanged);
         }
     }
     public void ChangeOpponentPokemon(Pokemon newOpponent, bool animate = false)
     {
-        enemyPokemon.onHpChanged.RemoveCallback(OpponentHpChanged);
+        enemy.activePokemon.onHpChanged.RemoveCallback(OpponentHpChanged);
         if (!animate)
         {
             SetupEnemy(newOpponent);
         }
-        enemyPokemon = newOpponent;
-        enemyPokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
+        enemy.activePokemon = newOpponent;
+        enemy.activePokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
     }
     #endregion
 }
