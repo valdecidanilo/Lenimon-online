@@ -56,9 +56,7 @@ public class FightMenu : ContextMenu<Pokemon>
         Announcer.ChangeAnnouncer(battleAnnouncer);
         gameObject.SetActive(true);
         for (int i = 0; i < moves.Length; i++)
-        {
             moves[i].text = player.activePokemon?.moves[i]?.name ?? "-";
-        }
 
         //first selected
         UpdateMoveData(player.activePokemon.moves[0]);

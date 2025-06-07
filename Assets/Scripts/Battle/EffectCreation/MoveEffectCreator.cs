@@ -86,7 +86,7 @@ namespace Battle
         private static IEnumerator NotImplementedMessage(BattleEvent evt)
         {
             evt.failed = true;
-            yield return Announcer.Announce("But it failed (this effect was not yet implemented)", holdTime: .6f);
+            yield return Announcer.Announce("(this effect was not yet implemented)", holdTime: .4f);
         }
 
         public static MoveModel EmptyMove(int priority = 99)

@@ -25,7 +25,7 @@ public class TestScript : MonoBehaviour
     private void Awake()
     {
         PokeDatabase.PreloadAssets();
-        LoadingScreen.lastOnList.onCompleted += Setup;
+        LoadingScreen.onDoneLoading += Setup;
     }
 
     private void Update()
@@ -47,8 +47,9 @@ public class TestScript : MonoBehaviour
             referenceText = "Opponent's"
         };
 
-        LoadingScreen.onDoneLoading += GenerateItems;
         GenerateParties();
+        LoadingScreen.onDoneLoading -= Setup;
+        LoadingScreen.onDoneLoading += StartBattle;
     }
     private void StartBattle()
     {
@@ -86,6 +87,7 @@ public class TestScript : MonoBehaviour
             {
                 if (requiredEnemy.isDone) return;
                 opponent.activePokemon = opponent.party[0];
+                GenerateItems();
                 requiredEnemy.FinishStep();
             };
             Logger.Log($"setup enemy party ({partySize} pokemons)", LogFlags.Game);
@@ -140,9 +142,6 @@ public class TestScript : MonoBehaviour
     #region Items
     private void GenerateItems()
     {
-        LoadingScreen.onDoneLoading -= GenerateItems;
-        LoadingScreen.onDoneLoading += StartBattle;
-        player.bag = new();
         itemsLoaded = new(0);
         GenerateHealItems();
         GenerateBattleItems();
