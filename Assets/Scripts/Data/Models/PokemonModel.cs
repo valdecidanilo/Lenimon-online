@@ -108,7 +108,7 @@ public class Pokemon : ApiData
 
     private void UpdateStats()
     {
-        stats.hp = BasicStatCalculation(data.hpStat, iv[StatType.hp], ev[StatType.hp], level) + level + 10;
+        stats.hp = data.name != "shedinja" ? BasicStatCalculation(data.hpStat, iv[StatType.hp], ev[StatType.hp], level) + level + 10 : 1;
         stats.atk = NonHpCalculation(StatType.atk);
         stats.def = NonHpCalculation(StatType.def);
         stats.sAtk = NonHpCalculation(StatType.sAtk);
