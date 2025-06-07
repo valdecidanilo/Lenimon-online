@@ -212,6 +212,7 @@ public static class PokeDatabase
 
         #endregion
     }
+    #endregion
 
     //Utility methods
     public static void SetGenderSprite(Image image, Gender gender)
@@ -233,5 +234,13 @@ public static class PokeDatabase
 
     public static TypeChartEntry GetType(string type) => typeChart.GetValueOrDefault(type, typeChart[types[^1]]);
 
-    #endregion
+    /// <summary>
+    /// Method don't work on Hp, Acc, or Evasion
+    /// </summary>
+    public static int CalculateModifiedStat(int statValue, int stage)
+    {
+        int upper = 2 + Mathf.Max(stage, 0);
+        float lower = 2 - Mathf.Min(stage, 0);
+        return Mathf.FloorToInt(statValue * (upper / lower));
+    }
 }

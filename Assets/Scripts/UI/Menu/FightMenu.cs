@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Battle;
 using LenixSO.Logger;
 using TMPro;
@@ -20,7 +21,7 @@ public class FightMenu : ContextMenu<Pokemon>
     [Header("Battle Visuals")]
     [SerializeField] Sprite[] healthStates;
     //Enemy
-    private Opponent enemy;
+    private Opponent opponent;
     [Header("Enemy")] [SerializeField] private Image enemyImage;
     [SerializeField] private TMP_Text enemyName;
     [SerializeField] private TMP_Text enemyLevel;
@@ -98,7 +99,7 @@ public class FightMenu : ContextMenu<Pokemon>
         MoveModel opponentMove = instance.ChoseOpponentMove();
         instance.StartCoroutine(instance.BattleSequence(playerMove, opponentMove));
     }
-    private MoveModel ChoseOpponentMove() => enemy.ChooseMove(player.activePokemon);
+    private MoveModel ChoseOpponentMove() => opponent.ChooseMove(player.activePokemon);
 
     public static IEnumerator DelayedStartBattle(MoveModel allyMove)
     {
@@ -108,21 +109,59 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
     {
-        BattleEvent evt = new();
-        evt.user = "You";//or "Opponent"
+        player.pickedMove ??= allyMove;
+        opponent.pickedMove ??= opponentMove;
+        //calculate witch one goes first
+        List<Trainer> trainerOrder = new(2) { player };
+        bool opponentFirst = false;
+        if (opponentMove.priority >= allyMove.priority)
+        {
+            if (opponentMove.priority == allyMove.priority)
+            {
+                int allySpeed = PokeDatabase.CalculateModifiedStat(
+                    player.activePokemon.stats[StatType.spd],
+                    player.activePokemon.battleStats[StatType.spd]);
+
+                int opponentSpeed = PokeDatabase.CalculateModifiedStat(
+                    opponent.activePokemon.stats[StatType.spd],
+                    opponent.activePokemon.battleStats[StatType.spd]);
+                opponentFirst = opponentSpeed > allySpeed;
+            }
+            else opponentFirst = true;
+        }
+        trainerOrder.Insert(opponentFirst ? 0 : 1, opponent);
+
+        for (int i = 0; i < trainerOrder.Count; i++)
+        {
+            Pokemon nextPokemon = trainerOrder[(i + 1) % trainerOrder.Count].activePokemon;
+
+            BattleEvent evt = new();
+            evt.user = trainerOrder[i];
+            evt.move = trainerOrder[i].pickedMove;
+            evt.origin = evt.user.activePokemon;
+            evt.target = GetTarget(evt.move.Data.target.name, evt.user.activePokemon, nextPokemon);
+            evt.attackEvent = new(evt.origin, evt.target, evt.move);
+            yield return TurnSequence(evt);
+        }
+
+        player.pickedMove = null;
+        opponent.pickedMove = null;
+
+        /*BattleEvent evt = new();
+        evt.user = player;
         evt.move = allyMove;
-        evt.origin = player.activePokemon;
-        evt.target = GetTarget(evt.move.Data.target.name, player.activePokemon, enemy.activePokemon);
+        evt.origin = evt.user.activePokemon;
+        evt.target = GetTarget(evt.move.Data.target.name, evt.user.activePokemon, opponent.activePokemon);
         evt.attackEvent = new(evt.origin, evt.target, evt.move);
         yield return TurnSequence(evt);
 
         evt = new();
-        evt.user = "Opponent";
+        evt.user = opponent;
         evt.move = opponentMove;
-        evt.origin = enemy.activePokemon;
-        evt.target = GetTarget(evt.move.Data.target.name, enemy.activePokemon, player.activePokemon);
+        evt.origin = evt.user.activePokemon;
+        evt.target = GetTarget(evt.move.Data.target.name, evt.user.activePokemon, player.activePokemon);
         evt.attackEvent = new(evt.origin, evt.target, evt.move);
-        yield return TurnSequence(evt);
+        yield return TurnSequence(evt);*/
 
         //next move
         //yield return Announcer.Announce($"{enemy.name} attacks.", holdTime: 1.5f);
@@ -234,17 +273,17 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     private IEnumerator OpponentHpChanged(int initialValue, int currentValue)
     {
-        yield return BattleVFX.LerpHpBar(enemy.activePokemon, initialValue, currentValue, enemyHp);
+        yield return BattleVFX.LerpHpBar(opponent.activePokemon, initialValue, currentValue, enemyHp);
     }
     #endregion
 
     #region Visual
-    public void SetupBattle(Trainer ally, Opponent opponent)
+    public void SetupBattle(Trainer ally, Opponent enemy)
     {
         //setup enemy
-        enemy = opponent;
-        SetupEnemy(enemy.activePokemon);
-        enemy.activePokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
+        opponent = enemy;
+        SetupEnemy(opponent.activePokemon);
+        opponent.activePokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
 
         //setup ally
         player = ally;
@@ -265,7 +304,7 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     private void SetupEnemy(Pokemon newPokemon)
     {
-        enemy.activePokemon = newPokemon;
+        opponent.activePokemon = newPokemon;
         var pokemon = newPokemon;
         enemyImage.sprite = pokemon.frontSprite;
         enemyName.text = pokemon.name;
@@ -292,13 +331,13 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     public void ChangeOpponentPokemon(Pokemon newOpponent, bool animate = false)
     {
-        enemy.activePokemon.onHpChanged.RemoveCallback(OpponentHpChanged);
+        opponent.activePokemon.onHpChanged.RemoveCallback(OpponentHpChanged);
         if (!animate)
         {
             SetupEnemy(newOpponent);
         }
-        enemy.activePokemon = newOpponent;
-        enemy.activePokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
+        opponent.activePokemon = newOpponent;
+        opponent.activePokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
     }
     #endregion
 }

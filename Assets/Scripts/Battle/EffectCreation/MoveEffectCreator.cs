@@ -79,8 +79,7 @@ namespace Battle
 
         private static IEnumerator MoveMessage(BattleEvent evt)
         {
-            string side = evt.user == "You" ? "Allied" : $"{evt.user}'s";
-            yield return Announcer.Announce($"{side} {evt.origin.name} used {evt.move.name}.", holdTime: 1f);
+            yield return Announcer.Announce($"{evt.user.referenceText} {evt.origin.name} used {evt.move.name}.", holdTime: 1f);
         }
 
         private static Effect EffectNotImplemented() => new CustomEffect(NotImplementedMessage);

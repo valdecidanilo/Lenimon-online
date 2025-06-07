@@ -100,10 +100,7 @@ namespace Battle
             for (int i = (int)StatType.atk; i <= finalStat; i++)
             {
                 type = (StatType)i;
-                stage = pokemon.battleStats[type];
-                upper = 2 + Mathf.Max(stage, 0);
-                lower = 2 - Mathf.Min(stage, 0);
-                stats[type] = Mathf.FloorToInt(stats[type] * (upper / lower));
+                stats[type] = PokeDatabase.CalculateModifiedStat(stats[type], pokemon.battleStats[type]);
             }
 
             return stats;

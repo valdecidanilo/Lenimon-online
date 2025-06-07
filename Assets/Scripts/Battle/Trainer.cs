@@ -7,5 +7,5 @@ public class Trainer
     public Pokemon[] party;
     public Pokemon activePokemon;
 
-    public MoveModel autoPickMove;
+    public MoveModel pickedMove;
 }
