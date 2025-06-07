@@ -16,16 +16,16 @@ public class TestScript : MonoBehaviour
 
     [SerializeField] private BattleSetup battle;
 
-    private Pokemon[] allyParty;
-    private Pokemon[] enemyParty;
-    private Bag bag;
+    private Trainer player;
+    private Opponent opponent;
+    int encounterLevel;
 
     private Checklist itemsLoaded;
 
     private void Awake()
     {
         PokeDatabase.PreloadAssets();
-        LoadingScreen.onDoneLoading += Setup;
+        LoadingScreen.lastOnList.onCompleted += Setup;
     }
 
     private void Update()
@@ -35,25 +35,36 @@ public class TestScript : MonoBehaviour
 
     private void Setup()
     {
-        LoadingScreen.onDoneLoading -= Setup;
+        player = new()
+        {
+            name = "You",
+            referenceText = "Allied"
+        };
+
+        opponent = new FullRandomAI()
+        {
+            name = "Opponent",
+            referenceText = "Opponent's"
+        };
+
         LoadingScreen.onDoneLoading += GenerateItems;
         GenerateParties();
     }
     private void StartBattle()
     {
-        battle.SetupBattle(allyParty, enemyParty, bag);
+        battle.SetupBattle(player, opponent);
     }
 
     #region Pokemon
     private void GenerateParties()
     {
         //get encounter level
-        int encounterLevel = Random.Range(1, 101);
+        encounterLevel = Random.Range(1, 101);
 
         //generate ally party
         int partySize = Random.Range(1, 7);
         int partyLevel = Mathf.Min(100, encounterLevel + (6 - partySize));
-        allyParty = new Pokemon[partySize];
+        player.party = new Pokemon[partySize];
         Checklist alliesLoaded = new(partySize);
 
         Checklist requiredEnemy = new(1);
@@ -68,17 +79,19 @@ public class TestScript : MonoBehaviour
             //load enemies
             partySize = Random.Range(1, 7);
             partyLevel = Mathf.Min(100, encounterLevel + (6 - partySize));
-            enemyParty = new Pokemon[partySize];
+            opponent.party = new Pokemon[partySize];
 
             Checklist opponentLoaded = new(partySize);
             opponentLoaded.onProgress += (p) =>
             {
-                if (!requiredEnemy.isDone) requiredEnemy.FinishStep();
+                if (requiredEnemy.isDone) return;
+                opponent.activePokemon = opponent.party[0];
+                requiredEnemy.FinishStep();
             };
             Logger.Log($"setup enemy party ({partySize} pokemons)", LogFlags.Game);
-            SetupParty(enemyParty, opponentLoaded);
+            SetupParty(opponent.party, opponentLoaded);
         };
-        SetupParty(allyParty, alliesLoaded);
+        SetupParty(player.party, alliesLoaded);
 
         void SetupParty(Pokemon[] party, Checklist loaded)
         {
@@ -129,11 +142,13 @@ public class TestScript : MonoBehaviour
     {
         LoadingScreen.onDoneLoading -= GenerateItems;
         LoadingScreen.onDoneLoading += StartBattle;
-        bag = new();
+        player.bag = new();
         itemsLoaded = new(0);
         GenerateHealItems();
         GenerateBattleItems();
         GenerateTMs();
+        itemsLoaded.AddStep();
+        opponent.SetupBag(encounterLevel, () => itemsLoaded.FinishStep());
         LoadingScreen.AddOrChangeQueue(itemsLoaded, "Loading items...");
     }
 
@@ -162,7 +177,7 @@ public class TestScript : MonoBehaviour
             PokeAPI.GetItem(route, (item) =>
             {
                 item.amount = 5;
-                bag.items.Add(item);
+                player.bag.items.Add(item);
                 item.battleEffect = ItemEffect.GenerateItemEffect(item);
                 log.Append($"\n{item.name}");
                 loaded.FinishStep();
@@ -201,7 +216,7 @@ public class TestScript : MonoBehaviour
             string route = $"{PokeAPI.baseRoute}item/{itemList[loaded.currentSteps]}";
             PokeAPI.GetItem(route, (item) =>
             {
-                bag.battleItems.Add(item);
+                player.bag.battleItems.Add(item);
                 item.battleEffect = ItemEffect.GenerateItemEffect(item);
                 log.Append($"\n{item.name}");
                 loaded.FinishStep();
@@ -242,7 +257,7 @@ public class TestScript : MonoBehaviour
             {
                 PokeAPI.GetTM(moveData, (tm) =>
                 {
-                    bag.TMs.Add(tm);
+                    player.bag.TMs.Add(tm);
                     tm.battleEffect = MoveEffectCreator.EmptyEffect();
                     log.Append($"\n{tm.name} => {tm.data.moveData.name}");
                     loadedTMs.FinishStep();

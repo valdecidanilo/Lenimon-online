@@ -19,6 +19,8 @@ public class LoadingScreen : MonoBehaviour
     private List<Checklist> checklists = new();
     private List<string> texts = new();
 
+    public static Checklist lastOnList => instance.checklists[^1];
+
     private void Awake()
     {
         onDoneLoading = null;

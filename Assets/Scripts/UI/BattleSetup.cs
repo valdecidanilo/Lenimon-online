@@ -29,12 +29,8 @@ public class BattleSetup : MonoBehaviour
     private InputAction detailsAction;
     private InputAction summaryNavigationAction;
 
-    //Enemy
-    private Pokemon[] enemyParty;
-
-    //Ally
-    private Pokemon[] allyParty;
-    private Bag playerBag;
+    private Trainer player;
+    private Opponent opponent;
 
     private void Awake()
     {
@@ -51,13 +47,14 @@ public class BattleSetup : MonoBehaviour
         bag.onReturn += OpenChoiceMenu;
     }
 
-    public void SetupBattle(Pokemon[] allies, Pokemon[] enemies, Bag bag)
+    public void SetupBattle(Trainer Player, Opponent Opponent)
     {
         //setup enemy
-        allyParty = allies;
-        enemyParty = enemies;
-        playerBag = bag;
-        fightMenu.SetupBattle(allyParty[0], enemyParty[0]);
+        player = Player;
+        opponent = Opponent;
+        player.activePokemon = player.party[0];
+        opponent.activePokemon = opponent.party[0];
+        fightMenu.SetupBattle(player.activePokemon, opponent.activePokemon);
         OpenParty();
         OpenBag();
         OpenChoiceMenu();
@@ -65,10 +62,11 @@ public class BattleSetup : MonoBehaviour
 
     private void OnAllyChanged(int newAlly)
     {
-        Pokemon cashe = allyParty[newAlly];
-        allyParty[newAlly] = allyParty[0];
-        allyParty[0] = cashe;
-        fightMenu.ChangeAllyPokemon(allyParty[0], true);
+        Pokemon cashe = player.party[newAlly];
+        player.party[newAlly] = player.activePokemon;
+        player.party[0] = cashe;
+        player.activePokemon = cashe;
+        fightMenu.ChangeAllyPokemon(player.activePokemon, true);
         OpenChoiceMenu();
     }
 
@@ -77,7 +75,7 @@ public class BattleSetup : MonoBehaviour
     {
         summaryPokemonId = id;
         summaryFromParty = true;
-        OpenPokemonSummary(allyParty[id]);
+        OpenPokemonSummary(player.party[id]);
     }
 
     private void SwitchPokemon(CallbackContext context)
@@ -86,8 +84,8 @@ public class BattleSetup : MonoBehaviour
         if(direction.y == 0) return;
         int delta = -Mathf.RoundToInt(Mathf.Sign(direction.y));
         if (delta == 0 || !summaryFromParty || !summary.isOpen) return;
-        summaryPokemonId = (summaryPokemonId + delta + allyParty.Length) % allyParty.Length;
-        OpenPokemonSummary(allyParty[summaryPokemonId]);
+        summaryPokemonId = (summaryPokemonId + delta + player.party.Length) % player.party.Length;
+        OpenPokemonSummary(player.party[summaryPokemonId]);
     }
 
     private void CloseSummary()
@@ -113,7 +111,7 @@ public class BattleSetup : MonoBehaviour
         enemySummaryButton.onClick.RemoveListener(OpenEnemySummary);
     }
 
-    private void OpenEnemySummary() => OpenPokemonSummary(enemyParty[0]);
+    private void OpenEnemySummary() => OpenPokemonSummary(opponent.activePokemon);
 
     private void EnemySummaryInput(CallbackContext context) => OpenEnemySummary();
     #endregion
@@ -151,28 +149,28 @@ public class BattleSetup : MonoBehaviour
 
         //open window
         battleMenu.SetActive(true);
-        battleChoice.Select(0);
+        battleChoice.Focus();
         Announcer.ChangeAnnouncer(choiceAnnouncer);
-        StartCoroutine(Announcer.Announce($"What will {allyParty[0].name} do?"));
+        StartCoroutine(Announcer.Announce($"What will {player.activePokemon.name} do?"));
     }
 
     private void OpenBattleScene()
     {
         battleMenu.SetActive(false);
-        fightMenu.OpenMenu(allyParty[0]);
+        fightMenu.OpenMenu(player.activePokemon);
     }
 
     private void OpenBag()
     {
         battleMenu.SetActive(false);
-        bag.OpenMenu(playerBag);
+        bag.OpenMenu(player.bag);
     }
 
     private void OpenParty()
     {
         battleChoice.ReleaseSelection();
         battleMenu.SetActive(false);
-        partyChoice.OpenMenu(allyParty);
+        partyChoice.OpenMenu(player.party);
     }
 
     private void OpenPokemonSummary(Pokemon pokemon)
