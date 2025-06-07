@@ -146,27 +146,7 @@ public class FightMenu : ContextMenu<Pokemon>
 
         player.pickedMove = null;
         opponent.pickedMove = null;
-
-        /*BattleEvent evt = new();
-        evt.user = player;
-        evt.move = allyMove;
-        evt.origin = evt.user.activePokemon;
-        evt.target = GetTarget(evt.move.Data.target.name, evt.user.activePokemon, opponent.activePokemon);
-        evt.attackEvent = new(evt.origin, evt.target, evt.move);
-        yield return TurnSequence(evt);
-
-        evt = new();
-        evt.user = opponent;
-        evt.move = opponentMove;
-        evt.origin = evt.user.activePokemon;
-        evt.target = GetTarget(evt.move.Data.target.name, evt.user.activePokemon, player.activePokemon);
-        evt.attackEvent = new(evt.origin, evt.target, evt.move);
-        yield return TurnSequence(evt);*/
-
-        //next move
-        //yield return Announcer.Announce($"{enemy.name} attacks.", holdTime: 1.5f);
         contextSelection.Focus();
-        //yield return player.activePokemon.DamagePokemon(50);
         Announcer.CloseAnnouncement();
         ReturnCall(new());
 
