@@ -45,6 +45,7 @@ public class Announcer : MonoBehaviour
     public static void Announce(string text, bool awaitInput = false, float holdTime = 0, Action onDone = null)
     {
         if (!instance) return;
+        instance.gameObject.SetActive(true);
         instance.StartCoroutine(AnnounceCoroutine(text, awaitInput, holdTime, onDone));
     }
 
