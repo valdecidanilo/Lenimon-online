@@ -11,7 +11,7 @@ namespace Battle
     {
         public override IEnumerator EffectSequence(BattleEvent evt)
         {
-            WaitForSeconds attacksDelay = new(.4f);
+            WaitForSeconds attacksDelay = new(.6f);
 
             //damage
             int hits = Random.Range(evt.attackEvent.minHits, evt.attackEvent.maxHits + 1);
@@ -23,6 +23,18 @@ namespace Battle
 
             if (evt.attackEvent.damageDealt > 0 && evt.attackEvent.maxHits > evt.attackEvent.minHits)
                 yield return Announcer.AnnounceCoroutine($"It hit {hits} times!", holdTime: 1);
+
+            if (evt.move.Data.meta.drain >= 0 && evt.move.Data.meta.healing >= 0) yield break;
+
+            int recoil = 0;
+            if (evt.move.Data.meta.drain < 0) 
+                recoil = Mathf.FloorToInt(evt.attackEvent.damageDealt * evt.move.Data.meta.drain / -100f);
+            else if (evt.move.Data.meta.healing < 0)
+                recoil = Mathf.FloorToInt(evt.origin.stats[StatType.hp] * evt.move.Data.meta.healing / -100f);
+
+            if (recoil <= 0) yield break;
+            yield return evt.origin.DamagePokemon(recoil);
+            yield return Announcer.AnnounceCoroutine($"{evt.origin.name} was damaged by recoil!", holdTime: 1);
         }
     }
 }

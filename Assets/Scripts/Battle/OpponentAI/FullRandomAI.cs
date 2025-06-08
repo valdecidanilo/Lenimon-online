@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,18 +8,14 @@ public class FullRandomAI : Opponent
         if (activePokemon.battleStats.hp <= activePokemon.stats.hp * .25f &&
             (bag.items.Count > 0 && bag.items[0].amount > 0))
             return UseHealItem();
-        MoveModel pickedMove = activePokemon.moves[Random.Range(0, 4)];
-        while (pickedMove == null) pickedMove = activePokemon.moves[Random.Range(0, 4)];
-        return pickedMove;
-    }
+        List<int> options = new(4);
+        for (int i = 0; i < options.Capacity; i++)
+            if (pokemon.moves[i] != null && pokemon.moves[i].pp > 0)
+                options.Add(i);
 
-    private MoveModel UseHealItem()
-    {
-        ItemModel item = bag.items[0];
-        item.amount--;
-        if(item.amount <= 0) bag.items.Remove(item);
-        MoveModel mockMove = ItemEffect.CreateMockMove(item);
-        mockMove.priority--;
-        return mockMove;
+        MoveModel pickedMove;
+        if(options.Count > 0) pickedMove = activePokemon.moves[options[Random.Range(0, options.Count)]];
+        else pickedMove = MoveHelper.Struggle();
+        return pickedMove;
     }
 }

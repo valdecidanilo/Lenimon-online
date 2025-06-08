@@ -16,6 +16,7 @@ public static class PokeDatabase
     public static Dictionary<string, ItemData> items = new();
     public static Dictionary<string, Stats> natures = new();
     public static Dictionary<MoveData, TMData> TMs = new();
+    public static MoveData StruggleMoveData => moves[PokeAPI.struggleMoveRoute];
     #endregion
 
     //resources database
@@ -152,6 +153,7 @@ public static class PokeDatabase
             preloadedAssets.FinishStep();
         });
 
+        //TypeChart
         preloadedAssets.AddStep();
         WebConnection.GetRequest<ApiRequestList>("https://pokeapi.co/api/v2/type", (data) =>
         {
@@ -209,6 +211,10 @@ public static class PokeDatabase
                 });
             }
         });
+
+        //Struggle move
+        preloadedAssets.AddStep();
+        PokeAPI.GetMoveData(PokeAPI.struggleMoveRoute, (data) => preloadedAssets.FinishStep());
 
         #endregion
     }

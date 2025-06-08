@@ -8,6 +8,7 @@ using Logger = LenixSO.Logger.Logger;
 public static class PokeAPI
 {
     public const string baseRoute = "https://pokeapi.co/api/v2/";
+    public const string struggleMoveRoute = "https://pokeapi.co/api/v2/move/struggle";
 
     public static void GetPokemonData(string pokemonName, Action<PokemonData> onSuccess)
     {

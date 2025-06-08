@@ -27,7 +27,7 @@ public class MoveModel
         this.data = data;
         name = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(data.name.Replace("-", " "));
         id = data.id;
-        moveType = PokeDatabase.GetType(data.type.name);
+        moveType = PokeDatabase.GetType(data.name == "struggle" ? "" : data.type.name);
         power = data.power;
         accuracy = data.accuracy;
         pp = data.pp;

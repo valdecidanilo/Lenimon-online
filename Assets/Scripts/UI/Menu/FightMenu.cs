@@ -39,6 +39,8 @@ public class FightMenu : ContextMenu<Pokemon>
     [SerializeField] private Image gender;
     #endregion
 
+    private MoveModel[] movesData;
+
     private static FightMenu instance;
 
     protected override void Awake()
@@ -55,11 +57,24 @@ public class FightMenu : ContextMenu<Pokemon>
         base.OpenMenu(data);
         Announcer.ChangeAnnouncer(battleAnnouncer);
         gameObject.SetActive(true);
+
+        //check if any move has pp
+        bool canOnlyStruggle = true;
+        for (int i = 0; i < data.moves.Length; i++)
+        {
+            if (data.moves[i] != null && data.moves[i].pp > 0)
+            {
+                canOnlyStruggle = false; 
+                break;
+            }
+        }
+        movesData = canOnlyStruggle ? new MoveModel[4] { MoveHelper.Struggle(), null, null, null } : data.moves;
+
         for (int i = 0; i < moves.Length; i++)
-            moves[i].text = player.activePokemon?.moves[i]?.name ?? "-";
+            moves[i].text = movesData[i]?.name ?? "-";
 
         //first selected
-        UpdateMoveData(player.activePokemon.moves[0]);
+        UpdateMoveData(movesData[0]);
         contextSelection.Focus();
     }
 
@@ -72,8 +87,8 @@ public class FightMenu : ContextMenu<Pokemon>
     #region Moves
     private void OnSelectionChanged(int id)
     {
-        if (id < 0 || id >= player.activePokemon.moves.Length) return;
-        UpdateMoveData(player.activePokemon.moves[id]);
+        if (id < 0 || id >= movesData.Length) return;
+        UpdateMoveData(movesData[id]);
     }
     private void UpdateMoveData(MoveModel move)
     {
@@ -84,10 +99,10 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     private void OnMovePick(int id)
     {
-        if(player.activePokemon.moves[id] == null) return;
-        Logger.Log($"{player.name} will use {player.activePokemon.moves[id].name}", LogFlags.Game);
+        if(movesData[id] == null) return;
+        Logger.Log($"{player.name} will use {movesData[id].name}", LogFlags.Game);
         //onPickMove?.Invoke(id);
-        BeginBattle(player.activePokemon.moves[id]);
+        BeginBattle(movesData[id]);
     }
     #endregion
 
@@ -253,6 +268,7 @@ public class FightMenu : ContextMenu<Pokemon>
             "selected-pokemon" => opponent,
             "all-opponents" => opponent,
             "all-other-pokemon" => opponent,
+            _ => opponent,
         };
     }
     private IEnumerator AllyHpChanged(int initialValue, int currentValue)

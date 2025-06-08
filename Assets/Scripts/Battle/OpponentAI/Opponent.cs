@@ -27,4 +27,14 @@ public abstract class Opponent : Trainer
         });
     }
     public abstract MoveModel ChooseMove(Pokemon pokemon);
+
+    protected virtual MoveModel UseHealItem()
+    {
+        ItemModel item = bag.items[0];
+        item.amount--;
+        if (item.amount <= 0) bag.items.Remove(item);
+        MoveModel mockMove = ItemEffect.CreateMockMove(item);
+        mockMove.priority--;
+        return mockMove;
+    }
 }
