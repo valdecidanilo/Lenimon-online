@@ -13,7 +13,7 @@ namespace Battle
             Effect moveEffect = EffectNotImplemented();
             CoroutineAction<BattleEvent> moveMessage = new(MoveMessage);
             move.effectMessage = moveMessage;
-            switch (move.Data.meta.category.name)
+            switch (move.Data?.meta?.category?.name)
             {
                 case "damage":
                     //Logger.Log("damage move", LogFlags.DataCheck);
@@ -51,8 +51,8 @@ namespace Battle
                 case "heal":
                     //Logger.Log("heal move", LogFlags.DataCheck);
                     MoveMetaData meta = move.Data.meta;
-                    moveEffect = meta.healing > 0 ? 
-                        new HealEffect(meta.healing, HealEffect.HealType.Hp) : 
+                    moveEffect = meta.healing > 0 ?
+                        new HealEffect(meta.healing, HealEffect.HealType.Hp) :
                         new HealEffect(meta.drain, HealEffect.HealType.Drain);
                     break;
                 case "swagger":

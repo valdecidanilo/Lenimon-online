@@ -43,5 +43,6 @@ public class EffectText
 
 public class ApiRequestList
 {
+    public int count;
     public List<ApiReference> results;
 }
