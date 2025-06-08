@@ -79,14 +79,14 @@ namespace Battle
 
         private static IEnumerator MoveMessage(BattleEvent evt)
         {
-            yield return Announcer.Announce($"{evt.user.referenceText} {evt.origin.name} used {evt.move.name}.", holdTime: 1f);
+            yield return Announcer.AnnounceCoroutine($"{evt.user.referenceText} {evt.origin.name} used {evt.move.name}.", holdTime: 1f);
         }
 
         private static Effect EffectNotImplemented() => new CustomEffect(NotImplementedMessage);
         private static IEnumerator NotImplementedMessage(BattleEvent evt)
         {
             evt.failed = true;
-            yield return Announcer.Announce("(this effect was not yet implemented)", holdTime: .4f);
+            yield return Announcer.AnnounceCoroutine("(this effect was not yet implemented)", holdTime: .4f);
         }
 
         public static MoveModel EmptyMove(int priority = 99)

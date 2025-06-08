@@ -151,7 +151,7 @@ public class BattleSetup : MonoBehaviour
         battleMenu.SetActive(true);
         battleChoice.Focus();
         Announcer.ChangeAnnouncer(choiceAnnouncer);
-        StartCoroutine(Announcer.Announce($"What will {player.activePokemon.name} do?"));
+        StartCoroutine(Announcer.AnnounceCoroutine($"What will {player.activePokemon.name} do?"));
     }
 
     private void OpenBattleScene()

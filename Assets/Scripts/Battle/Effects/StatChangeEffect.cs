@@ -40,7 +40,7 @@ namespace Battle
             }
             sb.Append($" {changeType}!");
             Logger.Log(sb.ToString(), LogFlags.Game);
-            yield return Announcer.Announce(sb.ToString(), holdTime: 2f);
+            yield return Announcer.AnnounceCoroutine(sb.ToString(), holdTime: 2f);
         }
 
         private static StatType ApiToStat(ApiReference reference)

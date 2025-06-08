@@ -141,7 +141,7 @@ public class BagMenu : ContextMenu<Bag>
 
         ItemModel item = itemList[itemId];
         itemIcon.sprite = item.sprite;
-        StartCoroutine(Announcer.Announce(item.effect));
+        StartCoroutine(Announcer.AnnounceCoroutine(item.effect));
     }
 
     private IEnumerator ScrollDelay(int offset)
@@ -200,7 +200,7 @@ public class BagMenu : ContextMenu<Bag>
 
     private IEnumerator NotUsableAnnouncement(int id)
     {
-        yield return Announcer.Announce("Can't use this item!", holdTime: .8f);
+        yield return Announcer.AnnounceCoroutine("Can't use this item!", holdTime: .8f);
         ShowItemDetails(id);
     }
 
@@ -217,7 +217,7 @@ public class BagMenu : ContextMenu<Bag>
             {
                 ClosePartyMenu();
                 Announcer.ChangeAnnouncer(itemDescription);
-                yield return Announcer.Announce(item.effect);
+                yield return Announcer.AnnounceCoroutine(item.effect);
                 OpenOptions();
                 yield break;
             }
@@ -238,7 +238,7 @@ public class BagMenu : ContextMenu<Bag>
                 }
                 else
                 {
-                    yield return Announcer.Announce($"{evt.pickedPokemon.name} can't learn this move!", true);
+                    yield return Announcer.AnnounceCoroutine($"{evt.pickedPokemon.name} can't learn this move!", true);
                     Announcer.CloseAnnouncement();
                 }
             }
@@ -256,7 +256,7 @@ public class BagMenu : ContextMenu<Bag>
             }
             else
             {
-                yield return Announcer.Announce(failMessage, true);
+                yield return Announcer.AnnounceCoroutine(failMessage, true);
                 Announcer.CloseAnnouncement();
             }
         }

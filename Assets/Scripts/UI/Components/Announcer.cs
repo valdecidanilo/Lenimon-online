@@ -42,10 +42,16 @@ public class Announcer : MonoBehaviour
         instance = newAnnouncer;
     }
 
-    public static IEnumerator Announce(string text, bool awaitInput = false, float holdTime = 0)
+    public static void Announce(string text, bool awaitInput = false, float holdTime = 0, Action onDone = null)
     {
-        if(!instance) yield break;
-        
+        if (!instance) return;
+        instance.StartCoroutine(AnnounceCoroutine(text, awaitInput, holdTime, onDone));
+    }
+
+    public static IEnumerator AnnounceCoroutine(string text, bool awaitInput = false, float holdTime = 0, Action onDone = null)
+    {
+        if (!instance) yield break;
+
         //setup
         WaitForSeconds step = new(1f / instance.cps);
         StringBuilder typing = new();
@@ -56,13 +62,13 @@ public class Announcer : MonoBehaviour
             instance.onInputPress += () =>
             {
                 //skip typing
-                if(typing.Length >= text.Length) return;
+                if (typing.Length >= text.Length) return;
                 typing = new(text);
                 instance.field.text = typing.ToString();
                 instance.pressedInput = false;
             };
         }
-        
+
         //type
         while (typing.Length < text.Length)
         {
@@ -70,8 +76,8 @@ public class Announcer : MonoBehaviour
             skipDelay |= text[typing.Length] == '\n' && instance.ignoreLineBreaks;
             typing.Append(text[typing.Length]);
             instance.field.text = typing.ToString();
-            
-            if(skipDelay || typing.Length == text.Length) continue;
+
+            if (skipDelay || typing.Length == text.Length) continue;
             yield return step;
         }
 
@@ -79,7 +85,12 @@ public class Announcer : MonoBehaviour
         if (awaitInput) yield return new WaitUntil(() => instance.pressedInput);
         instance.pressedInput = false;
         yield return new WaitForSeconds(holdTime);
+        onDone?.Invoke();
     }
 
-    public static void CloseAnnouncement() => instance.gameObject.SetActive(false);
+    public static void CloseAnnouncement()
+    {
+        instance.field.text = string.Empty;
+        instance.gameObject.SetActive(false);
+    }
 }

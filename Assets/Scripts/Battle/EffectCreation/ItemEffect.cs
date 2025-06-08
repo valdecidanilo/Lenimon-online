@@ -106,7 +106,7 @@ public static class ItemEffect
 
     public static IEnumerator ItemMessage(BattleEvent evt)
     {
-        yield return Announcer.Announce($"{evt.user.name} used a {evt.move.name}.", holdTime: .6f);
+        yield return Announcer.AnnounceCoroutine($"{evt.user.name} used a {evt.move.name}.", holdTime: .6f);
     }
 
     private static ApiReference StatToApi(StatType type)

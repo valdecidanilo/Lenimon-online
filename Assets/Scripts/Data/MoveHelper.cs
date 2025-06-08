@@ -86,9 +86,9 @@ public static class MoveHelper
         bool learnMove = freeSlot >= 0;
         if (!learnMove)
         {
-            yield return Announcer.Announce($"{evt.pokemon.name} wants to learn {move.name}.", true, .2f);
-            yield return Announcer.Announce($"But {evt.pokemon.name} already knows 4 moves.", true, .2f);
-            yield return Announcer.Announce($"Choose a move to be overwritten by {move.name}.", true, .2f);
+            yield return Announcer.AnnounceCoroutine($"{evt.pokemon.name} wants to learn {move.name}.", true, .2f);
+            yield return Announcer.AnnounceCoroutine($"But {evt.pokemon.name} already knows 4 moves.", true, .2f);
+            yield return Announcer.AnnounceCoroutine($"Choose a move to be overwritten by {move.name}.", true, .2f);
             
             PartyMenu.ClosePartyMenu();
             PickMoveEvent pickMoveEvent = new(evt.pokemon);
@@ -99,16 +99,16 @@ public static class MoveHelper
             if (learnMove)
             {
                 freeSlot = pickMoveEvent.moveSlot;
-                yield return Announcer.Announce($"Poof.", true, .1f);
-                yield return Announcer.Announce($"{evt.pokemon.name} forgot {evt.overridenMove.name}.", true, .2f);
-                yield return Announcer.Announce($"And", true, .1f);
+                yield return Announcer.AnnounceCoroutine($"Poof.", true, .1f);
+                yield return Announcer.AnnounceCoroutine($"{evt.pokemon.name} forgot {evt.overridenMove.name}.", true, .2f);
+                yield return Announcer.AnnounceCoroutine($"And", true, .1f);
             }
         }
 
         if (!learnMove) yield break;
         evt.pokemon.moves[freeSlot] = move;
         evt.moveLearnt = true;
-        yield return Announcer.Announce($"{evt.pokemon.name} learned {move.name}!", true, .2f);
+        yield return Announcer.AnnounceCoroutine($"{evt.pokemon.name} learned {move.name}!", true, .2f);
         SummaryMenu.CloseSummaryMenu();
     }
 }

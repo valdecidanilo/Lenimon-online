@@ -22,7 +22,7 @@ namespace Battle
             }
 
             if (evt.attackEvent.damageDealt > 0 && evt.attackEvent.maxHits > evt.attackEvent.minHits)
-                yield return Announcer.Announce($"It hit {hits} times!", holdTime: 1);
+                yield return Announcer.AnnounceCoroutine($"It hit {hits} times!", holdTime: 1);
         }
     }
 }

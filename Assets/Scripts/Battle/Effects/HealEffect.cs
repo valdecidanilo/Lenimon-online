@@ -31,13 +31,13 @@ namespace Battle
             switch (healType)
             {
                 case HealType.Raw:
-                    yield return Announcer.Announce($"{evt.target.name} recovered {healedHp} hit point{(healedHp > 1 ? "s" : "")}.", holdTime: 2f);
+                    yield return Announcer.AnnounceCoroutine($"{evt.target.name} recovered {healedHp} hit point{(healedHp > 1 ? "s" : "")}.", holdTime: 2f);
                     break;
                 case HealType.Hp:
-                    yield return Announcer.Announce($"{evt.target.name} recovered Hp.", holdTime: 2f);
+                    yield return Announcer.AnnounceCoroutine($"{evt.target.name} recovered Hp.", holdTime: 2f);
                     break;
                 case HealType.Drain:
-                    yield return Announcer.Announce($"{evt.attackEvent.defender.name} got its enegy drained.", holdTime: 2f);
+                    yield return Announcer.AnnounceCoroutine($"{evt.attackEvent.defender.name} got its enegy drained.", holdTime: 2f);
                     break;
             }
             Logger.Log($"{evt.target.name} healed by {heal} ({evt.target.battleStats.hp}/{evt.target.stats.hp})", LogFlags.Game);

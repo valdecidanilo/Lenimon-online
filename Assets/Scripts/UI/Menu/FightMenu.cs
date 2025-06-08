@@ -79,7 +79,7 @@ public class FightMenu : ContextMenu<Pokemon>
     {
         moveType.text = move?.moveTypeName ?? "-";
         string currentPP = move?.pp.ToString() ?? "-";
-        string maxPP = move?.Data.pp.ToString() ?? "-";
+        string maxPP = move?.maxPP.ToString() ?? "-";
         movePp.text = $"{currentPP}/{maxPP}";
     }
     private void OnMovePick(int id)
@@ -94,6 +94,15 @@ public class FightMenu : ContextMenu<Pokemon>
     #region Battle
     public static void BeginBattle(MoveModel playerMove)
     {
+        if (playerMove.pp <= 0)
+        {
+            Announcer.Announce("You don't have pp for this move!!", awaitInput: true,  onDone: ()=>
+            {
+                Announcer.CloseAnnouncement();
+                instance.contextSelection.Focus();
+            });
+            return;
+        }
         MoveModel opponentMove = instance.ChoseOpponentMove();
         instance.StartCoroutine(instance.BattleSequence(playerMove, opponentMove));
     }
@@ -187,6 +196,7 @@ public class FightMenu : ContextMenu<Pokemon>
 
             contextSelection.ReleaseSelection();
             yield return evtBattle.move.effectMessage.Invoke(evtBattle);
+            evtBattle.move.pp--;
             if (hit)
             {
 
@@ -198,7 +208,7 @@ public class FightMenu : ContextMenu<Pokemon>
                 bool attackHits = (typeMod != 0 && evtBattle.attackEvent.damageDealt >= 0) ||
                                   (typeMod == 0 && evtBattle.attackEvent.damageDealt < 0);
                 if (attackHits && !string.IsNullOrEmpty(typeEffectMessage))
-                    yield return Announcer.Announce(typeEffectMessage, holdTime: 1);
+                    yield return Announcer.AnnounceCoroutine(typeEffectMessage, holdTime: 1);
 
                 //sub effect
                 if (evtBattle.attackEvent.modifier > 0) yield return TriggerSubEffect(evtBattle.move.effect);
@@ -217,7 +227,7 @@ public class FightMenu : ContextMenu<Pokemon>
                 if (evtBattle.failed)
                 {
                     //fail text
-                    yield return Announcer.Announce($"But it failed!", holdTime: 1f);
+                    yield return Announcer.AnnounceCoroutine($"But it failed!", holdTime: 1f);
                 }
             }
             else
@@ -225,11 +235,11 @@ public class FightMenu : ContextMenu<Pokemon>
                 //missed/evaded text
                 if (missed)
                 {
-                    yield return Announcer.Announce($"{evtBattle.origin.name} attack missed.", holdTime: 1f);
+                    yield return Announcer.AnnounceCoroutine($"{evtBattle.origin.name} attack missed.", holdTime: 1f);
                 }
                 else
                 {
-                    yield return Announcer.Announce($"{evtBattle.target.name} avoided the attack", holdTime: 1f);
+                    yield return Announcer.AnnounceCoroutine($"{evtBattle.target.name} avoided the attack", holdTime: 1f);
                 }
             }
         }
