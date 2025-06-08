@@ -22,7 +22,7 @@ public class FightMenu : ContextMenu<Pokemon>
     [SerializeField] Sprite[] healthStates;
     //Enemy
     private Opponent opponent;
-    [Header("Enemy")] [SerializeField] private Image enemyImage;
+    [Header("Enemy")] [SerializeField] private BattlePokemon enemyImage;
     [SerializeField] private TMP_Text enemyName;
     [SerializeField] private TMP_Text enemyLevel;
     [SerializeField] private Image enemyHp;
@@ -30,7 +30,7 @@ public class FightMenu : ContextMenu<Pokemon>
 
     //Ally
     private Trainer player;
-    [Header("Ally")] [SerializeField] private Image pokemonImage;
+    [Header("Ally")] [SerializeField] private BattlePokemon pokemonImage;
     [SerializeField] private TMP_Text pokemonName;
     [SerializeField] private TMP_Text level;
     [SerializeField] private Image hp;
@@ -128,6 +128,15 @@ public class FightMenu : ContextMenu<Pokemon>
         instance.OpenMenu(instance.player.activePokemon);
         yield return null;
         BeginBattle(allyMove);
+    }
+    public static IEnumerator StatusChangeEffect(Pokemon target, bool buff)
+    {
+        BattlePokemon targetPokemon = null;
+        if (target == instance.player.activePokemon) targetPokemon = instance.pokemonImage;
+        else if (target == instance.opponent.activePokemon) targetPokemon = instance.enemyImage;
+
+        if(targetPokemon == null) yield break;
+        yield return targetPokemon.StatChangeAnimation(buff);
     }
     private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
     {
@@ -298,10 +307,10 @@ public class FightMenu : ContextMenu<Pokemon>
     {
         player.activePokemon = ally;
         var pokemom = ally;
-        pokemonImage.sprite = pokemom.backSprite;
-        if (pokemonImage.sprite == null)
+        pokemonImage.image.sprite = pokemom.backSprite;
+        if (pokemonImage.image.sprite == null)
         {
-            pokemonImage.sprite = pokemom.frontSprite;
+            pokemonImage.image.sprite = pokemom.frontSprite;
             pokemonImage.transform.transform.localScale = Vector3.up + Vector3.left;
         }
         pokemonName.text = pokemom.name;
@@ -315,7 +324,7 @@ public class FightMenu : ContextMenu<Pokemon>
     {
         opponent.activePokemon = newPokemon;
         var pokemon = newPokemon;
-        enemyImage.sprite = pokemon.frontSprite;
+        enemyImage.image.sprite = pokemon.frontSprite;
         enemyName.text = pokemon.name;
         enemyLevel.text = $"Lv{pokemon.level}";
         BattleVFX.ChangeHpBar(pokemon, enemyHp, pokemon.battleStats[StatType.hp]);

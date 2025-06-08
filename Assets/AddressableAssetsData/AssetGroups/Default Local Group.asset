@@ -117,6 +117,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a52d5bb4e8706c04a95da5652da7d155
+    m_Address: Stat_Change
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ac78cc66195113249b8e1fdb519ac2c9
     m_Address: icon_ball_MASTERBALL
     m_ReadOnly: 0

@@ -27,7 +27,6 @@ namespace Battle
         
         public override IEnumerator EffectSequence(BattleEvent evt)
         {
-            yield return null;
             StringBuilder sb = new($"{evt.target.name}'s ");
             string changeType = changes[0] > 0 ? "rose" : "fell";
             Stats stats = evt.target.battleStats;
@@ -40,6 +39,7 @@ namespace Battle
             }
             sb.Append($" {changeType}!");
             Logger.Log(sb.ToString(), LogFlags.Game);
+            yield return FightMenu.StatusChangeEffect(evt.target, changes[0] > 0);
             yield return Announcer.AnnounceCoroutine(sb.ToString(), holdTime: 2f);
         }
 

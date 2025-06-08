@@ -5,6 +5,6 @@ using UnityEngine.UI;
 
 public class BattlePokemon : MonoBehaviour
 {
-    [SerializeField] private Image pokemonImage;
-    [SerializeField] private Image pokemonOverlay;
+    public Image image;
+    public Image overlay;
 }

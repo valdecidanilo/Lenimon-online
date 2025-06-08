@@ -38,10 +38,10 @@ public static class MoveHelper
         List<MoveReference> possibleMoves = GetPossibleMoves(pokemon, methodFilter);
 
         //test
-        //possibleMoves = new List<MoveReference>();
-        //possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/bullet-punch" } });
-        //possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/dragon-dance" } });
-        //possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/poison-jab" } });
+        possibleMoves = new List<MoveReference>();
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/shell-smash" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/leer" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/bulk-up" } });
         //possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/drain-punch" } });
 
         MoveReference[] newMoves = new MoveReference[4];
@@ -111,6 +111,8 @@ public static class MoveHelper
         yield return Announcer.AnnounceCoroutine($"{evt.pokemon.name} learned {move.name}!", true, .2f);
         SummaryMenu.CloseSummaryMenu();
     }
+
+    public static MoveModel Struggle() => new(PokeDatabase.StruggleMoveData);
 }
 
 public class MoveLearnEvent

@@ -72,6 +72,8 @@ namespace Battle
                     break;
                 default:
                     //unique
+                    if(move.Data.statChanges != null && move.Data.statChanges.Count > 0)
+                        moveEffect = new StatChangeEffect(move.Data.statChanges);
                     break;
             }
             move.effect = moveEffect;

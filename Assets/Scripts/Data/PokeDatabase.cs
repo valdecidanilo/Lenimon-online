@@ -25,6 +25,7 @@ public static class PokeDatabase
     private const string genericTMKey = "Item_Icons[TM_Generic]";
     private const string maleIconKey = "maleIcon";
     private const string femaleIconKey = "femaleIcon";
+    private const string statChangeKey = "Stat_Change";
     private const string hpBarKey = "Hp_Bar";
     public static readonly string[] types = 
     {
@@ -58,6 +59,7 @@ public static class PokeDatabase
     public static Sprite genericTM;
     public static Sprite maleIcon;
     public static Sprite femaleIcon;
+    public static Sprite statChangeSprite;
     public static Sprite[] hpBars;
     public static Dictionary<string, Sprite> typeSprites = new(types.Length);
     public static Dictionary<string, TypeChartEntry> typeChart = new(types.Length);
@@ -115,6 +117,12 @@ public static class PokeDatabase
         AAAsset<Sprite>.LoadAsset(genericTMKey, (sprite) =>
         {
             genericTM = sprite;
+            preloadedAssets.FinishStep();
+        });
+        preloadedAssets.AddStep();
+        AAAsset<Sprite>.LoadAsset(statChangeKey, (sprite) =>
+        {
+            statChangeSprite = sprite;
             preloadedAssets.FinishStep();
         });
 
