@@ -273,6 +273,11 @@ public class FightMenu : ContextMenu<Pokemon>
         player.activePokemon = ally;
         var pokemom = ally;
         pokemonImage.sprite = pokemom.backSprite;
+        if (pokemonImage.sprite == null)
+        {
+            pokemonImage.sprite = pokemom.frontSprite;
+            pokemonImage.transform.transform.localScale = Vector3.up + Vector3.left;
+        }
         pokemonName.text = pokemom.name;
         level.text = $"Lv{pokemom.level}";
         BattleVFX.ChangeHpBar(pokemom, hp, pokemom.battleStats[StatType.hp], hpValue);

@@ -110,7 +110,7 @@ public class TestScript : MonoBehaviour
     }
     private void GetPokemon(int pokemonId, int level, Action<Pokemon> onFinished)
     {
-        PokeAPI.GetPokemonData(pokemonId, (data) => { Pokemon.GetLoadedPokemon(data, level, onFinished); });
+        PokeAPI.GetPokemonData("fuecoco", (data) => { Pokemon.GetLoadedPokemon(data, level, onFinished); });
     }
     private void CheckPokemon(Pokemon pokemon)
     {

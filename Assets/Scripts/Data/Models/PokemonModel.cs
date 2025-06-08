@@ -152,6 +152,13 @@ public class Pokemon : ApiData
             frontSprite = sprite;
             Logger.Log($"{name} Front sprite done loading", LogFlags.PokemonBuild);
             dataChecklist.FinishStep();
+
+            PokeAPI.GetIcon(data, (sprite) =>
+            {
+                icon = sprite ?? frontSprite;
+                Logger.Log($"{name} Icon done loading", LogFlags.PokemonBuild);
+                dataChecklist.FinishStep();
+            });
         });
         PokeAPI.GetPokemonSprite(data, (sprite) =>
         {
@@ -159,12 +166,6 @@ public class Pokemon : ApiData
             Logger.Log($"{name} Back sprite done loading", LogFlags.PokemonBuild);
             dataChecklist.FinishStep();
         }, true);
-        PokeAPI.GetIcon(data, (sprite) =>
-        {
-            icon = sprite;
-            Logger.Log($"{name} Icon done loading", LogFlags.PokemonBuild);
-            dataChecklist.FinishStep();
-        });
     }
     private void GetRandomMoves()
     {

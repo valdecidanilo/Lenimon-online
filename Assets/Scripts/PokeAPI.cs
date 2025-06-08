@@ -30,10 +30,8 @@ public static class PokeAPI
             {
                 onSuccess?.Invoke(GenerateSprite(txt));
                 return;
-            }
-
-            string sufix = backSprite ? "Back" : "Front";
-            AAAsset<Sprite>.LoadAsset($"MissingNo{sufix}", onSuccess);
+            };
+            onSuccess?.Invoke(null);
 
         }, backSprite);
     }
@@ -47,11 +45,7 @@ public static class PokeAPI
         hasIcon = !string.IsNullOrEmpty(route);
         if (!hasIcon)
         {
-            AAAsset<Sprite>.LoadAsset("MissingNoIcon", (sprite) =>
-            {
-                Logger.LogError("No icons found", LogFlags.API);
-                onSuccess?.Invoke(sprite);
-            });
+            onSuccess?.Invoke(null);
             return;
         }
 
