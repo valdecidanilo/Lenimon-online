@@ -231,7 +231,7 @@ public class FightMenu : ContextMenu<Pokemon>
                 typeMod = evtBattle.attackEvent.modifier;//resultant modifier
                 bool attackHits = (typeMod != 0 && evtBattle.attackEvent.damageDealt >= 0) ||
                                   (typeMod == 0 && evtBattle.attackEvent.damageDealt < 0);
-                if (attackHits && !string.IsNullOrEmpty(typeEffectMessage))
+                if (attackHits && !string.IsNullOrEmpty(typeEffectMessage) && !targetSelf)
                     yield return Announcer.AnnounceCoroutine(typeEffectMessage, holdTime: 1);
 
                 //sub effect
