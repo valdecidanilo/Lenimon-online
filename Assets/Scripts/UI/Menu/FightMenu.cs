@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = LenixSO.Logger.Logger;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 public class FightMenu : ContextMenu<Pokemon>
@@ -131,11 +132,8 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     public static IEnumerator StatusChangeEffect(Pokemon target, bool buff)
     {
-        BattlePokemon targetPokemon = null;
-        if (target == instance.player.activePokemon) targetPokemon = instance.pokemonImage;
-        else if (target == instance.opponent.activePokemon) targetPokemon = instance.enemyImage;
-
-        if(targetPokemon == null) yield break;
+        BattlePokemon targetPokemon = instance.GetBattlePokemon(target);
+        if (ReferenceEquals(targetPokemon, null)) yield break;
         yield return targetPokemon.StatChangeAnimation(buff);
     }
     private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
@@ -221,9 +219,9 @@ public class FightMenu : ContextMenu<Pokemon>
             contextSelection.ReleaseSelection();
             yield return evtBattle.move.effectMessage.Invoke(evtBattle);
             evtBattle.move.pp--;
+            yield return GetBattlePokemon(evtBattle.origin)?.MoveAnimation(evtBattle.move.typeOfMove);
             if (hit)
             {
-
                 bool targetSelf = evtBattle.target == evtBattle.origin;
                 if (typeMod != 0 || targetSelf)
                     yield return evtBattle.move.effect.EffectSequence(evtBattle);
@@ -258,13 +256,9 @@ public class FightMenu : ContextMenu<Pokemon>
             {
                 //missed/evaded text
                 if (missed)
-                {
                     yield return Announcer.AnnounceCoroutine($"{evtBattle.origin.name} attack missed.", holdTime: 1f);
-                }
                 else
-                {
                     yield return Announcer.AnnounceCoroutine($"{evtBattle.target.name} avoided the attack", holdTime: 1f);
-                }
             }
         }
     }
@@ -279,6 +273,14 @@ public class FightMenu : ContextMenu<Pokemon>
             "all-other-pokemon" => opponent,
             _ => opponent,
         };
+    }
+
+    private BattlePokemon GetBattlePokemon(Pokemon target)
+    {
+        BattlePokemon targetPokemon = null;
+        if (target == instance.player.activePokemon) targetPokemon = instance.pokemonImage;
+        else if (target == instance.opponent.activePokemon) targetPokemon = instance.enemyImage;
+        return targetPokemon;
     }
     private IEnumerator AllyHpChanged(int initialValue, int currentValue)
     {
