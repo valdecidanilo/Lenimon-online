@@ -39,8 +39,8 @@ public static class MoveHelper
 
         //test
         possibleMoves = new List<MoveReference>();
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/shell-smash" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/leer" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/tackle" } });
+        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/swift" } });
         possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/bulk-up" } });
         //possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/drain-punch" } });
 

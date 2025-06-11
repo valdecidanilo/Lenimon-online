@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public static class BattleVFX
 {
-
     public static IEnumerator LerpHpBar(Pokemon pokemon, int initialValue, int currentValue, Image bar,
         TMP_Text text = null)
     {
@@ -109,11 +108,41 @@ public static class BattleVFX
 
     public static IEnumerator DefaultPhysicalMoveAnimation(this BattlePokemon pokemon)
     {
-        yield break;
+        RectTransform rect = (RectTransform)pokemon.image.transform;
+        Vector2 size = rect.rect.size;
+        Vector2 originalPosition = rect.anchoredPosition;
+        Vector3 originalAngles = rect.localEulerAngles;
+
+        //windup
+        const float windUpDistance = .8f;
+        const float windUpDuration = .4f;
+        Vector2 windUpDirection = new(1f, .2f);
+        Vector2 windUpPosition = originalPosition - (size * (windUpDirection * windUpDistance));
+        float time = 0;
+        while (time < windUpDuration)
+        {
+            rect.anchoredPosition = Vector2.Lerp(originalPosition, windUpPosition, time);
+            yield return null;
+            time += Time.deltaTime;
+        }
+
+        //hold
+        const float holdTime = .4f;
+        yield return new WaitForSeconds(holdTime);
+
+        //attack
+        const float attackDistance = .2f;
+        const float attackDuration = .1f;
+
+        //return
+        const float returnDuration = .05f;
     }
 
     public static IEnumerator DefaultSpecialMoveAnimation(this BattlePokemon pokemon)
     {
+        RectTransform rect = (RectTransform)pokemon.image.transform;
+        Vector2 originalPosition = rect.anchoredPosition;
+        Vector3 originalAngles = rect.localEulerAngles;
         yield break;
     }
 
@@ -130,7 +159,7 @@ public static class BattleVFX
         const float amp = 5;
 
         float time = 0;
-        while (time <= totalDuration)
+        while (time < totalDuration)
         {
             float angle = NumberUtil.SineWave(time, amp, 1 / duration);
             rect.localEulerAngles = Vector3.forward * angle;
