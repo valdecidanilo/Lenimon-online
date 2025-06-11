@@ -9,71 +9,57 @@ namespace Battle
 {
     public class StatChangeEffect : Effect
     {
+        public static readonly Dictionary<string, StatType> StatTypes = new()
+        {
+            { "attack", StatType.atk },
+            { "defense", StatType.def },
+            { "special-attack", StatType.sAtk },
+            { "special-defense", StatType.sDef },
+            { "speed", StatType.spd },
+            { "accuracy", StatType.acc },
+            { "evasion", StatType.eva },
+        };
+
+        public static readonly string[] StatNames = new[]
+        {
+            "attack",
+            "defense",
+            "special attack",
+            "special defense",
+            "speed",
+            "accuracy",
+            "evasion",
+        };
+        
         private readonly List<StatChange> changeRef;
+        private readonly List<StatType> statLookUp;
+        private readonly List<int> changeLookUp;
 
         private readonly int mainSign;
-
-        private readonly List<StatType> mainStats;
         private readonly List<int> mainChanges;
-        private readonly string mainChangeText;
-
-        private readonly List<StatType> altStats;
         private readonly List<int> altChanges;
-        private readonly string altChangeText;
         
         public StatChangeEffect(List<StatChange> statChanges)
         {
             changeRef = statChanges;
 
-            mainStats = new();
+            statLookUp = new(statChanges.Count);
+            changeLookUp = new(statChanges.Count);
+            
             mainChanges = new();
-            altStats = new();
             altChanges = new();
 
             mainSign = (int)Mathf.Sign(changeRef[0].change);
-            StringBuilder mainText = new();
-            StringBuilder altText = new();
             for (int i = 0; i < statChanges.Count; i++)
             {
+                string statName = changeRef[i].stat.name;
+                StatType statType = StatTypes[statName];
+                statLookUp.Add(statType);
+                changeLookUp.Add(changeRef[i].change);
                 bool mainChange = (int)Mathf.Sign(changeRef[i].change) == mainSign;
-                StatType statType = ApiToStat(changeRef[i].stat);
-                int change = changeRef[i].change;
-                if (mainChange)
-                {
-                    //if (mainChanges.Count > 0)
-                    //{
-                    //    //change "and" for ","
-                    //    mainText.Remove(mainText.Length - 5, 5);
-                    //    mainText.Append(", ");
-                    //}
-                    mainText.Append($"{changeRef[i].stat.name.Replace("-", " ")}");
-                    mainText.Append($" and ");
-                    mainStats.Add(statType);
-                    mainChanges.Add(change);
-                }
-                else
-                {
-                    //if (altChanges.Count > 0)
-                    //{
-                    //    //change "and" for ","
-                    //    altText.Remove(altText.Length - 5, 5);
-                    //    altText.Append(", ");
-                    //}
-                    altText.Append($"{changeRef[i].stat.name.Replace("-", " ")}");
-                    altText.Append($" and ");
-                    altStats.Add(statType);
-                    altChanges.Add(change);
-                }
+                if (mainChange) mainChanges.Add(i);
+                else altChanges.Add(i);
             }
-            mainText.Remove(mainText.Length - 5, 5);
-            mainText.Append(mainSign > 0 ? " rose" : " fell");
-            mainChangeText = mainText.ToString();
-            //Logger.Log(mainChangeText);
-            if (altChanges.Count <= 0) return;
-            altText.Remove(altText.Length - 5, 5);
-            altText.Append(mainSign < 0 ? " rose" : " fell");
-            altChangeText = altText.ToString();
-            //Logger.Log(altChangeText);
         }
         
         public override IEnumerator EffectSequence(BattleEvent evt)
@@ -82,40 +68,50 @@ namespace Battle
             Stats stats = evt.target.battleStats;
             for (int i = 0; i < mainChanges.Count; i++)
             {
-                stats[mainStats[i]] = Mathf.Clamp(stats[mainStats[i]] + mainChanges[i], -6, 6);
+                StatType statType = statLookUp[mainChanges[i]];
+                int newValue = Mathf.Clamp(stats[statType] + changeLookUp[mainChanges[i]], -6, 6);
+                stats[statType] = newValue;
+                sb.Append($"{StatNames[(int)statType - 1]}, ");
             }
-            sb.Append($"{mainChangeText}!");
+
+            sb.Remove(sb.Length - 2, 2);
+            if (mainChanges.Count > 1)
+            {
+                const int mod = 2;
+                int lastStat = (int)statLookUp[mainChanges[^1]]-1;
+                string lastStatText = StatNames[lastStat];
+                sb.Remove(sb.Length - (lastStatText.Length + mod), lastStatText.Length + mod);
+                sb.Append($" and {lastStatText}");
+            }
+            sb.Append($" {(mainSign > 0 ? "rose" : "fell")}!");
             Logger.Log(sb.ToString(), LogFlags.Game);
             yield return FightMenu.StatusChangeEffect(evt.target, mainSign > 0);
             yield return Announcer.AnnounceCoroutine(sb.ToString(), holdTime: 1.5f);
 
             if (altChanges.Count <= 0) yield break;
-
+            
             sb = new($"{evt.target.name}'s ");
             for (int i = 0; i < altChanges.Count; i++)
             {
-                stats[altStats[i]] = Mathf.Clamp(stats[altStats[i]] + altChanges[i], -6, 6);
+                StatType statType = statLookUp[altChanges[i]];
+                int newValue = Mathf.Clamp(stats[statType] + changeLookUp[altChanges[i]], -6, 6);
+                stats[statType] = newValue;
+                sb.Append($"{StatNames[(int)statType - 1]}, ");
             }
-            sb.Append($"{altChangeText}!");
+
+            sb.Remove(sb.Length - 2, 2);
+            if (altChanges.Count > 1)
+            {
+                const int mod = 2;
+                int lastStat = (int)statLookUp[altChanges[^1]]-1;
+                string lastStatText = StatNames[lastStat];
+                sb.Remove(sb.Length - (lastStatText.Length + mod), lastStatText.Length + mod);
+                sb.Append($" and {lastStatText}");
+            }
+            sb.Append($" {(mainSign < 0 ? "rose" : "fell")}!");
             Logger.Log(sb.ToString(), LogFlags.Game);
             yield return FightMenu.StatusChangeEffect(evt.target, mainSign < 0);
             yield return Announcer.AnnounceCoroutine(sb.ToString(), holdTime: 1.5f);
-        }
-
-        private static StatType ApiToStat(ApiReference reference)
-        {
-            StatType type = reference.name switch
-            {
-                "attack" => StatType.atk,
-                "defense" => StatType.def,
-                "special-attack" => StatType.sAtk,
-                "special-defense" => StatType.sDef,
-                "speed" => StatType.spd,
-                "accuracy" => StatType.acc,
-                "evasion" => StatType.eva,
-                _ => (StatType)999
-            };
-            return type;
         }
     }
 }
