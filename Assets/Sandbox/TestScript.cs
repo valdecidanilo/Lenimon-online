@@ -2,7 +2,7 @@ using AddressableAsyncInstances;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class MoveHunt : MonoBehaviour
+public class TestScript : MonoBehaviour
 {
     [SerializeField] private BattlePokemon ally, enemy;
     private void Start()

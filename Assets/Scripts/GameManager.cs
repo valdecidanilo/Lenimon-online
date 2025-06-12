@@ -10,7 +10,7 @@ using LenixSO.Logger;
 using Random = UnityEngine.Random;
 using Logger = LenixSO.Logger.Logger;
 
-public class TestScript : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     private const int maxPokemonId = 1025;
 
