@@ -108,7 +108,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 93e1f2e5bb0654b41bd1362d12421320
-    m_Address: icon_ball_POKEBALL
+    m_Address: pokeball
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

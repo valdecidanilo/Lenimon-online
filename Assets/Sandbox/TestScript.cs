@@ -29,17 +29,22 @@ public class TestScript : MonoBehaviour
                 CheckMove();
             });
         }*/
+        
+        AAAsset<Sprite>.LoadAsset("pokeball", (sprite) =>
+        {
+            PokeDatabase.pokeBallSprite = sprite;
+        });
     }
 
     private void Update()
     {
         if (Keyboard.current.xKey.wasPressedThisFrame)
         {
-            StartCoroutine(ally.MoveAnimation(MoveType.Special, enemy));
+            StartCoroutine(ally.SwitchOutAnimation());
         }
         if (Keyboard.current.zKey.wasPressedThisFrame)
         {
-            StartCoroutine(enemy.MoveAnimation(MoveType.Special, ally));
+            StartCoroutine(enemy.SwitchOutAnimation(-1));
         }
     }
 }

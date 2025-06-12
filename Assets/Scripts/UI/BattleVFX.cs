@@ -250,6 +250,99 @@ public static class BattleVFX
 
         pokemon.ResetBattlePokemon();
     }
+
+    public static IEnumerator SwitchOutAnimation(this BattlePokemon pokemon, int side = 1)
+    {
+        RectTransform imageRect = (RectTransform)pokemon.image.transform;
+        Vector2 imageScale = imageRect.lossyScale;
+        Vector2 originalPosition = imageRect.anchoredPosition;
+        Color color = Color.red;
+        color.a = 0;
+        pokemon.overlay.color = color;
+        pokemon.overlay.sprite = null;
+        
+        //fade in color
+        const float maxAlphaColor = .7f;
+        const float fadeDuration = .3f;
+        float time = 0;
+        while (time < fadeDuration)
+        {
+            float scaledTime = time / fadeDuration;
+            color.a = Mathf.Lerp(0, maxAlphaColor, scaledTime);
+            pokemon.overlay.color = color;
+            yield return null;
+            time += Time.deltaTime;
+        }
+
+        color.a = maxAlphaColor;
+        pokemon.overlay.color = color;
+        
+        //scale down to nothingness
+        Vector3 scale = pokemon.overlay.transform.localScale;
+        const float scaleDownDuration = .3f;
+        time = 0;
+        while (time < scaleDownDuration)
+        {
+            float scaledTime = time / scaleDownDuration;
+            imageRect.localScale = Vector3.Lerp(scale, Vector3.zero, scaledTime);
+            yield return null;
+            time += Time.deltaTime;
+        }
+        
+        //scale up poke ball
+        const float scaleUpDuration = .2f;
+        const float pokeBallScale = .1f;
+        Vector3 pokeBallSize = Vector3.one * pokeBallScale;
+        pokemon.overlay.color = default;
+        pokemon.image.sprite = PokeDatabase.pokeBallSprite;
+        time = 0;
+        while (time < scaleUpDuration)
+        {
+            float scaledTime = time / scaleUpDuration;
+            imageRect.localScale = Vector3.Lerp(Vector3.zero, pokeBallSize, scaledTime);
+            yield return null;
+            time += Time.deltaTime;
+        }
+        imageRect.localScale = pokeBallSize;
+        
+        //poke ball fall
+        const float dropFactor = 1f;
+        const float dropDuration = .2f;
+        Vector2 pokeBallDirection = (Vector2.up * dropFactor) * imageRect.rect.size * imageRect.localScale;
+        Vector2 pokeBallPosition = originalPosition - pokeBallDirection;
+        time = 0;
+        while (time < dropDuration)
+        {
+            float scaledTime = time / dropDuration;
+            imageRect.anchoredPosition = Vector3.Lerp(originalPosition, pokeBallPosition, scaledTime);
+            yield return null;
+            time += Time.deltaTime;
+        }
+        
+        //poke ball movement
+        const float movementDuration = .4f;
+        Vector2 movementDirection = new Vector2(1f * side * imageScale.x, -.65f);
+        Vector2 movementPosition = originalPosition - (movementDirection * imageRect.rect.size);
+        time = 0;
+        while (time < movementDuration)
+        {
+            float scaledTime = time / movementDuration;
+            imageRect.anchoredPosition = Vector3.Lerp(pokeBallPosition, movementPosition, scaledTime);
+            yield return null;
+            time += Time.deltaTime;
+        }
+    }
     
-    
+    public static IEnumerator SwitchInAnimation(this BattlePokemon pokemon, Sprite newPokemonSprite)
+    {
+        //poke ball movement
+        
+        //scale down to nothingness
+        
+        //scale up pokemon
+        
+        //fade out color
+        
+        yield break;
+    }
 }
