@@ -41,11 +41,9 @@ public static class BattleVFX
     {
         int multiplier = buff ? 1 : -1;
         Image overlay = pokemon.overlay;
-        Sprite originalSprite = overlay.sprite;
         Image.Type originalType = overlay.type;
         float ppum = overlay.pixelsPerUnitMultiplier;
         RectTransform rect = (RectTransform)overlay.transform;
-        Vector3 originalPosition = rect.localPosition;
         Vector3 originalSize = rect.sizeDelta;
         //setup
         pokemon.overlay.sprite = PokeDatabase.statChangeSprite;
@@ -81,13 +79,9 @@ public static class BattleVFX
         }
 
         //reset
-        overlay.color = default;
         overlay.type = originalType;
         overlay.pixelsPerUnitMultiplier = ppum;
-        overlay.sprite = originalSprite;
-        rect.localScale = Vector3.one;
-        rect.sizeDelta = originalSize;
-        rect.localPosition = originalPosition;
+        pokemon.ResetBattlePokemon();
     }
 
     public static IEnumerator MoveAnimation(this BattlePokemon pokemon, MoveType moveType, BattlePokemon target)
@@ -166,8 +160,8 @@ public static class BattleVFX
             time += Time.deltaTime;
         }
 
-        rect.anchoredPosition = originalPosition;
-        targetRect.anchoredPosition = targetOriginalPosition;
+        pokemon.ResetBattlePokemon();
+        target.ResetBattlePokemon();
     }
 
     public static IEnumerator DefaultSpecialMoveAnimation(this BattlePokemon pokemon, BattlePokemon target)
@@ -229,8 +223,8 @@ public static class BattleVFX
             time += Time.deltaTime;
         }
 
-        rect.localEulerAngles = originalRotation;
-        targetRect.anchoredPosition = targetOriginalPosition;
+        pokemon.ResetBattlePokemon();
+        target.ResetBattlePokemon();
     }
 
     public static IEnumerator DefaultStatusMoveAnimation(this BattlePokemon pokemon)
@@ -254,6 +248,8 @@ public static class BattleVFX
             time += Time.deltaTime;
         }
 
-        rect.localEulerAngles = originalAngles;
+        pokemon.ResetBattlePokemon();
     }
+    
+    
 }

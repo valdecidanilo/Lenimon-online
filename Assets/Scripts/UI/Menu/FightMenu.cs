@@ -305,11 +305,13 @@ public class FightMenu : ContextMenu<Pokemon>
         //setup enemy
         opponent = enemy;
         SetupEnemy(opponent.activePokemon);
+        enemyImage.SaveAsDefaultValues();
         opponent.activePokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
 
         //setup ally
         player = ally;
         SetupAlly(player.activePokemon);
+        pokemonImage.SaveAsDefaultValues();
         player.activePokemon.onHpChanged.RegisterCallback(AllyHpChanged);
     }
     private void SetupAlly(Pokemon ally)
@@ -320,7 +322,7 @@ public class FightMenu : ContextMenu<Pokemon>
         if (pokemonImage.image.sprite == null)
         {
             pokemonImage.image.sprite = pokemom.frontSprite;
-            pokemonImage.transform.transform.localScale = Vector3.up + Vector3.left;
+            pokemonImage.transform.localScale = Vector3.up + Vector3.left;
         }
         pokemonName.text = pokemom.name;
         level.text = $"Lv{pokemom.level}";
