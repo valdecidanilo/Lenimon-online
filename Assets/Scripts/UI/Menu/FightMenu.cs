@@ -42,6 +42,8 @@ public class FightMenu : ContextMenu<Pokemon>
 
     private MoveModel[] movesData;
 
+    public event Action<bool> onBattleStateChanged;
+
     private static FightMenu instance;
 
     protected override void Awake()
@@ -138,6 +140,7 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
     {
+        onBattleStateChanged?.Invoke(true);
         player.pickedMove ??= allyMove;
         opponent.pickedMove ??= opponentMove;
         //calculate witch one goes first
@@ -178,6 +181,7 @@ public class FightMenu : ContextMenu<Pokemon>
         contextSelection.Focus();
         Announcer.CloseAnnouncement();
         ReturnCall(new());
+        onBattleStateChanged?.Invoke(false);
 
         yield break;
         

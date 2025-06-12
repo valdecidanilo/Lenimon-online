@@ -37,7 +37,8 @@ public class BattleSetup : MonoBehaviour
         detailsAction = InputSystem.actions.FindAction("UI/Details");
         summaryNavigationAction = InputSystem.actions.FindAction("UI/ScrollWheel");
         summaryNavigationAction.performed += SwitchPokemon;
-        EnableEnemySummary(true);
+        fightMenu.onBattleStateChanged += EnableEnemySummary;
+        EnableEnemySummary(false);
         battleChoice.onItemPick += OnChoicePick;
         fightMenu.onReturn += OpenChoiceMenu;
         partyChoice.onReturn += OpenChoiceMenu;
@@ -98,17 +99,18 @@ public class BattleSetup : MonoBehaviour
         summaryFromParty = false;
     }
 
-    private void EnableEnemySummary(bool enable)
+    private void EnableEnemySummary(bool disable)
     {
-        if (enable)
+        enemySummaryButton.interactable = !disable;
+        if (!disable)
         {
-            detailsAction.performed += EnemySummaryInput;
-            enemySummaryButton.onClick.AddListener(OpenEnemySummary);
+            detailsAction.performed -= EnemySummaryInput;
+            enemySummaryButton.onClick.RemoveListener(OpenEnemySummary);
             return;
         }
 
-        detailsAction.performed -= EnemySummaryInput;
-        enemySummaryButton.onClick.RemoveListener(OpenEnemySummary);
+        detailsAction.performed += EnemySummaryInput;
+        enemySummaryButton.onClick.AddListener(OpenEnemySummary);
     }
 
     private void OpenEnemySummary() => OpenPokemonSummary(opponent.activePokemon);
