@@ -90,15 +90,15 @@ public static class BattleVFX
         rect.localPosition = originalPosition;
     }
 
-    public static IEnumerator MoveAnimation(this BattlePokemon pokemon, MoveType moveType)
+    public static IEnumerator MoveAnimation(this BattlePokemon pokemon, MoveType moveType, BattlePokemon target)
     {
         switch (moveType)
         {
             case MoveType.Physical:
-                yield return DefaultPhysicalMoveAnimation(pokemon);
+                yield return DefaultPhysicalMoveAnimation(pokemon, target);
                 break;
             case MoveType.Special:
-                yield return DefaultSpecialMoveAnimation(pokemon);
+                yield return DefaultSpecialMoveAnimation(pokemon, target);
                 break;
             case MoveType.Status:
                 yield return DefaultStatusMoveAnimation(pokemon);
@@ -106,44 +106,131 @@ public static class BattleVFX
         }
     }
 
-    public static IEnumerator DefaultPhysicalMoveAnimation(this BattlePokemon pokemon)
+    public static IEnumerator DefaultPhysicalMoveAnimation(this BattlePokemon pokemon, BattlePokemon target)
     {
+        if(ReferenceEquals(target,null) || ReferenceEquals(target,pokemon)) yield break;
+        
         RectTransform rect = (RectTransform)pokemon.image.transform;
         Vector2 size = rect.rect.size;
         Vector2 originalPosition = rect.anchoredPosition;
-        Vector3 originalAngles = rect.localEulerAngles;
+        RectTransform targetRect = (RectTransform)target.image.transform;
+        Vector2 targetOriginalPosition = targetRect.anchoredPosition;
+        Vector2 scale = rect.lossyScale;
+        Vector2 finalScale = Vector3.Scale(rect.lossyScale, targetRect.lossyScale);
 
         //windup
-        const float windUpDistance = .8f;
-        const float windUpDuration = .4f;
-        Vector2 windUpDirection = new(1f, .2f);
+        float directionMultiplier = Mathf.Clamp(target.transform.localPosition.x - pokemon.transform.localPosition.x, -1, 1);
+        const float windUpDistance = .15f;
+        const float windUpDuration = .3f;
+        Vector2 windUpDirection = new Vector2(1f, .2f) * scale * directionMultiplier;
         Vector2 windUpPosition = originalPosition - (size * (windUpDirection * windUpDistance));
         float time = 0;
         while (time < windUpDuration)
         {
-            rect.anchoredPosition = Vector2.Lerp(originalPosition, windUpPosition, time);
+            float scaledTime = time / windUpDuration;
+            rect.anchoredPosition = Vector2.Lerp(originalPosition, windUpPosition, scaledTime);
             yield return null;
             time += Time.deltaTime;
         }
 
         //hold
-        const float holdTime = .4f;
+        const float holdTime = .2f;
         yield return new WaitForSeconds(holdTime);
 
         //attack
         const float attackDistance = .2f;
         const float attackDuration = .1f;
+        Vector2 attackDirection = windUpDirection * -1;
+        Vector2 attackPosition = originalPosition - (size * (attackDirection * attackDistance));
+        time = 0;
+        while (time < attackDuration)
+        {
+            float scaledTime = time / attackDuration;
+            rect.anchoredPosition = Vector2.Lerp(windUpPosition, attackPosition, scaledTime);
+            yield return null;
+            time += Time.deltaTime;
+        }
 
         //return
+        const float backUpDistance = .1f;
+        Vector2 backUpPosition = targetOriginalPosition - (targetRect.rect.size * (attackDirection * finalScale * backUpDistance));
         const float returnDuration = .05f;
+        time = 0;
+        while (time < returnDuration)
+        {
+            float scaledTime = time / returnDuration;
+            rect.anchoredPosition = Vector2.Lerp(attackPosition, originalPosition, scaledTime);
+            float backUpTime = NumberUtil.SineWave(scaledTime / 2f, 1, 1);
+            targetRect.anchoredPosition = Vector2.Lerp(targetOriginalPosition, backUpPosition, backUpTime);
+            yield return null;
+            time += Time.deltaTime;
+        }
+
+        rect.anchoredPosition = originalPosition;
+        targetRect.anchoredPosition = targetOriginalPosition;
     }
 
-    public static IEnumerator DefaultSpecialMoveAnimation(this BattlePokemon pokemon)
+    public static IEnumerator DefaultSpecialMoveAnimation(this BattlePokemon pokemon, BattlePokemon target)
     {
+        if(ReferenceEquals(target,null) || ReferenceEquals(target,pokemon)) yield break;
+        
         RectTransform rect = (RectTransform)pokemon.image.transform;
-        Vector2 originalPosition = rect.anchoredPosition;
-        Vector3 originalAngles = rect.localEulerAngles;
-        yield break;
+        Vector3 originalRotation = rect.localEulerAngles;
+        RectTransform targetRect = (RectTransform)target.image.transform;
+        Vector2 targetOriginalPosition = targetRect.anchoredPosition;
+        Vector2 scale = rect.lossyScale;
+        Vector2 finalScale = Vector3.Scale(rect.lossyScale, targetRect.lossyScale);
+
+        //windup
+        float directionMultiplier = Mathf.Clamp(pokemon.transform.localPosition.x - target.transform.localPosition.x, -1, 1);
+        const float windUpDistance = -25f;
+        const float windUpDuration = .2f;
+        float windUpDirection = windUpDistance * directionMultiplier;
+        
+        float time = 0;
+        while (time < windUpDuration)
+        {
+            float scaledTime = time / windUpDuration;
+            rect.localEulerAngles = Vector3.forward * Mathf.Lerp(originalRotation.z, windUpDirection, scaledTime);
+            yield return null;
+            time += Time.deltaTime;
+        }
+
+        //hold
+        const float holdTime = .2f;
+        yield return new WaitForSeconds(holdTime);
+
+        //attack
+        const float attackDistance = 10f;
+        const float attackDuration = .1f;
+        float attackDirection = attackDistance * directionMultiplier;
+        time = 0;
+        while (time < attackDuration)
+        {
+            float scaledTime = time / attackDuration;
+            rect.localEulerAngles = Vector3.forward * Mathf.Lerp(windUpDirection, attackDirection, scaledTime);
+            yield return null;
+            time += Time.deltaTime;
+        }
+
+        //return
+        const float backUpDistance = .1f;
+        Vector2 backUpDirection = new Vector2(1f, .2f) * finalScale * directionMultiplier;
+        Vector2 backUpPosition = targetOriginalPosition - (targetRect.rect.size * (backUpDirection * finalScale * backUpDistance));
+        const float returnDuration = .1f;
+        time = 0;
+        while (time < returnDuration)
+        {
+            float scaledTime = time / returnDuration;
+            rect.localEulerAngles = Vector3.forward * Mathf.Lerp(attackDirection, originalRotation.z, scaledTime);
+            float backUpTime = NumberUtil.SineWave(scaledTime / 2f, 1, 1);
+            targetRect.anchoredPosition = Vector2.Lerp(targetOriginalPosition, backUpPosition, backUpTime);
+            yield return null;
+            time += Time.deltaTime;
+        }
+
+        rect.localEulerAngles = originalRotation;
+        targetRect.anchoredPosition = targetOriginalPosition;
     }
 
     public static IEnumerator DefaultStatusMoveAnimation(this BattlePokemon pokemon)

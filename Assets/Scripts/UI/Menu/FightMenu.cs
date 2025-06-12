@@ -219,12 +219,15 @@ public class FightMenu : ContextMenu<Pokemon>
             contextSelection.ReleaseSelection();
             yield return evtBattle.move.effectMessage.Invoke(evtBattle);
             evtBattle.move.pp--;
-            yield return GetBattlePokemon(evtBattle.origin)?.MoveAnimation(evtBattle.move.typeOfMove);
             if (hit)
             {
                 bool targetSelf = evtBattle.target == evtBattle.origin;
                 if (typeMod != 0 || targetSelf)
+                {
+                    yield return GetBattlePokemon(evtBattle.origin)
+                        ?.MoveAnimation(evtBattle.move.typeOfMove, GetBattlePokemon(evtBattle.target));
                     yield return evtBattle.move.effect.EffectSequence(evtBattle);
+                }
 
                 typeMod = evtBattle.attackEvent.modifier;//resultant modifier
                 bool attackHits = (typeMod != 0 && evtBattle.attackEvent.damageDealt >= 0) ||
