@@ -138,6 +138,16 @@ public class PartyMenu : ContextMenu<Pokemon[]>
                 break;
             case 1:
                 //chose pokemon
+                if (contextSelection.selectedId == 0)
+                {
+                    Announcer.Announce("This pokemon is already in battle!", true,
+                        onDone: () =>
+                        {
+                            Announcer.CloseAnnouncement();
+                            contextSelection.Focus();
+                        });
+                    return;
+                }
                 onChangePokemon?.Invoke(contextSelection.selectedId);
                 break;
             case 2:
