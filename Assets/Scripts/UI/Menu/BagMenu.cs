@@ -252,7 +252,7 @@ public class BagMenu : ContextMenu<Bag>
                     battleEvt.target = battleEvt.origin = evt.pickedPokemon;
                     yield return item.battleEffect.EffectSequence(battleEvt);
                 }
-                yield return UseItemSequence(mockMove);
+                UseItemSequence(mockMove);
             }
             else
             {
@@ -262,12 +262,12 @@ public class BagMenu : ContextMenu<Bag>
         }
         yield break;
 
-        IEnumerator UseItemSequence(MoveModel effect)
+        void UseItemSequence(MoveModel effect)
         {
-            yield return FightMenu.DelayedStartBattle(effect);
             UseItem();
             ClosePartyMenu();
             CloseMenu();
+            FightMenu.BeginBattle(effect);
             pokemonSelected = true;
         }
         void UseItem()

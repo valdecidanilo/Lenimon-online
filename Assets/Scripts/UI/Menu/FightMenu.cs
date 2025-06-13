@@ -112,6 +112,8 @@ public class FightMenu : ContextMenu<Pokemon>
     #region Battle
     public static void BeginBattle(MoveModel playerMove)
     {
+        if(!instance.gameObject.activeSelf) instance.OpenMenu(instance.player.activePokemon);
+        //Logger.Log($"{instance.gameObject.activeSelf}");
         if (playerMove.pp <= 0)
         {
             Announcer.Announce("You don't have pp for this move!!", awaitInput: true,  onDone: ()=>
@@ -125,13 +127,6 @@ public class FightMenu : ContextMenu<Pokemon>
         instance.StartCoroutine(instance.BattleSequence(playerMove, opponentMove));
     }
     private MoveModel ChoseOpponentMove() => opponent.ChooseMove(player.activePokemon);
-
-    public static IEnumerator DelayedStartBattle(MoveModel allyMove)
-    {
-        instance.OpenMenu(instance.player.activePokemon);
-        yield return null;
-        BeginBattle(allyMove);
-    }
     public static IEnumerator StatusChangeEffect(Pokemon target, bool buff)
     {
         BattlePokemon targetPokemon = instance.GetBattlePokemon(target);
@@ -343,27 +338,15 @@ public class FightMenu : ContextMenu<Pokemon>
 
         PokeDatabase.SetGenderSprite(gender, pokemon.gender);
     }
-    public void ChangeAllyPokemon(Pokemon newAlly, bool animate = false)
+    public void ChangeAllyPokemon(Pokemon newAlly)
     {
         player.activePokemon.onHpChanged.RemoveCallback(AllyHpChanged);
-        if (animate)
-        {
-            pokemonImage.StartCoroutine(ChangePokemonSequence(pokemonImage, player, newAlly));
-        }
-        else
-        {
-            SetupAlly(newAlly);
-            player.activePokemon = newAlly;
-            player.activePokemon.onHpChanged.RegisterCallback(AllyHpChanged);
-        }
+        pokemonImage.StartCoroutine(ChangePokemonSequence(pokemonImage, player, newAlly));
     }
-    public void ChangeOpponentPokemon(Pokemon newOpponent, bool animate = false)
+    public void ChangeOpponentPokemon(Pokemon newOpponent)
     {
         opponent.activePokemon.onHpChanged.RemoveCallback(OpponentHpChanged);
-        if (!animate)
-        {
-            SetupEnemy(newOpponent);
-        }
+        SetupEnemy(newOpponent);
         opponent.activePokemon = newOpponent;
         opponent.activePokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
     }
