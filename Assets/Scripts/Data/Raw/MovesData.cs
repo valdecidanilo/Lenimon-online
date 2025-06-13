@@ -35,6 +35,8 @@ public enum MoveType
     Status = 1,
     Physical = 2,
     Special = 3,
+    Item = 4,
+    Switch = 5
 }
 public class MoveReference
 {
