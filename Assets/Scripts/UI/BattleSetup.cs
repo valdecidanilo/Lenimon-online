@@ -67,7 +67,7 @@ public class BattleSetup : MonoBehaviour
         player.party[newAlly] = player.activePokemon;
         player.party[0] = cashe;
         player.activePokemon = cashe;
-        fightMenu.ChangeAllyPokemon(player.activePokemon, true);
+        fightMenu.ChangeAllyPokemon(player.activePokemon);
         OpenChoiceMenu();
     }
 
