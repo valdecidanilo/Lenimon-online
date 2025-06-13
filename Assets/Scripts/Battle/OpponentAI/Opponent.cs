@@ -1,5 +1,6 @@
 using LenixSO.Logger;
 using System;
+using System.Collections;
 
 public abstract class Opponent : Trainer
 {
@@ -36,5 +37,10 @@ public abstract class Opponent : Trainer
         MoveModel mockMove = ItemEffect.CreateMockMove(item);
         mockMove.priority--;
         return mockMove;
+    }
+
+    public override IEnumerator PickPokemon(PickPokemonEvent evt)
+    {
+        return base.PickPokemon(evt);
     }
 }

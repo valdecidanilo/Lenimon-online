@@ -1,3 +1,4 @@
+using System.Collections;
 
 public class Trainer
 {
@@ -8,4 +9,12 @@ public class Trainer
     public Pokemon activePokemon;
 
     public MoveModel pickedMove;
+
+    /// <summary>
+    /// "isCurrent" will be treated as can't pick currentPokemon
+    /// </summary>
+    public virtual IEnumerator PickPokemon(PickPokemonEvent evt)
+    {
+        yield return PartyMenu.PickPokemon(evt);
+    }
 }

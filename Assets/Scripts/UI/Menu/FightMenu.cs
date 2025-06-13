@@ -133,6 +133,26 @@ public class FightMenu : ContextMenu<Pokemon>
         if (ReferenceEquals(targetPokemon, null)) yield break;
         yield return targetPokemon.StatChangeAnimation(buff);
     }
+
+    public static IEnumerator ChangePokemon(Pokemon currentPokemon, Pokemon newPokemon)
+    {
+        BattlePokemon battlePokemon;
+        Trainer trainer;
+        int side = 1;
+        if (currentPokemon == instance.player.activePokemon)
+        {
+            battlePokemon = instance.pokemonImage;
+            trainer = instance.player;
+        }
+        else
+        {
+            battlePokemon = instance.enemyImage;
+            trainer = instance.opponent;
+            side = -1;
+        }
+
+        yield return instance.ChangePokemonSequence(battlePokemon, trainer, newPokemon, side);
+    }
     private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
     {
         onBattleStateChanged?.Invoke(true);
@@ -276,7 +296,6 @@ public class FightMenu : ContextMenu<Pokemon>
             _ => opponent,
         };
     }
-
     private BattlePokemon GetBattlePokemon(Pokemon target)
     {
         BattlePokemon targetPokemon = null;
