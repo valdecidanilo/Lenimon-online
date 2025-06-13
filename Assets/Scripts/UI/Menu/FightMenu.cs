@@ -317,19 +317,20 @@ public class FightMenu : ContextMenu<Pokemon>
     private void SetupAlly(Pokemon ally)
     {
         player.activePokemon = ally;
-        var pokemom = ally;
-        pokemonImage.image.sprite = pokemom.backSprite;
-        if (pokemonImage.image.sprite == null)
-        {
-            pokemonImage.image.sprite = pokemom.frontSprite;
-            pokemonImage.transform.localScale = Vector3.up + Vector3.left;
-        }
-        pokemonName.text = pokemom.name;
-        level.text = $"Lv{pokemom.level}";
-        BattleVFX.ChangeHpBar(pokemom, hp, pokemom.battleStats[StatType.hp], hpValue);
+        var pokemon = ally;
+        SetupAllySprite(pokemon);
+        pokemonName.text = pokemon.name;
+        level.text = $"Lv{pokemon.level}";
+        BattleVFX.ChangeHpBar(pokemon, hp, pokemon.battleStats[StatType.hp], hpValue);
         xp.fillAmount = Random.Range(0, 1);
 
-        PokeDatabase.SetGenderSprite(gender, pokemom.gender);
+        PokeDatabase.SetGenderSprite(gender, pokemon.gender);
+    }
+
+    private void SetupAllySprite(Pokemon pokemon)
+    {
+        pokemonImage.image.sprite = pokemon.backSprite ?? pokemon.frontSprite;
+        pokemonImage.image.transform.localScale = Vector3.up + (!pokemon.backSprite ? Vector3.left : Vector3.right);
     }
     private void SetupEnemy(Pokemon newPokemon)
     {
@@ -345,11 +346,9 @@ public class FightMenu : ContextMenu<Pokemon>
     public void ChangeAllyPokemon(Pokemon newAlly, bool animate = false)
     {
         player.activePokemon.onHpChanged.RemoveCallback(AllyHpChanged);
-        if (!animate)
+        if (animate)
         {
-            SetupAlly(newAlly);
-            player.activePokemon = newAlly;
-            player.activePokemon.onHpChanged.RegisterCallback(AllyHpChanged);
+            pokemonImage.StartCoroutine(ChangePokemonSequence(pokemonImage, player, newAlly));
         }
         else
         {
@@ -367,6 +366,29 @@ public class FightMenu : ContextMenu<Pokemon>
         }
         opponent.activePokemon = newOpponent;
         opponent.activePokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
+    }
+
+    private IEnumerator ChangePokemonSequence(BattlePokemon battlePokemon, Trainer trainer, Pokemon newPokemon, int side = 1)
+    {
+        trainer.activePokemon = newPokemon;
+        yield return battlePokemon.SwitchOutAnimation(side);
+        yield return new WaitForSeconds(.6f);
+        Sprite sprite;
+        if (side == 1)
+        {
+            //battlePokemon.ResetBattlePokemon();
+            SetupAlly(newPokemon);
+            sprite = battlePokemon.image.sprite;
+            player.activePokemon.onHpChanged.RegisterCallback(AllyHpChanged);
+            //battlePokemon.SaveAsDefaultValues();
+        }
+        else
+        {
+            SetupEnemy(newPokemon);
+            sprite = newPokemon.frontSprite;
+            opponent.activePokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
+        }
+        yield return battlePokemon.SwitchInAnimation(sprite, side);
     }
     #endregion
 }

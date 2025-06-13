@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 public class TestScript : MonoBehaviour
 {
     [SerializeField] private BattlePokemon ally, enemy;
+
+    private Sprite pokemonSprite;
     private void Start()
     {
         /*const string route = PokeAPI.baseRoute + "move/";
@@ -34,17 +36,36 @@ public class TestScript : MonoBehaviour
         {
             PokeDatabase.pokeBallSprite = sprite;
         });
+        
+        AAAsset<Sprite>.LoadAsset("MissingNoFront", (sprite) =>
+        {
+            pokemonSprite = sprite;
+        });
     }
 
     private void Update()
     {
-        if (Keyboard.current.xKey.wasPressedThisFrame)
+        if (Keyboard.current.zKey.wasPressedThisFrame)
         {
             StartCoroutine(ally.SwitchOutAnimation());
         }
-        if (Keyboard.current.zKey.wasPressedThisFrame)
+        if (Keyboard.current.xKey.wasPressedThisFrame)
         {
             StartCoroutine(enemy.SwitchOutAnimation(-1));
+        }
+        if (Keyboard.current.aKey.wasPressedThisFrame)
+        {
+            StartCoroutine(ally.SwitchInAnimation(pokemonSprite));
+        }
+        if (Keyboard.current.sKey.wasPressedThisFrame)
+        {
+            StartCoroutine(enemy.SwitchInAnimation(pokemonSprite, -1));
+        }
+        
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            ally.ResetBattlePokemon();
+            enemy.ResetBattlePokemon();
         }
     }
 }
