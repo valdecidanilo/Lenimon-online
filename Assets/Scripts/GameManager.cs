@@ -90,6 +90,15 @@ public class GameManager : MonoBehaviour
                 GenerateItems();
                 requiredEnemy.FinishStep();
             };
+            opponentLoaded.onCompleted += () =>
+            {
+                StringBuilder sb = new("Opponent's party:");
+                for (int i = 0; i < opponent.party.Length; i++)
+                {
+                    sb.Append($"\n{opponent.party[i].name}");
+                }
+                Logger.Log(sb.ToString(), LogFlags.DataCheck);
+            };
             Logger.Log($"setup enemy party ({partySize} pokemons)", LogFlags.Game);
             SetupParty(opponent.party, opponentLoaded);
         };
