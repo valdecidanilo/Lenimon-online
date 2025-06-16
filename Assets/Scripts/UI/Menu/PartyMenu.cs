@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Battle;
 using UnityEngine;
 using UnityEngine.UI;
 using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
@@ -16,8 +17,6 @@ public class PartyMenu : ContextMenu<Pokemon[]>
 
     private Pokemon[] party;
     private PartyPokemon[] instances;
-
-    public event Action<int> onChangePokemon;
     public event Action<int> onSummaryCall;
     public event Action onItemCall;
 
@@ -148,7 +147,8 @@ public class PartyMenu : ContextMenu<Pokemon[]>
                         });
                     return;
                 }
-                onChangePokemon?.Invoke(contextSelection.selectedId);
+                FightMenu.BeginBattle(MoveEffectCreator.SwitchPokemonMove(contextSelection.selectedId));
+                CloseMenu();
                 break;
             case 2:
                 //switch pokemon
@@ -182,6 +182,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     {
         if (evt.currentPokemonOnly)
         {
+            evt.partyId = 0;
             evt.pickedPokemon = instance.party[0];
             evt.isCurrent = true;
             yield break;
@@ -215,6 +216,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         {
             if (id < instance.contextSelection.itemCount - 1) evt.pickedPokemon = instance.party[id];
             selected = true;
+            evt.partyId = id;
             evt.isCurrent = id == 0;
             if (evt.move == null || id >= moveLearnability.Count) return;
             evt.canLearnTM = moveLearnability[id];
@@ -240,6 +242,7 @@ public class PickPokemonEvent
     //feedback
     public bool isCurrent;
     public Pokemon pickedPokemon;
+    public int partyId = -1;
     public bool canLearnTM;
 
     public PickPokemonEvent(bool currentOnly, TMModel tm = null)

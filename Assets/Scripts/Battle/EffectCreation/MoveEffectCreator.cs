@@ -69,6 +69,7 @@ namespace Battle
                     break;
                 case "force-switch":
                     //Logger.Log("force switch move", LogFlags.DataCheck);
+                    moveEffect = new SwitchPokemonEffect();
                     break;
                 default:
                     //unique
@@ -123,5 +124,33 @@ namespace Battle
         private static IEnumerator Empty(BattleEvent evt) { yield break; }
         
         public static Effect EmptyEffect() => new CustomEffect(Empty);
+
+        public static MoveModel SwitchPokemonMove(int newPokemon)
+        {
+            MoveData data = new();
+            data.id = -1;
+            data.name = "Switch Pokemon";
+            data.pp = 1;
+            data.priority = 99;
+            data.type = new() { name = "unknown" };
+            data.target = new() { name = "user" };
+            data.moveTypeData = new() { id = MoveType.Switch };
+            data.flavorTexts = new() {
+                new FlavorText() {
+                    text = "Switches pokemon",
+                    language = new(){name = "en"}
+                }
+            };
+            data.meta = new() {
+                category = new() { name = "unique" }
+            };
+        
+            MoveModel model = new(data);
+            SwitchPokemonEffect switchEffect = new();
+            switchEffect.newPokemon = newPokemon;
+            model.effect = switchEffect;
+            model.effectMessage = null;
+            return model;
+        }
     }
 }

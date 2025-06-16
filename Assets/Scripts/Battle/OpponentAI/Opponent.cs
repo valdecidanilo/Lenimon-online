@@ -1,6 +1,8 @@
 using LenixSO.Logger;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using Random = UnityEngine.Random;
 
 public abstract class Opponent : Trainer
 {
@@ -41,6 +43,19 @@ public abstract class Opponent : Trainer
 
     public override IEnumerator PickPokemon(PickPokemonEvent evt)
     {
-        return base.PickPokemon(evt);
+        List<int> possiblePokemons = new(party.Length);
+        for (int i = 0; i < party.Length; i++)
+        {
+            if(party[i].fainted || party[i] == activePokemon) continue;
+            possiblePokemons.Add(i);
+        }
+
+        if (possiblePokemons.Count > 0)
+        {
+            evt.partyId = possiblePokemons[Random.Range(0, possiblePokemons.Count)];
+            evt.pickedPokemon = party[evt.partyId];
+        }
+        else evt.canLearnTM = true;
+        yield break;
     }
 }

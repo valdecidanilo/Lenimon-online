@@ -109,14 +109,14 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     #endregion
 
-    #region Battle
+    #region Static Methods
     public static void BeginBattle(MoveModel playerMove)
     {
-        if(!instance.gameObject.activeSelf) instance.OpenMenu(instance.player.activePokemon);
+        if (!instance.gameObject.activeSelf) instance.OpenMenu(instance.player.activePokemon);
         //Logger.Log($"{instance.gameObject.activeSelf}");
         if (playerMove.pp <= 0)
         {
-            Announcer.Announce("You don't have pp for this move!!", awaitInput: true,  onDone: ()=>
+            Announcer.Announce("You don't have pp for this move!!", awaitInput: true, onDone: () =>
             {
                 Announcer.CloseAnnouncement();
                 instance.contextSelection.Focus();
@@ -126,33 +126,39 @@ public class FightMenu : ContextMenu<Pokemon>
         MoveModel opponentMove = instance.ChoseOpponentMove();
         instance.StartCoroutine(instance.BattleSequence(playerMove, opponentMove));
     }
-    private MoveModel ChoseOpponentMove() => opponent.ChooseMove(player.activePokemon);
     public static IEnumerator StatusChangeEffect(Pokemon target, bool buff)
     {
         BattlePokemon targetPokemon = instance.GetBattlePokemon(target);
         if (ReferenceEquals(targetPokemon, null)) yield break;
         yield return targetPokemon.StatChangeAnimation(buff);
     }
-
-    public static IEnumerator ChangePokemon(Pokemon currentPokemon, Pokemon newPokemon)
+    public static IEnumerator ChangePokemon(Trainer trainer, int pokemonPartyId)
     {
         BattlePokemon battlePokemon;
-        Trainer trainer;
         int side = 1;
-        if (currentPokemon == instance.player.activePokemon)
+        if (trainer == instance.player)
         {
+            trainer.party[0] = trainer.party[pokemonPartyId];
+            trainer.party[pokemonPartyId] = trainer.activePokemon;
+            pokemonPartyId = 0;
+            trainer.activePokemon.onHpChanged.RemoveCallback(instance.AllyHpChanged);
             battlePokemon = instance.pokemonImage;
-            trainer = instance.player;
         }
         else
         {
+            trainer.activePokemon.onHpChanged.RemoveCallback(instance.OpponentHpChanged);
             battlePokemon = instance.enemyImage;
-            trainer = instance.opponent;
             side = -1;
         }
 
-        yield return instance.ChangePokemonSequence(battlePokemon, trainer, newPokemon, side);
+        trainer.activePokemon = trainer.party[pokemonPartyId];
+        yield return instance.ChangePokemonSequence(battlePokemon, trainer, trainer.activePokemon, side);
     }
+    public static void EnableFightAnnouncer() => Announcer.ChangeAnnouncer(instance.battleAnnouncer);
+    #endregion
+
+    #region Battle
+    private MoveModel ChoseOpponentMove() => opponent.ChooseMove(player.activePokemon);
     private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
     {
         onBattleStateChanged?.Invoke(true);
@@ -180,13 +186,14 @@ public class FightMenu : ContextMenu<Pokemon>
 
         for (int i = 0; i < trainerOrder.Count; i++)
         {
-            Pokemon nextPokemon = trainerOrder[(i + 1) % trainerOrder.Count].activePokemon;
+            Trainer otherTrainer = trainerOrder[(i + 1) % trainerOrder.Count];
 
             BattleEvent evt = new();
-            evt.user = trainerOrder[i];
             evt.move = trainerOrder[i].pickedMove;
+            evt.user = trainerOrder[i];
             evt.origin = evt.user.activePokemon;
-            evt.target = GetTarget(evt.move.Data.target.name, evt.user.activePokemon, nextPokemon);
+            evt.targetTrainer = GetTarget(evt.move.Data.target.name, evt.user, otherTrainer);
+            evt.target = evt.targetTrainer.activePokemon;
             evt.attackEvent = new(evt.origin, evt.target, evt.move);
             yield return TurnSequence(evt);
         }
@@ -236,7 +243,7 @@ public class FightMenu : ContextMenu<Pokemon>
             bool hit = evtBattle.attackEvent.CheckHit(out bool missed);
 
             contextSelection.ReleaseSelection();
-            yield return evtBattle.move.effectMessage.Invoke(evtBattle);
+            yield return evtBattle.move.effectMessage?.Invoke(evtBattle);
             evtBattle.move.pp--;
             if (hit)
             {
@@ -284,7 +291,7 @@ public class FightMenu : ContextMenu<Pokemon>
             }
         }
     }
-    private Pokemon GetTarget(string target, Pokemon self, Pokemon opponent)
+    private Trainer GetTarget(string target, Trainer self, Trainer opponent)
     {
         return target switch
         {
@@ -330,7 +337,6 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     private void SetupAlly(Pokemon ally)
     {
-        player.activePokemon = ally;
         var pokemon = ally;
         SetupAllySprite(pokemon);
         pokemonName.text = pokemon.name;
@@ -348,7 +354,6 @@ public class FightMenu : ContextMenu<Pokemon>
     }
     private void SetupEnemy(Pokemon newPokemon)
     {
-        opponent.activePokemon = newPokemon;
         var pokemon = newPokemon;
         enemyImage.image.sprite = pokemon.frontSprite;
         enemyName.text = pokemon.name;
@@ -357,32 +362,20 @@ public class FightMenu : ContextMenu<Pokemon>
 
         PokeDatabase.SetGenderSprite(gender, pokemon.gender);
     }
-    public void ChangeAllyPokemon(Pokemon newAlly)
-    {
-        player.activePokemon.onHpChanged.RemoveCallback(AllyHpChanged);
-        pokemonImage.StartCoroutine(ChangePokemonSequence(pokemonImage, player, newAlly));
-    }
-    public void ChangeOpponentPokemon(Pokemon newOpponent)
-    {
-        opponent.activePokemon.onHpChanged.RemoveCallback(OpponentHpChanged);
-        SetupEnemy(newOpponent);
-        opponent.activePokemon = newOpponent;
-        opponent.activePokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
-    }
 
     private IEnumerator ChangePokemonSequence(BattlePokemon battlePokemon, Trainer trainer, Pokemon newPokemon, int side = 1)
     {
-        trainer.activePokemon = newPokemon;
         yield return battlePokemon.SwitchOutAnimation(side);
         yield return new WaitForSeconds(.6f);
+        yield return Announcer.AnnounceCoroutine($"{trainer.name} sent out {newPokemon.name}.", holdTime: .6f);
         Sprite sprite;
         if (side == 1)
         {
-            //battlePokemon.ResetBattlePokemon();
+            battlePokemon.ResetBattlePokemon();
             SetupAlly(newPokemon);
             sprite = battlePokemon.image.sprite;
             player.activePokemon.onHpChanged.RegisterCallback(AllyHpChanged);
-            //battlePokemon.SaveAsDefaultValues();
+            battlePokemon.SaveAsDefaultValues();
         }
         else
         {

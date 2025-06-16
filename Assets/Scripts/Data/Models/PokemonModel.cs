@@ -11,6 +11,8 @@ public class Pokemon : ApiData
     public PokemonData data { get; private set; }
     public Gender gender { get; private set; }
 
+    public bool fainted => battleStats[StatType.hp] <= 0;
+
     #region Stats
     //stats
     public int level { get; private set; }

@@ -42,7 +42,6 @@ public class BattleSetup : MonoBehaviour
         battleChoice.onItemPick += OnChoicePick;
         fightMenu.onReturn += OpenChoiceMenu;
         partyChoice.onReturn += OpenChoiceMenu;
-        partyChoice.onChangePokemon += OnAllyChanged;
         partyChoice.onSummaryCall += OnPokemonSummaryRequest;
         summary.onReturn += CloseSummary;
         bag.onReturn += OpenChoiceMenu;
@@ -58,16 +57,6 @@ public class BattleSetup : MonoBehaviour
         fightMenu.SetupBattle(player, opponent);
         OpenParty();
         OpenBag();
-        OpenChoiceMenu();
-    }
-
-    private void OnAllyChanged(int newAlly)
-    {
-        Pokemon cashe = player.party[newAlly];
-        player.party[newAlly] = player.activePokemon;
-        player.party[0] = cashe;
-        player.activePokemon = cashe;
-        fightMenu.ChangeAllyPokemon(player.activePokemon);
         OpenChoiceMenu();
     }
 

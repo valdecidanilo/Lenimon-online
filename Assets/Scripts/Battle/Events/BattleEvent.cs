@@ -7,6 +7,7 @@ namespace Battle
     public class BattleEvent
     {
         public Trainer user;
+        public Trainer targetTrainer;
         public Pokemon origin;
         public Pokemon target;
         public MoveModel move;
