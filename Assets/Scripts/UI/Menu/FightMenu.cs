@@ -136,6 +136,7 @@ public class FightMenu : ContextMenu<Pokemon>
     {
         BattlePokemon battlePokemon;
         int side = 1;
+        trainer.activePokemon.ResetBattleStats();
         if (trainer == instance.player)
         {
             trainer.party[0] = trainer.party[pokemonPartyId];
@@ -196,6 +197,10 @@ public class FightMenu : ContextMenu<Pokemon>
             evt.target = evt.targetTrainer.activePokemon;
             evt.attackEvent = new(evt.origin, evt.target, evt.move);
             yield return TurnSequence(evt);
+            if (evt.target != evt.targetTrainer.activePokemon)
+            {
+                break;
+            }
         }
 
         player.pickedMove = null;
@@ -310,14 +315,6 @@ public class FightMenu : ContextMenu<Pokemon>
         else if (target == instance.opponent.activePokemon) targetPokemon = instance.enemyImage;
         return targetPokemon;
     }
-    private IEnumerator AllyHpChanged(int initialValue, int currentValue)
-    {
-        yield return BattleVFX.LerpHpBar(player.activePokemon, initialValue, currentValue, hp, hpValue);
-    }
-    private IEnumerator OpponentHpChanged(int initialValue, int currentValue)
-    {
-        yield return BattleVFX.LerpHpBar(opponent.activePokemon, initialValue, currentValue, enemyHp);
-    }
     #endregion
 
     #region Visual
@@ -361,6 +358,15 @@ public class FightMenu : ContextMenu<Pokemon>
         BattleVFX.ChangeHpBar(pokemon, enemyHp, pokemon.battleStats[StatType.hp]);
 
         PokeDatabase.SetGenderSprite(gender, pokemon.gender);
+    }
+
+    private IEnumerator AllyHpChanged(int initialValue, int currentValue)
+    {
+        yield return BattleVFX.LerpHpBar(player.activePokemon, initialValue, currentValue, hp, hpValue);
+    }
+    private IEnumerator OpponentHpChanged(int initialValue, int currentValue)
+    {
+        yield return BattleVFX.LerpHpBar(opponent.activePokemon, initialValue, currentValue, enemyHp);
     }
 
     private IEnumerator ChangePokemonSequence(BattlePokemon battlePokemon, Trainer trainer, Pokemon newPokemon, int side = 1)

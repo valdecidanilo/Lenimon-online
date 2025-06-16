@@ -128,6 +128,17 @@ public class Pokemon : ApiData
         }
     }
 
+    public void ResetBattleStats()
+    {
+        battleStats[StatType.atk] = 0;
+        battleStats[StatType.def] = 0;
+        battleStats[StatType.sAtk] = 0;
+        battleStats[StatType.sDef] = 0;
+        battleStats[StatType.spd] = 0;
+        battleStats[StatType.acc] = 0;
+        battleStats[StatType.eva] = 0;
+    }
+
     public IEnumerator DamagePokemon(int value)
     {
         int currentHp = battleStats.hp;
