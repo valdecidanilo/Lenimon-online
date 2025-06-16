@@ -93,13 +93,13 @@ public class BattleSetup : MonoBehaviour
         enemySummaryButton.interactable = !disable;
         if (!disable)
         {
-            detailsAction.performed -= EnemySummaryInput;
-            enemySummaryButton.onClick.RemoveListener(OpenEnemySummary);
+            detailsAction.performed += EnemySummaryInput;
+            enemySummaryButton.onClick.AddListener(OpenEnemySummary);
             return;
         }
 
-        detailsAction.performed += EnemySummaryInput;
-        enemySummaryButton.onClick.AddListener(OpenEnemySummary);
+        detailsAction.performed -= EnemySummaryInput;
+        enemySummaryButton.onClick.RemoveListener(OpenEnemySummary);
     }
 
     private void OpenEnemySummary() => OpenPokemonSummary(opponent.activePokemon);
