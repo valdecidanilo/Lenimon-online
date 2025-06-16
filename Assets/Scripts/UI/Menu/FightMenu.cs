@@ -373,9 +373,9 @@ public class FightMenu : ContextMenu<Pokemon>
         {
             battlePokemon.ResetBattlePokemon();
             SetupAlly(newPokemon);
+            battlePokemon.SaveAsDefaultValues();
             sprite = battlePokemon.image.sprite;
             player.activePokemon.onHpChanged.RegisterCallback(AllyHpChanged);
-            battlePokemon.SaveAsDefaultValues();
         }
         else
         {

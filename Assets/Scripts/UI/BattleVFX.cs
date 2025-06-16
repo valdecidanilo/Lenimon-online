@@ -116,7 +116,7 @@ public static class BattleVFX
         float directionMultiplier = Mathf.Clamp(target.transform.localPosition.x - pokemon.transform.localPosition.x, -1, 1);
         const float windUpDistance = .15f;
         const float windUpDuration = .3f;
-        Vector2 windUpDirection = new Vector2(1f, .2f) * scale * directionMultiplier;
+        Vector2 windUpDirection = new Vector2(1f, .2f) * directionMultiplier;
         Vector2 windUpPosition = originalPosition - (size * (windUpDirection * windUpDistance));
         float time = 0;
         while (time < windUpDuration)
@@ -172,7 +172,6 @@ public static class BattleVFX
         Vector3 originalRotation = rect.localEulerAngles;
         RectTransform targetRect = (RectTransform)target.image.transform;
         Vector2 targetOriginalPosition = targetRect.anchoredPosition;
-        Vector2 scale = rect.lossyScale;
         Vector2 finalScale = Vector3.Scale(rect.lossyScale, targetRect.lossyScale);
 
         //windup
