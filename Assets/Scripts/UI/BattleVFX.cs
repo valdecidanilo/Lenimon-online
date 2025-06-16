@@ -147,7 +147,8 @@ public static class BattleVFX
 
         //return
         const float backUpDistance = .1f;
-        Vector2 backUpPosition = targetOriginalPosition - (targetRect.rect.size * (attackDirection * finalScale * backUpDistance));
+        Vector2 backUpDirection = new Vector2(1f, .2f) * -finalScale * directionMultiplier;
+        Vector2 backUpPosition = targetOriginalPosition - (targetRect.rect.size * (backUpDirection * finalScale * backUpDistance));
         const float returnDuration = .05f;
         time = 0;
         while (time < returnDuration)
