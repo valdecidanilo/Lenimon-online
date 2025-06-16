@@ -16,5 +16,6 @@ public class Trainer
     public virtual IEnumerator PickPokemon(PickPokemonEvent evt)
     {
         yield return PartyMenu.PickPokemon(evt);
+        PartyMenu.ClosePartyMenu();
     }
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Vector2 = UnityEngine.Vector2;
 
 public static class BattleVFX
 {
@@ -249,6 +250,27 @@ public static class BattleVFX
         }
 
         pokemon.ResetBattlePokemon();
+    }
+
+    public static IEnumerator FaintAnimation(this BattlePokemon battlePokemon)
+    {
+        RectTransform imageRect = (RectTransform)battlePokemon.image.transform;
+        Vector2 originalPosition = imageRect.anchoredPosition;
+        Vector2 size = imageRect.rect.size;
+        
+        const float fallDuration = 1.2f;
+        const float fallDistance = 3;
+
+        Vector2 finalPosition = imageRect.anchoredPosition + (Vector2.down * size * fallDistance);
+        float time = 0;
+        while (time < fadeDuration)
+        {
+            float scaledTime = time / fallDuration;
+            imageRect.anchoredPosition = Vector2.Lerp(originalPosition, finalPosition, scaledTime);
+            yield return null;
+            time += Time.deltaTime;
+        }
+        imageRect.anchoredPosition = finalPosition;
     }
     
     //switch const values

@@ -152,8 +152,9 @@ public class FightMenu : ContextMenu<Pokemon>
             side = -1;
         }
 
+        bool skipSwitchOut = trainer.activePokemon.fainted;
         trainer.activePokemon = trainer.party[pokemonPartyId];
-        yield return instance.ChangePokemonSequence(battlePokemon, trainer, trainer.activePokemon, side);
+        yield return instance.ChangePokemonSequence(battlePokemon, trainer, trainer.activePokemon, skipSwitchOut, side);
     }
     public static void EnableFightAnnouncer() => Announcer.ChangeAnnouncer(instance.battleAnnouncer);
     #endregion
@@ -197,10 +198,20 @@ public class FightMenu : ContextMenu<Pokemon>
             evt.target = evt.targetTrainer.activePokemon;
             evt.attackEvent = new(evt.origin, evt.target, evt.move);
             yield return TurnSequence(evt);
-            if (evt.target != evt.targetTrainer.activePokemon)
+            if (evt.targetTrainer.activePokemon.fainted)
             {
-                break;
+                bool pickedPokemon = false;
+                while (!pickedPokemon)
+                {
+                    PickPokemonEvent pickEvent = new(false);
+                    yield return evt.targetTrainer.PickPokemon(pickEvent);
+                    if (pickEvent.partyId < 0 || pickEvent.pickedPokemon.fainted) continue;
+                    yield return ChangePokemon(evt.targetTrainer, pickEvent.partyId);
+                    pickedPokemon = true;
+                }
             }
+            if (evt.user != evt.targetTrainer && 
+                evt.target != evt.targetTrainer.activePokemon) break;
         }
 
         player.pickedMove = null;
@@ -296,16 +307,16 @@ public class FightMenu : ContextMenu<Pokemon>
             }
         }
     }
-    private Trainer GetTarget(string target, Trainer self, Trainer opponent)
+    private Trainer GetTarget(string target, Trainer self, Trainer other)
     {
         return target switch
         {
             "user" => self,
             "user-and-allies" => self,
-            "selected-pokemon" => opponent,
-            "all-opponents" => opponent,
-            "all-other-pokemon" => opponent,
-            _ => opponent,
+            "selected-pokemon" => other,
+            "all-opponents" => other,
+            "all-other-pokemon" => other,
+            _ => other,
         };
     }
     private BattlePokemon GetBattlePokemon(Pokemon target)
@@ -363,15 +374,19 @@ public class FightMenu : ContextMenu<Pokemon>
     private IEnumerator AllyHpChanged(int initialValue, int currentValue)
     {
         yield return BattleVFX.LerpHpBar(player.activePokemon, initialValue, currentValue, hp, hpValue);
+        if (currentValue <= 0) yield return pokemonImage.FaintAnimation();
     }
     private IEnumerator OpponentHpChanged(int initialValue, int currentValue)
     {
         yield return BattleVFX.LerpHpBar(opponent.activePokemon, initialValue, currentValue, enemyHp);
+        if (currentValue <= 0) yield return enemyImage.FaintAnimation();
     }
 
-    private IEnumerator ChangePokemonSequence(BattlePokemon battlePokemon, Trainer trainer, Pokemon newPokemon, int side = 1)
+    private IEnumerator ChangePokemonSequence(BattlePokemon battlePokemon, Trainer trainer, Pokemon newPokemon,
+        bool skipSwitchOut, int side = 1)
     {
-        yield return battlePokemon.SwitchOutAnimation(side);
+        if (!skipSwitchOut)
+            yield return battlePokemon.SwitchOutAnimation(side);
         yield return new WaitForSeconds(.6f);
         yield return Announcer.AnnounceCoroutine($"{trainer.name} sent out {newPokemon.name}.", holdTime: .6f);
         Sprite sprite;
@@ -389,7 +404,9 @@ public class FightMenu : ContextMenu<Pokemon>
             sprite = newPokemon.frontSprite;
             opponent.activePokemon.onHpChanged.RegisterCallback(OpponentHpChanged);
         }
+
         yield return battlePokemon.SwitchInAnimation(sprite, side);
     }
+
     #endregion
 }

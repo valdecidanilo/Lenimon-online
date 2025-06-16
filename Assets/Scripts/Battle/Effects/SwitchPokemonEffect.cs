@@ -33,7 +33,6 @@ namespace Battle
 
             if (newPokemon >= 0)
             {
-                PartyMenu.ClosePartyMenu();
                 FightMenu.EnableFightAnnouncer();
                 yield return SwitchPokemonMessage(evt);
                 yield return FightMenu.ChangePokemon(evt.targetTrainer, newPokemon);

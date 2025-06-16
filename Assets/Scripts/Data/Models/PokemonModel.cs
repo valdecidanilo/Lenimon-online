@@ -146,6 +146,9 @@ public class Pokemon : ApiData
         int newHp = battleStats.hp;
         if(currentHp == newHp) yield break;
         yield return onHpChanged?.Invoke(currentHp, newHp);
+        if (newHp > 0) yield break;
+        yield return new WaitForSeconds(.5f);
+        yield return Announcer.AnnounceCoroutine($"{name} fainted!", holdTime: 1.2f);
     }
     public IEnumerator HealPokemon(int value)
     {
