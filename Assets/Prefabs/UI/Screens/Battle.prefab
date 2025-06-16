@@ -3226,6 +3226,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4826068103039997655}
     m_Modifications:
+    - target: {fileID: 65450108879931267, guid: 7efe9d26cd2e11b49a9eed57c97eff6c,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 65450108879931267, guid: 7efe9d26cd2e11b49a9eed57c97eff6c,
+        type: 3}
+      propertyPath: m_Navigation.m_Mode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 617942331335625265, guid: 7efe9d26cd2e11b49a9eed57c97eff6c,
         type: 3}
       propertyPath: m_Name
@@ -3260,6 +3270,11 @@ PrefabInstance:
     - target: {fileID: 7130877684862168284, guid: 7efe9d26cd2e11b49a9eed57c97eff6c,
         type: 3}
       propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7130877684862168284, guid: 7efe9d26cd2e11b49a9eed57c97eff6c,
+        type: 3}
+      propertyPath: m_RaycastTarget
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8263594607446033071, guid: 7efe9d26cd2e11b49a9eed57c97eff6c,
