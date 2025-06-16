@@ -47,19 +47,19 @@ public class TestScript : MonoBehaviour
     {
         if (Keyboard.current.zKey.wasPressedThisFrame)
         {
-            StartCoroutine(ally.SwitchOutAnimation());
+            StartCoroutine(ally.DefaultPhysicalMoveAnimation(enemy));
         }
         if (Keyboard.current.xKey.wasPressedThisFrame)
         {
-            StartCoroutine(enemy.SwitchOutAnimation(-1));
+            StartCoroutine(enemy.DefaultPhysicalMoveAnimation(ally));
         }
         if (Keyboard.current.aKey.wasPressedThisFrame)
         {
-            StartCoroutine(ally.SwitchInAnimation(pokemonSprite));
+            StartCoroutine(ally.DefaultSpecialMoveAnimation(enemy));
         }
         if (Keyboard.current.sKey.wasPressedThisFrame)
         {
-            StartCoroutine(enemy.SwitchInAnimation(pokemonSprite, -1));
+            StartCoroutine(enemy.DefaultSpecialMoveAnimation(ally));
         }
         
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
