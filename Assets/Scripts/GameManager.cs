@@ -242,16 +242,45 @@ public class GameManager : MonoBehaviour
     private void GenerateTMs()
     {
         itemsLoaded.AddStep();
-        const int tmPerPokemon = 4;
-        List<string> itemList = new()
-        {
-            "solar-beam",
-            "earthquake",
-        };
-
+        const int tmPerPokemon = 2;
+        List<string> itemList = new(player.party.Length * tmPerPokemon);
+        //{
+        //    "solar-beam",
+        //    "earthquake",
+        //};
+        
         List<MoveReference> TMs = new(itemList.Count);
-        for (int i = 0; i < TMs.Capacity; i++)
-            TMs.Add(new() { move = new() { url = $"{PokeAPI.baseRoute}move/{itemList[i]}" } });
+        //for (int i = 0; i < TMs.Capacity; i++)
+        //    TMs.Add(new() { move = new() { url = $"{PokeAPI.baseRoute}move/{itemList[i]}" } });
+        
+        for (int i = 0; i < player.party.Length; i++)
+        {
+            Pokemon pokemon = player.party[i];
+            var moves = MoveHelper.GetPossibleMoves(pokemon, new [] { MoveLearnMethod.TM });
+            List<MoveReference> learnableMoves = new();
+            for (int j = 0; j < moves.Count; j++)
+            {
+                var moveData = moves[j];
+                //check if tm was already added
+                if (itemList.Contains(moveData.move.name)) continue;
+                //check if pokemon doesn't already know this move
+                for (int k = 0; k < pokemon.moves.Length; k++)
+                {
+                    var move = pokemon.moves[k];
+                    if (moveData.move.name == move.Data.name) continue;
+                    learnableMoves.Add(moveData);
+                }
+            }
+            //get 2(?) random moves
+            int movesToAdd = Mathf.Min(tmPerPokemon, learnableMoves.Count);
+            for (int j = 0; j < movesToAdd; j++)
+            {
+                int randomId = Random.Range(0, learnableMoves.Count);
+                itemList.Add(learnableMoves[randomId].move.name);
+                TMs.Add(learnableMoves[randomId]);
+                learnableMoves.RemoveAt(randomId);
+            }
+        }
 
         //TMs = MoveHelper.GetPossibleMoves(allyParty[0], new[] { MoveLearnMethod.TM });
         Checklist loadedTMs = new(TMs.Count);
