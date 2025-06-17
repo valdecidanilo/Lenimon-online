@@ -56,7 +56,8 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
     [SerializeField] private ContextSelection moveSelection;
     private SummaryMove[] moves;
     #endregion
-
+    
+    private InputAction summaryNavigationAction;
     public event Action<int> onShiftPokemon;
 
     private const int screenCount = 3;
@@ -72,10 +73,12 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
     {
         instance = this;
         base.Awake();
-
+        summaryNavigationAction = InputSystem.actions.FindAction("UI/ScrollWheel");
+        summaryNavigationAction.performed += ShiftPokemon;
         contextSelection.onSelect += UpdateScreen;
         contextSelection.onItemPick += OpenMoveDetails;
         moveSelection.onSelect += OnMoveSelect;
+        moveSelection.onItemPick += OnMovePick;
         backButton.onClick.AddListener(BaseReturnCall);
     }
 
@@ -145,9 +148,18 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
             screens[i].SetActive(currentScreen == i);
     }
 
+    private void ShiftPokemon(CallbackContext context)
+    {
+        if(selectMove.activeSelf) return;
+        Vector2 direction = context.ReadValue<Vector2>();
+        if(direction.y == 0) return;
+        int delta = -Mathf.RoundToInt(Mathf.Sign(direction.y));
+        onShiftPokemon?.Invoke(delta);
+    }
+
     private void OpenMoveDetails(int windowId)
     {
-        if(windowId != 2) return;
+        if(windowId != moveScreen) return;
 
         if (selectMove.activeSelf &&
             moveSelection.selectedId == moveSelection.itemCount - 1)
@@ -168,6 +180,12 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
         description.text = move != null ? $"{move.description}" : "-";
     }
 
+    private void OnMovePick(int id)
+    {
+        MoveModel move = id < 4 ? pokemon.moves[id] : null;
+        selectMove.SetActive(move != null);
+    }
+
     private void ExitMoveSelection()
     {
         power.text = "-";
@@ -178,7 +196,7 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
         contextSelection.Focus();
     }
 
-    private void BaseReturnCall() => ReturnCall(new());
+    private void BaseReturnCall() => base.ReturnCall(new());
     protected override void ReturnCall(CallbackContext context)
     {
         if (selectMove.activeSelf)

@@ -27,7 +27,6 @@ public class BattleSetup : MonoBehaviour
     private bool summaryFromParty;
     private int summaryPokemonId;
     private InputAction detailsAction;
-    private InputAction summaryNavigationAction;
 
     private Trainer player;
     private Opponent opponent;
@@ -35,8 +34,7 @@ public class BattleSetup : MonoBehaviour
     private void Awake()
     {
         detailsAction = InputSystem.actions.FindAction("UI/Details");
-        summaryNavigationAction = InputSystem.actions.FindAction("UI/ScrollWheel");
-        summaryNavigationAction.performed += SwitchPokemon;
+        summary.onShiftPokemon += SwitchPokemon;
         fightMenu.onBattleStateChanged += EnableEnemySummary;
         EnableEnemySummary(false);
         battleChoice.onItemPick += OnChoicePick;
@@ -68,11 +66,8 @@ public class BattleSetup : MonoBehaviour
         OpenPokemonSummary(player.party[id]);
     }
 
-    private void SwitchPokemon(CallbackContext context)
+    private void SwitchPokemon(int delta)
     {
-        Vector2 direction = context.ReadValue<Vector2>();
-        if(direction.y == 0) return;
-        int delta = -Mathf.RoundToInt(Mathf.Sign(direction.y));
         if (delta == 0 || !summaryFromParty || !summary.isOpen) return;
         summaryPokemonId = (summaryPokemonId + delta + player.party.Length) % player.party.Length;
         OpenPokemonSummary(player.party[summaryPokemonId]);
