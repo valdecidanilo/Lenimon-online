@@ -98,7 +98,7 @@ public static class ItemEffect
     private static bool RevivalItemCheck(Pokemon pokemon, out string failMessage)
     {
         failMessage = string.Empty;
-        if (pokemon.fainted) failMessage = $"{pokemon.name} has not fainted!!";
+        if (!pokemon.fainted) failMessage = $"{pokemon.name} has not fainted!!";
         return string.IsNullOrEmpty(failMessage);
     }
 
