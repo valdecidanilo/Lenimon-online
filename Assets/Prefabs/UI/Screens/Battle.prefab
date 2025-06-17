@@ -3468,6 +3468,46 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1517690257130239630, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_text
+      value: light-that-burns-the-sky
+      objectReference: {fileID: 0}
+    - target: {fileID: 1517690257130239630, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 46.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 1517690257130239630, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_fontSizeMax
+      value: 76
+      objectReference: {fileID: 0}
+    - target: {fileID: 1517690257130239630, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1539361594315963525, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_text
+      value: light-that-burns-the-sky
+      objectReference: {fileID: 0}
+    - target: {fileID: 1539361594315963525, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 46.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 1539361594315963525, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_fontSizeMax
+      value: 76
+      objectReference: {fileID: 0}
+    - target: {fileID: 1539361594315963525, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2151387959272617047, guid: 22710abc75cb70e4692f374e16bfe40c,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -3498,6 +3538,26 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2947236143823712724, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_text
+      value: light-that-burns-the-sky
+      objectReference: {fileID: 0}
+    - target: {fileID: 2947236143823712724, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 46.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 2947236143823712724, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_fontSizeMax
+      value: 76
+      objectReference: {fileID: 0}
+    - target: {fileID: 2947236143823712724, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2968969306034873195, guid: 22710abc75cb70e4692f374e16bfe40c,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -3557,6 +3617,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3807602149894789912, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_text
+      value: light-that-burns-the-sky
+      objectReference: {fileID: 0}
+    - target: {fileID: 3807602149894789912, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 46.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 3807602149894789912, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_fontSizeMax
+      value: 76
+      objectReference: {fileID: 0}
+    - target: {fileID: 3807602149894789912, guid: 22710abc75cb70e4692f374e16bfe40c,
+        type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4113183560800899357, guid: 22710abc75cb70e4692f374e16bfe40c,
         type: 3}

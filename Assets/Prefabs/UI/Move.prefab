@@ -293,7 +293,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: psychic terrain
+  m_text: light-that-burns-the-sky
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f8994c180b2ab284782967d62a1122a9, type: 2}
   m_sharedMaterial: {fileID: -3009649241749147789, guid: f8994c180b2ab284782967d62a1122a9,
@@ -321,7 +321,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 79
+  m_fontSize: 48.2
   m_fontSizeBase: 79
   m_fontWeight: 400
   m_enableAutoSizing: 1
