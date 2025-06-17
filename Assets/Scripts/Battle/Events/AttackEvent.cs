@@ -83,8 +83,8 @@ namespace Battle
             Logger.Log($"dealt {finalDamage} damage to {defender.name} " +
                        $"({defender.battleStats.hp}/{defender.stats.hp})" +
                        $"\n{atk}({attacker.battleStats[StatType.atk]}) vs {def}", LogFlags.Game);
-            damageDealt = finalDamage;
-            yield return defender.DamagePokemon(finalDamage);
+            damageDealt = Mathf.Max(finalDamage, 1);
+            yield return defender.DamagePokemon(damageDealt);
         }
 
         public static Stats CalculateModifiers(Pokemon pokemon)
