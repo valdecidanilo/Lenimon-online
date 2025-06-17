@@ -27,7 +27,7 @@ namespace Battle
                     //Logger.Log("damage and heal move", LogFlags.DataCheck);
                     moveEffect = new DamageEffect();
                     moveEffect.subEffect = new HealEffect(move.Data.meta.drain, HealEffect.HealType.Drain);
-                    moveEffect.subEffectSetup = (evt) => evt.target = evt.origin;
+                    moveEffect.subEffectSetup = ChangeTargetToSelf;
                     break;
                 case "damage+lower":
                     //Logger.Log("damage and target's stats move", LogFlags.DataCheck);
@@ -40,7 +40,7 @@ namespace Battle
                     moveEffect = new DamageEffect();
                     moveEffect.subEffect = new StatChangeEffect(move.Data.statChanges);
                     moveEffect.subEffectChance = move?.Data?.meta?.statChance ?? 0;
-                    moveEffect.subEffectSetup = (evt) => evt.target = evt.origin;
+                    moveEffect.subEffectSetup = ChangeTargetToSelf;
                     break;
                 case "ailment":
                     //Logger.Log("ailment move", LogFlags.DataCheck);
@@ -80,6 +80,12 @@ namespace Battle
                     break;
             }
             move.effect = moveEffect;
+        }
+
+        private static void ChangeTargetToSelf(BattleEvent evt)
+        {
+            evt.targetTrainer = evt.user;
+            evt.target = evt.origin;
         }
 
         private static IEnumerator MoveMessage(BattleEvent evt)
