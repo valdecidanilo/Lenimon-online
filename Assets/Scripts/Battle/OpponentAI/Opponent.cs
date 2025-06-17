@@ -55,7 +55,7 @@ public abstract class Opponent : Trainer
             evt.partyId = possiblePokemons[Random.Range(0, possiblePokemons.Count)];
             evt.pickedPokemon = party[evt.partyId];
         }
-        else evt.canLearnTM = true;
+        else evt.noValidPokemon = true;
         yield break;
     }
 }
