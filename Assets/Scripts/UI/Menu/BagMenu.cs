@@ -232,7 +232,9 @@ public class BagMenu : ContextMenu<Bag>
                     if (moveLearn.moveLearnt)
                     {
                         ClosePartyMenu();
+                        Announcer.ChangeAnnouncer(itemDescription);
                         CloseOptions();
+                        ShowItemDetails(contextSelection.selectedId);
                         pokemonSelected = true;
                     }else SummaryMenu.CloseSummaryMenu();
                 }
