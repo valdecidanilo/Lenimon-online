@@ -28,9 +28,9 @@ public class MoveModel
         name = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(data.name.Replace("-", " "));
         id = data.id;
         moveType = PokeDatabase.GetType(data.name == "struggle" ? "" : data.type.name);
-        power = 600;// data.power;
+        power = data.power;
         accuracy = data.accuracy;
-        pp = 100;//data.pp;
+        pp = data.pp;
         maxPP = pp;
         priority = data.priority;
         typeOfMove = data.moveTypeData.id;
