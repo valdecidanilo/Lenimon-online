@@ -90,17 +90,15 @@ public static class ItemEffect
     private static bool HealItemCheck(Pokemon pokemon, out string failMessage)
     {
         failMessage = string.Empty;
-        int hp = pokemon.battleStats.hp;
-        if (hp <= 0) failMessage = "You can't heal a fainted pokemon!!";
-        else if(hp >= pokemon.stats.hp) failMessage = $"{pokemon.name} is already at full HP!!";
+        if (pokemon.fainted) failMessage = "You can't heal a fainted pokemon!!";
+        else if(pokemon.battleStats.hp >= pokemon.stats.hp) failMessage = $"{pokemon.name} is already at full HP!!";
         return string.IsNullOrEmpty(failMessage);
     }
     
     private static bool RevivalItemCheck(Pokemon pokemon, out string failMessage)
     {
         failMessage = string.Empty;
-        int hp = pokemon.battleStats.hp;
-        if (hp > 0) failMessage = $"{pokemon.name} has not fainted!!";
+        if (pokemon.fainted) failMessage = $"{pokemon.name} has not fainted!!";
         return string.IsNullOrEmpty(failMessage);
     }
 

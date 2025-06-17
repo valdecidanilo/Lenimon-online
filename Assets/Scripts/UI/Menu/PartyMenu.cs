@@ -18,7 +18,6 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     private Pokemon[] party;
     private PartyPokemon[] instances;
     public event Action<int> onSummaryCall;
-    public event Action onItemCall;
 
     private static PartyMenu instance;
 
@@ -150,12 +149,6 @@ public class PartyMenu : ContextMenu<Pokemon[]>
                 FightMenu.BeginBattle(MoveEffectCreator.SwitchPokemonMove(contextSelection.selectedId));
                 CloseMenu();
                 break;
-            case 2:
-                //switch pokemon
-                break;
-            case 3:
-                onItemCall?.Invoke();
-                break;
         }
     }
 
@@ -187,8 +180,20 @@ public class PartyMenu : ContextMenu<Pokemon[]>
             evt.isCurrent = true;
             yield break;
         }
+
+        bool validPokemonExists = false;
+        for (int i = 0; i < instance.party.Length; i++)
+        {
+            evt.pickedPokemon = instance.party[i];
+            validPokemonExists |= evt.CheckPokemon();
+        }
+        evt.noValidPokemon = !validPokemonExists;
+        if (!validPokemonExists) yield break;
+        evt.pickedPokemon = null;
+        
         //setup
         bool selected = false;
+        bool cancel = false;
         List<bool> moveLearnability = new(instance.party.Length);
         if (!instance.gameObject.activeSelf) instance.OpenMenu(instance.party);
         else instance.contextSelection.Focus();
@@ -203,7 +208,18 @@ public class PartyMenu : ContextMenu<Pokemon[]>
                 moveLearnability.Add(instance.instances[i].LearnMoveMode(evt.move.data.moveData));
         }
 
-        yield return new WaitUntil(PokemonSelected);
+        do
+        {
+            yield return new WaitUntil(PokemonSelected);
+            selected = false;
+            if(cancel) break;
+            if (!evt.canBeFainted && evt.pickedPokemon.fainted)
+                yield return Announcer.AnnounceCoroutine("You can't switch to a fainted pokemon!", true,
+                    onDone: ResetPick);
+            else if (!evt.canSelectCurrent && evt.isCurrent)
+                yield return Announcer.AnnounceCoroutine("Pokemon is already in battle!", true,
+                    onDone: ResetPick);
+        } while (!evt.CheckPokemon());
 
         //reset
         instance.contextSelection.onItemPick += instance.OnPickPokemon;
@@ -214,17 +230,30 @@ public class PartyMenu : ContextMenu<Pokemon[]>
 
         void SelectPokemon(int id)
         {
-            if (id < instance.contextSelection.itemCount - 1) evt.pickedPokemon = instance.party[id];
-            selected = true;
-            evt.partyId = id;
+            if (id < instance.contextSelection.itemCount - 1)
+            {
+                evt.partyId = id;
+                evt.pickedPokemon = instance.party[id];
+                selected = true;
+            }
+            else cancel = true;
             evt.isCurrent = id == 0;
             if (evt.move == null || id >= moveLearnability.Count) return;
             evt.canLearnTM = moveLearnability[id];
         }
 
-        bool PokemonSelected() => selected;
+        bool PokemonSelected() => selected || cancel;
 
-        void CancelSelection(CallbackContext context) => selected = true;
+        void CancelSelection(CallbackContext context) => cancel = true;
+
+        void ResetPick()
+        {
+            cancel = false;
+            evt.pickedPokemon = null;
+            evt.partyId = -1;
+            Announcer.CloseAnnouncement();
+            instance.contextSelection.Focus();
+        }
     }
 
     public static void ClosePartyMenu()
@@ -239,15 +268,35 @@ public class PickPokemonEvent
     public bool currentPokemonOnly;
     public TMModel move;
     
+    //flags
+    public bool canSelectCurrent = true;
+    public bool canBeFainted = true;
+    
     //feedback
-    public bool isCurrent;
-    public Pokemon pickedPokemon;
     public int partyId = -1;
+    public Pokemon pickedPokemon;
+    public bool isCurrent;
     public bool canLearnTM;
+    public bool noValidPokemon;
 
-    public PickPokemonEvent(bool currentOnly, TMModel tm = null)
+    /// <param name="currentOnly">if the current pokemon is the only option</param>
+    /// <param name="fainted">if selected pokemon can be fainted</param>
+    /// <param name="current">if the selected pokemon can be the current one</param>
+    /// <param name="tm">tm to learn, if aplicable</param>
+    public PickPokemonEvent(bool currentOnly = false, bool fainted = true, bool current = true, TMModel tm = null)
     {
         currentPokemonOnly = currentOnly;
+        canBeFainted = fainted;
+        canSelectCurrent = current;
         move = tm;
+    }
+
+    public bool CheckPokemon()
+    {
+        if (pickedPokemon == null) return false;
+        bool valid = true;
+        valid &= canSelectCurrent || !isCurrent;
+        valid &= canBeFainted || !pickedPokemon.fainted;
+        return valid;
     }
 }

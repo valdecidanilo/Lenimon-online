@@ -72,7 +72,7 @@ public class Pokemon : ApiData
         moves = new MoveModel[4];
         LevelUp(Mathf.Max(lv, 1));//minimum level is 1
 
-        battleStats = new(stats.hp, 0, 0, 0, 0, 0, 0, 0);
+        battleStats = new(stats.hp / 2, 0, 0, 0, 0, 0, 0, 0);
 
         dataChecklist = new(0);
         dataChecklist.onCompleted += () => onDoneLoading?.Invoke();

@@ -163,6 +163,9 @@ public class FightMenu : ContextMenu<Pokemon>
     private MoveModel ChoseOpponentMove() => opponent.ChooseMove(player.activePokemon);
     private IEnumerator BattleSequence(MoveModel allyMove, MoveModel opponentMove)
     {
+        //remove callbacks
+        cancelAction.performed -= ReturnCall;
+        
         onBattleStateChanged?.Invoke(true);
         player.pickedMove ??= allyMove;
         opponent.pickedMove ??= opponentMove;
@@ -186,6 +189,7 @@ public class FightMenu : ContextMenu<Pokemon>
         }
         trainerOrder.Insert(opponentFirst ? 0 : 1, opponent);
 
+        //each take its turns
         for (int i = 0; i < trainerOrder.Count; i++)
         {
             Trainer otherTrainer = trainerOrder[(i + 1) % trainerOrder.Count];
@@ -203,11 +207,23 @@ public class FightMenu : ContextMenu<Pokemon>
                 bool pickedPokemon = false;
                 while (!pickedPokemon)
                 {
-                    PickPokemonEvent pickEvent = new(false);
+                    PickPokemonEvent pickEvent = new(fainted: false, current: false);
                     yield return evt.targetTrainer.PickPokemon(pickEvent);
-                    if (pickEvent.partyId < 0 || pickEvent.pickedPokemon.fainted) continue;
-                    yield return ChangePokemon(evt.targetTrainer, pickEvent.partyId);
-                    pickedPokemon = true;
+                    if (!pickEvent.noValidPokemon)
+                    {
+                        if (!(pickEvent.partyId < 0))//not canceled
+                        {
+                            EnableFightAnnouncer();
+                            yield return Announcer.AnnounceCoroutine("");
+                            if (pickEvent.partyId < 0 || pickEvent.pickedPokemon.fainted) continue;
+                            yield return ChangePokemon(evt.targetTrainer, pickEvent.partyId);
+                            pickedPokemon = true;
+                        }
+                    }
+                    else //defeated
+                    {
+                        yield return Announcer.AnnounceCoroutine($"{evt.targetTrainer.name} was defeated");
+                    }
                 }
             }
             if (evt.user != evt.targetTrainer && 
@@ -216,6 +232,10 @@ public class FightMenu : ContextMenu<Pokemon>
 
         player.pickedMove = null;
         opponent.pickedMove = null;
+        
+        //return callbacks
+        cancelAction.performed += ReturnCall;
+        
         contextSelection.Focus();
         Announcer.CloseAnnouncement();
         ReturnCall(new());

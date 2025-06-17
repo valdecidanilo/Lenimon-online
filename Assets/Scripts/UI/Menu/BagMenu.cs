@@ -210,7 +210,7 @@ public class BagMenu : ContextMenu<Bag>
         bool pokemonSelected = false;
         while (!pokemonSelected)
         {
-            PickPokemonEvent evt = new(item.activePokemonOnly, item as TMModel);
+            PickPokemonEvent evt = new(item.activePokemonOnly, tm: item as TMModel);
             yield return PartyMenu.PickPokemon(evt);
             
             if(evt.pickedPokemon == null)
