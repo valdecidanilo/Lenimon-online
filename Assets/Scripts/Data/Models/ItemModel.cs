@@ -1,7 +1,4 @@
-using System;
 using Battle;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
@@ -39,14 +36,6 @@ public class TMModel : ItemModel
     {
         sprite = data.itemData.sprite;
         this.data = data;
-        for (int i = 0; i < data.itemData.effectTexts.Count; i++)
-        {
-            EffectText effectText = data.itemData.effectTexts[i];
-            if (effectText.language.name == "en")
-            {
-                effect = effectText.text;
-                break;
-            }
-        }
+        effect = $"Teaches {CultureInfo.InvariantCulture.TextInfo.ToTitleCase(data.move.name.Replace("-", " "))} to a compatible Pokémon.";
     }
 }
