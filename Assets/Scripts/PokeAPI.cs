@@ -186,7 +186,7 @@ public static class PokeAPI
             }
         }
 
-        return text;
+        return text ?? string.Empty;
     }
 
     public static string SmallestFlavorText(List<ItemFlavorText> entries, string language = "en")
@@ -202,6 +202,6 @@ public static class PokeAPI
             }
         }
 
-        return text;
+        return text ?? string.Empty;
     }
 }
