@@ -103,7 +103,7 @@ namespace Battle
             data.priority = priority;
             data.type = new() { name = "unknown" };
             data.target = new() { name = "user" };
-            data.moveTypeData = new() { id = MoveType.Status };
+            data.moveTypeData = new() { id = MoveType.Item };
             data.flavorTexts = new() {
                 new FlavorText() {
                     text = "??",
