@@ -33,8 +33,8 @@ namespace Battle
             typeOfMove = move.typeOfMove;
             modifier = 1;
 
-            minHits = move.Data.meta.min_hits ?? 1;
-            maxHits = move.Data.meta.max_hits ?? minHits;
+            minHits = move.Data.meta?.min_hits ?? 1;
+            maxHits = move.Data.meta?.max_hits ?? minHits;
 
             attackerStats = CalculateModifiers(attacker);
             defenderStats = CalculateModifiers(defender);
