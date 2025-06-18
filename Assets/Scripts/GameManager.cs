@@ -267,7 +267,8 @@ public class GameManager : MonoBehaviour
                 for (int k = 0; k < pokemon.moves.Length; k++)
                 {
                     var move = pokemon.moves[k];
-                    if (moveData.move.name == move.Data.name) continue;
+                    if (moveData.move.name == 
+                        move?.Data?.name) continue;
                     learnableMoves.Add(moveData);
                 }
             }
