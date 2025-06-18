@@ -43,3 +43,6 @@ ehthumbs.db
 Thumbs.db
 /.idea
 /UserSettings/Layouts
+Assets/AddressableAssetsData/WebGL/addressables_content_state.bin.meta
+Assets/AddressableAssetsData/WebGL/addressables_content_state.bin
+Assets/AddressableAssetsData/WebGL.meta
