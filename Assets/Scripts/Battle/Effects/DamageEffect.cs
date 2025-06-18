@@ -23,9 +23,13 @@ namespace Battle
 
             if (evt.attackEvent.damageDealt > 0 && evt.attackEvent.maxHits > evt.attackEvent.minHits)
                 yield return Announcer.AnnounceCoroutine($"It hit {hits} times!", holdTime: 1);
-            
+
+            if (evt.move.Data.meta == null) yield break;
+
             //check flinch
-            
+            int r = Random.Range(0, 101);
+            if (r <= evt.move.Data.meta.flinchChance)
+                evt.flinchTarget = true;
 
             //recoil
             if (evt.move.Data.meta == null || evt.move.Data.meta.drain >= 0 && evt.move.Data.meta.healing >= 0) yield break;

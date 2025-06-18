@@ -190,11 +190,13 @@ public class FightMenu : ContextMenu<Pokemon>
         trainerOrder.Insert(opponentFirst ? 0 : 1, opponent);
 
         //each take its turns
+        bool flinchNext = false;
         for (int i = 0; i < trainerOrder.Count; i++)
         {
             Trainer otherTrainer = trainerOrder[(i + 1) % trainerOrder.Count];
 
             BattleEvent evt = new();
+            evt.flinchTarget = flinchNext;
             evt.move = trainerOrder[i].pickedMove;
             evt.user = trainerOrder[i];
             evt.origin = evt.user.activePokemon;
@@ -202,6 +204,7 @@ public class FightMenu : ContextMenu<Pokemon>
             evt.target = evt.targetTrainer.activePokemon;
             evt.attackEvent = new(evt.origin, evt.target, evt.move);
             yield return TurnSequence(evt);
+            flinchNext = evt.flinchTarget;
             if (evt.targetTrainer.activePokemon.fainted)
             {
                 bool pickedPokemon = false;
@@ -245,6 +248,12 @@ public class FightMenu : ContextMenu<Pokemon>
         
         IEnumerator TurnSequence(BattleEvent evtBattle)
         {
+            if (evtBattle.flinchTarget)
+            {
+                yield return Announcer.AnnounceCoroutine($"{evtBattle.origin.name} flinched!", holdTime: .6f);
+                yield break;
+            }
+
             #region Type Shenanigans
             //Add type chart and STAB modifiers
             //add type modifiers

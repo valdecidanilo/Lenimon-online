@@ -13,5 +13,6 @@ namespace Battle
         public MoveModel move;
         public AttackEvent attackEvent;
         public bool failed;
+        public bool flinchTarget;
     }
 }
