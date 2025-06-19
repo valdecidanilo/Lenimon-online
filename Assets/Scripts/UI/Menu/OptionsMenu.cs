@@ -35,15 +35,10 @@ public class OptionsMenu : ContextMenu<int>
 
     private void ShiftOption(CallbackContext context)
     {
+        if (!isOpen) return;
         int direction = Mathf.RoundToInt(context.ReadValue<Vector2>().x);
         if (direction == 0) return;
-
-        Debug.Log(context.duration);
-        HoldButton holdButton = direction > 0 ? levelUp : levelDown;
-        if (context.started)
-            holdButton.OnPointerDown(null);
-        else if (context.canceled)
-            holdButton.OnPointerUp(null);
+        ChangeBattleLevel(direction);
     }
 
     private void ChangeBattleLevel(int delta)
