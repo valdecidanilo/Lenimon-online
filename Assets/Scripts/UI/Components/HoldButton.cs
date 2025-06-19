@@ -26,12 +26,12 @@ public class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     {
         onButton = true;
         coroutine = StartCoroutine(LoopInput());
-        Debug.Log("down");
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         onButton = false;
+        if (coroutine == null) return;
         StopCoroutine(coroutine);
     }
 
@@ -40,8 +40,8 @@ public class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         if (!onButton) return;
         if (!ReferenceEquals(eventData.pointerCurrentRaycast.gameObject, gameObject)) return;
         onButton = false;
+        if (coroutine == null) return;
         StopCoroutine(coroutine);
-        Debug.Log("up");
     }
 
     private IEnumerator LoopInput()

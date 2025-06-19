@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
 public class OptionsMenu : ContextMenu<int>
 {
@@ -11,7 +12,8 @@ public class OptionsMenu : ContextMenu<int>
     [SerializeField] private TMP_Text levelText;
     [SerializeField] private HoldButton levelUp;
 
-    private int level = 1;
+    private int level;
+    private int finalLevel => level + 1;
 
     private InputAction navigationAction;
 
@@ -19,19 +21,35 @@ public class OptionsMenu : ContextMenu<int>
     {
         base.Awake();
         navigationAction = InputSystem.actions.FindAction("UI/Navigate");
+        navigationAction.performed += ShiftOption;
         levelDown.performed += () => ChangeBattleLevel(-1);
+        levelUp.performed += () => ChangeBattleLevel(1);
     }
 
     public override void OpenMenu(int data)
     {
         base.OpenMenu(data);
         gameObject.SetActive(true);
+        ChangeBattleLevel(0);
+    }
+
+    private void ShiftOption(CallbackContext context)
+    {
+        int direction = Mathf.RoundToInt(context.ReadValue<Vector2>().x);
+        if (direction == 0) return;
+
+        Debug.Log(context.duration);
+        HoldButton holdButton = direction > 0 ? levelUp : levelDown;
+        if (context.started)
+            holdButton.OnPointerDown(null);
+        else if (context.canceled)
+            holdButton.OnPointerUp(null);
     }
 
     private void ChangeBattleLevel(int delta)
     {
-        level = Mathf.Clamp((level + delta + 101) % 101, 1, 100);
-        levelText.text = level.ToString();
+        level = (level + delta + 100) % 100;
+        levelText.text = finalLevel.ToString();
     }
 
     public override void CloseMenu()
