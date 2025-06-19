@@ -342,7 +342,7 @@ public class FightMenu : ContextMenu<Pokemon>
                 if (missed)
                     yield return Announcer.AnnounceCoroutine($"{evtBattle.origin.name} attack missed.", holdTime: 1f);
                 else
-                    yield return Announcer.AnnounceCoroutine($"{evtBattle.target.name} avoided the attack", holdTime: 1f);
+                    yield return Announcer.AnnounceCoroutine($"{evtBattle.target.name} avoided the attack.", holdTime: 1f);
             }
         }
     }
