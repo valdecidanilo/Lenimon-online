@@ -15,14 +15,12 @@ public class BattleSetup : MonoBehaviour
     [SerializeField] private Button enemySummaryButton;
     [SerializeField] private Announcer choiceAnnouncer;
 
-    [Header("Moves Menu")]
+    [Header("Menus")]
     [SerializeField] private FightMenu fightMenu;
-    [Header("Party Menu")]
     [SerializeField] private PartyMenu partyChoice;
-    [Header("Summary Menu")]
     [SerializeField] private SummaryMenu summary;
-    [Header("Bag Menu")]
     [SerializeField] private BagMenu bag;
+    [SerializeField] private OptionsMenu options;
 
     private bool summaryFromParty;
     private int summaryPokemonId;
@@ -33,16 +31,22 @@ public class BattleSetup : MonoBehaviour
 
     private void Awake()
     {
+        battleChoice.onItemPick += OnChoicePick;
         detailsAction = InputSystem.actions.FindAction("UI/Details");
         summary.onShiftPokemon += SwitchPokemon;
-        fightMenu.onBattleStateChanged += EnableEnemySummary;
-        EnableEnemySummary(false);
-        battleChoice.onItemPick += OnChoicePick;
-        fightMenu.onReturn += OpenChoiceMenu;
-        partyChoice.onReturn += OpenChoiceMenu;
-        partyChoice.onSummaryCall += OnPokemonSummaryRequest;
         summary.onReturn += CloseSummary;
+        EnableEnemySummary(false);
+        fightMenu.onBattleStateChanged += EnableEnemySummary;
+        partyChoice.onSummaryCall += OnPokemonSummaryRequest;
+        partyChoice.onReturn += OpenChoiceMenu;
+        fightMenu.onReturn += OpenChoiceMenu;
         bag.onReturn += OpenChoiceMenu;
+        options.onReturn += OpenChoiceMenu;
+    }
+
+    private void OnDestroy()
+    {
+        EnableEnemySummary(true);
     }
 
     public void SetupBattle(Trainer Player, Opponent Opponent)
@@ -132,6 +136,7 @@ public class BattleSetup : MonoBehaviour
         partyChoice.CloseMenu();
         summary.CloseMenu();
         bag.CloseMenu();
+        options.CloseMenu();
 
         //open window
         battleMenu.SetActive(true);
@@ -169,7 +174,7 @@ public class BattleSetup : MonoBehaviour
 
     private void Run()
     {
-        
+        options.OpenMenu(0);
     }
     #endregion
 }

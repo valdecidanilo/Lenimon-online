@@ -28,7 +28,6 @@ public class BagMenu : ContextMenu<Bag>
     
     private int currentScreen = 0;
     private InputAction navigateAction;
-    private InputAction confirmAction;
 
     protected override void Awake()
     {
@@ -302,5 +301,11 @@ public class BagMenu : ContextMenu<Bag>
         contextSelection.MouseSelection(true);
         optionsContext.gameObject.SetActive(false);
         contextSelection.Focus();
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        navigateAction.performed -= ChangeScreen;
     }
 }

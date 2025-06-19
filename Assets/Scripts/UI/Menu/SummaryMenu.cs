@@ -82,6 +82,11 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
         backButton.onClick.AddListener(BaseReturnCall);
     }
 
+    private void OnDestroy()
+    {
+        summaryNavigationAction.performed -= ShiftPokemon;
+    }
+
     public override void OpenMenu((bool showHp, Pokemon pokemon) data)
     {
         Announcer.ChangeAnnouncer(announcer);

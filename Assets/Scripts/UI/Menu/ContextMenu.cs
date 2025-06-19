@@ -1,9 +1,6 @@
-using LenixSO.Logger;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using LenixSO.Logger;
-using Logger = LenixSO.Logger.Logger;
 using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
 public abstract class ContextMenu<T> : MonoBehaviour
@@ -36,6 +33,11 @@ public abstract class ContextMenu<T> : MonoBehaviour
     {
         isOpen = true;
         if (cancelAction == null) return;
+        cancelAction.performed -= ReturnCall;
+    }
+
+    protected virtual void OnDestroy()
+    {
         cancelAction.performed -= ReturnCall;
     }
 }

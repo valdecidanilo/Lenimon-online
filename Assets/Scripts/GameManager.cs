@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Battle;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using LenixSO.Logger;
 using Random = UnityEngine.Random;
 using Logger = LenixSO.Logger.Logger;
@@ -26,11 +23,6 @@ public class GameManager : MonoBehaviour
     {
         PokeDatabase.PreloadAssets();
         LoadingScreen.onDoneLoading += Setup;
-    }
-
-    private void Update()
-    {
-        if (Keyboard.current.spaceKey.wasPressedThisFrame) SceneManager.LoadScene(0);
     }
 
     private void Setup()
@@ -64,7 +56,7 @@ public class GameManager : MonoBehaviour
 
         //generate ally party
         int partySize = Random.Range(1, 7);
-        int partyLevel = Mathf.Min(100, encounterLevel + (6 - partySize));
+        int partyLevel = OptionsMenu.battleLevel ?? Mathf.Min(100, encounterLevel + (6 - partySize));
         player.party = new Pokemon[partySize];
         Checklist alliesLoaded = new(partySize);
 
@@ -79,7 +71,7 @@ public class GameManager : MonoBehaviour
         {
             //load enemies
             partySize = Random.Range(1, 7);
-            partyLevel = Mathf.Min(100, encounterLevel + (6 - partySize));
+            partyLevel = OptionsMenu.battleLevel ?? Mathf.Min(100, encounterLevel + (6 - partySize));
             opponent.party = new Pokemon[partySize];
 
             Checklist opponentLoaded = new(partySize);

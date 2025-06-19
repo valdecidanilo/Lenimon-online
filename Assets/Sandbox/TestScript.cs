@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 public class TestScript : MonoBehaviour
 {
     [SerializeField] private BattlePokemon ally, enemy;
+    [SerializeField] private OptionsMenu menu;
 
     private Sprite pokemonSprite;
     private void Start()
@@ -31,8 +32,8 @@ public class TestScript : MonoBehaviour
                 CheckMove();
             });
         }*/
-        
-        AAAsset<Sprite>.LoadAsset("pokeball", (sprite) =>
+
+        /*AAAsset<Sprite>.LoadAsset("pokeball", (sprite) =>
         {
             PokeDatabase.pokeBallSprite = sprite;
         });
@@ -40,11 +41,15 @@ public class TestScript : MonoBehaviour
         AAAsset<Sprite>.LoadAsset("MissingNoFront", (sprite) =>
         {
             pokemonSprite = sprite;
-        });
+        });*/
+        //menu.OpenMenu(0);
     }
 
     private void Update()
     {
+
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+            menu.OpenMenu(0);
         if (Keyboard.current.zKey.wasPressedThisFrame)
         {
             StartCoroutine(ally.DefaultPhysicalMoveAnimation(enemy));

@@ -185,10 +185,10 @@ public static class PokeDatabase
                     var typeData = typeChart[typeKey];
                     TypeRelations relations = typeData.referenceData;
                     var chartEntry = typeChart[typeKey];
-                    //offensive
-                    ApplyModifier(2, chartEntry.attackMultiplier, relations.superEffective);
-                    ApplyModifier(.5f, chartEntry.attackMultiplier, relations.notEffective);
-                    ApplyModifier(0, chartEntry.attackMultiplier, relations.doNotAffect);
+                    bool invert = OptionsMenu.invertChart;
+                    ApplyModifier(invert ? .5f : 2, chartEntry.attackMultiplier, relations.superEffective);
+                    ApplyModifier(invert ? 2 : .5f, chartEntry.attackMultiplier, relations.notEffective);
+                    ApplyModifier(invert ? 4 : 0, chartEntry.attackMultiplier, relations.doNotAffect);
 
                     void ApplyModifier(float modifier, Dictionary<TypeChartEntry, float> dictionary, 
                         List<ApiReference> reference)
