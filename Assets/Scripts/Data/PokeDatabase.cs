@@ -70,6 +70,8 @@ public static class PokeDatabase
     {
         Checklist preloadedAssets = new(1);
         LoadingScreen.AddOrChangeQueue(preloadedAssets, "Loading assets...");
+        //setup invert type chart
+        preloadedAssets.onCompleted += () => { foreach (var type in typeChart.Values) type.InvertChart(OptionsMenu.invertChart); };
         if (emptySprite != null)//already loaded data
         {
             preloadedAssets.FinishStep();
@@ -186,9 +188,9 @@ public static class PokeDatabase
                     TypeRelations relations = typeData.referenceData;
                     var chartEntry = typeChart[typeKey];
                     bool invert = OptionsMenu.invertChart;
-                    ApplyModifier(invert ? .5f : 2, chartEntry.attackMultiplier, relations.superEffective);
-                    ApplyModifier(invert ? 2 : .5f, chartEntry.attackMultiplier, relations.notEffective);
-                    ApplyModifier(invert ? 4 : 0, chartEntry.attackMultiplier, relations.doNotAffect);
+                    ApplyModifier(2, chartEntry.attackMultiplier, relations.superEffective);
+                    ApplyModifier(.5f, chartEntry.attackMultiplier, relations.notEffective);
+                    ApplyModifier(0, chartEntry.attackMultiplier, relations.doNotAffect);
 
                     void ApplyModifier(float modifier, Dictionary<TypeChartEntry, float> dictionary, 
                         List<ApiReference> reference)

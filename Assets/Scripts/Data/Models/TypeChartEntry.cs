@@ -6,7 +6,9 @@ public class TypeChartEntry
     public string name;
     public TypeRelations referenceData;
 
-    public readonly Dictionary<TypeChartEntry, float> attackMultiplier;
+    public Dictionary<TypeChartEntry, float> attackMultiplier { get; private set; }
+
+    private bool inverted = false;
 
     public TypeChartEntry(PokemonType type)
     {
@@ -21,4 +23,19 @@ public class TypeChartEntry
     }
 
     public float GetMultiplier(TypeChartEntry type) => attackMultiplier.GetValueOrDefault(type, 1);
+
+    public void InvertChart(bool invert)
+    {
+        if(invert == inverted) return;
+        Dictionary<TypeChartEntry, float> newMultipliers = new();
+        foreach (var entry in attackMultiplier)
+        {
+            if (invert)
+                newMultipliers[entry.Key] = entry.Value <= 0 ? 4 : 1f / entry.Value;
+            else
+                newMultipliers[entry.Key] = entry.Value > 2 ? 0 : 1f / entry.Value;
+        }
+        inverted = invert;
+        attackMultiplier = newMultipliers;
+    }
 }
