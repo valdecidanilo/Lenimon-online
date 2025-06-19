@@ -82,7 +82,7 @@ public static class BattleVFX
         //reset
         overlay.type = originalType;
         overlay.pixelsPerUnitMultiplier = ppum;
-        pokemon.ResetBattlePokemon();
+        rect.sizeDelta = originalSize;
     }
 
     public static IEnumerator MoveAnimation(this BattlePokemon pokemon, MoveType moveType, BattlePokemon target)
@@ -103,7 +103,7 @@ public static class BattleVFX
 
     public static IEnumerator DefaultPhysicalMoveAnimation(this BattlePokemon pokemon, BattlePokemon target)
     {
-        if(ReferenceEquals(target,null) || ReferenceEquals(target,pokemon)) yield break;
+        if (ReferenceEquals(target, null) || ReferenceEquals(target, pokemon)) yield break;
         
         RectTransform rect = (RectTransform)pokemon.image.transform;
         Vector2 size = rect.rect.size;
@@ -168,7 +168,7 @@ public static class BattleVFX
 
     public static IEnumerator DefaultSpecialMoveAnimation(this BattlePokemon pokemon, BattlePokemon target)
     {
-        if(ReferenceEquals(target,null) || ReferenceEquals(target,pokemon)) yield break;
+        if (ReferenceEquals(target, null) || ReferenceEquals(target, pokemon)) yield break;
         
         RectTransform rect = (RectTransform)pokemon.image.transform;
         Vector3 originalRotation = rect.localEulerAngles;
