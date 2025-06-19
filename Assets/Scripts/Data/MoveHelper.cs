@@ -38,10 +38,10 @@ public static class MoveHelper
         List<MoveReference> possibleMoves = GetPossibleMoves(pokemon, methodFilter);
 
         //test
-        possibleMoves = new List<MoveReference>();
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/fake-out" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/swift" } });
-        possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/bulk-up" } });
+        //possibleMoves = new List<MoveReference>();
+        //possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/fake-out" } });
+        //possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/swift" } });
+        //possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/bulk-up" } });
         //possibleMoves.Add(new() { move = new() { url = "pokeapi.co/api/v2/move/drain-punch" } });
 
         MoveReference[] newMoves = new MoveReference[4];
