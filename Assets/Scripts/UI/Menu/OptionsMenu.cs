@@ -12,6 +12,11 @@ public class OptionsMenu : ContextMenu<int>
     [SerializeField] private TMP_Text levelText;
     [SerializeField] private HoldButton levelUp;
 
+    [Header("InvertTypeChat")]
+    [SerializeField] private HoldButton leftButton;
+    [SerializeField] private TMP_Text optionText;
+    [SerializeField] private HoldButton rightButton;
+
     private int level;
     private int finalLevel => level + 1;
 
