@@ -225,7 +225,17 @@ public class FightMenu : ContextMenu<Pokemon>
                     }
                     else //defeated
                     {
-                        yield return Announcer.AnnounceCoroutine($"{evt.targetTrainer.name} was defeated");
+                        if(evt.targetTrainer == player)
+                        {
+                            //reload scene
+                            yield return Announcer.AnnounceCoroutine($"{player.name} defeated {opponent.name}!", true, .5f);
+                        }
+                        else
+                        {
+                            //TODO: load new enemy
+                            yield return Announcer.AnnounceCoroutine($"{opponent.name} defeated {player.name}!", true, .5f);
+                        }
+                        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
                     }
                 }
             }
