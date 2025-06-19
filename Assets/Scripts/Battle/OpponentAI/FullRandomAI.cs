@@ -10,7 +10,7 @@ public class FullRandomAI : Opponent
             return UseHealItem();
         List<int> options = new(4);
         for (int i = 0; i < options.Capacity; i++)
-            if (pokemon.moves[i] != null && pokemon.moves[i].pp > 0)
+            if (activePokemon.moves[i] != null && activePokemon.moves[i].pp > 0)
                 options.Add(i);
 
         MoveModel pickedMove;
