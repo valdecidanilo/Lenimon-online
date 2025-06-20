@@ -205,40 +205,9 @@ public class FightMenu : ContextMenu<Pokemon>
             evt.attackEvent = new(evt.origin, evt.target, evt.move);
             yield return TurnSequence(evt);
             flinchNext = evt.flinchTarget;
-            if (evt.targetTrainer.activePokemon.fainted)
-            {
-                bool pickedPokemon = false;
-                while (!pickedPokemon)
-                {
-                    PickPokemonEvent pickEvent = new(fainted: false, current: false);
-                    yield return evt.targetTrainer.PickPokemon(pickEvent);
-                    if (!pickEvent.noValidPokemon)
-                    {
-                        if (!(pickEvent.partyId < 0))//not canceled
-                        {
-                            EnableFightAnnouncer();
-                            yield return Announcer.AnnounceCoroutine("");
-                            if (pickEvent.partyId < 0 || pickEvent.pickedPokemon.fainted) continue;
-                            yield return ChangePokemon(evt.targetTrainer, pickEvent.partyId);
-                            pickedPokemon = true;
-                        }
-                    }
-                    else //defeated
-                    {
-                        if(evt.targetTrainer == player)
-                        {
-                            //reload scene
-                            yield return Announcer.AnnounceCoroutine($"{player.name} defeated {opponent.name}!", true, .5f);
-                        }
-                        else
-                        {
-                            //TODO: load new enemy
-                            yield return Announcer.AnnounceCoroutine($"{opponent.name} defeated {player.name}!", true, .5f);
-                        }
-                        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
-                    }
-                }
-            }
+            for (int j = 0; j < trainerOrder.Count; j++)
+                if (trainerOrder[j].activePokemon.fainted) yield return ReplaceFaintedPokemon(trainerOrder[j]);
+
             if (evt.user != evt.targetTrainer && 
                 evt.target != evt.targetTrainer.activePokemon) break;
         }
@@ -317,7 +286,8 @@ public class FightMenu : ContextMenu<Pokemon>
                     yield return Announcer.AnnounceCoroutine(typeEffectMessage, holdTime: 1);
 
                 //sub effect
-                if (evtBattle.attackEvent.modifier > 0) yield return TriggerSubEffect(evtBattle.move.effect);
+                if (evtBattle.attackEvent.modifier > 0)
+                    yield return TriggerSubEffect(evtBattle.move.effect);
 
                 IEnumerator TriggerSubEffect(Effect effect)
                 {
@@ -326,6 +296,7 @@ public class FightMenu : ContextMenu<Pokemon>
                     int r = Random.Range(1, 101);
                     if (r > effect.subEffectChance) yield break;
                     effect.subEffectSetup?.Invoke(evtBattle);
+                    if (evtBattle.target.fainted) yield break;
                     yield return effect.subEffect.EffectSequence(evtBattle);
                     yield return TriggerSubEffect(effect.subEffect);
                 }
@@ -343,6 +314,41 @@ public class FightMenu : ContextMenu<Pokemon>
                     yield return Announcer.AnnounceCoroutine($"{evtBattle.origin.name} attack missed.", holdTime: 1f);
                 else
                     yield return Announcer.AnnounceCoroutine($"{evtBattle.target.name} avoided the attack.", holdTime: 1f);
+            }
+        }
+
+        IEnumerator ReplaceFaintedPokemon(Trainer trainer)
+        {
+            bool pickedPokemon = false;
+            while (!pickedPokemon)
+            {
+                PickPokemonEvent pickEvent = new(fainted: false, current: false);
+                yield return trainer.PickPokemon(pickEvent);
+                if (!pickEvent.noValidPokemon)
+                {
+                    if (!(pickEvent.partyId < 0))//not canceled
+                    {
+                        EnableFightAnnouncer();
+                        yield return Announcer.AnnounceCoroutine("");
+                        if (pickEvent.partyId < 0 || pickEvent.pickedPokemon.fainted) continue;
+                        yield return ChangePokemon(trainer, pickEvent.partyId);
+                        pickedPokemon = true;
+                    }
+                }
+                else //defeated
+                {
+                    if (trainer == player)
+                    {
+                        //reload scene
+                        yield return Announcer.AnnounceCoroutine($"{opponent.name} defeated {player.name}!", true, .5f);
+                    }
+                    else
+                    {
+                        //TODO: load new enemy
+                        yield return Announcer.AnnounceCoroutine($"{player.name} defeated {opponent.name}!", true, .5f);
+                    }
+                    UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+                }
             }
         }
     }
