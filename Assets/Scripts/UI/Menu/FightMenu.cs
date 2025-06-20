@@ -340,7 +340,7 @@ public class FightMenu : ContextMenu<Pokemon>
                     if (trainer == player)
                     {
                         //reload scene
-                        yield return Announcer.AnnounceCoroutine($"{opponent.name} defeated {player.name}!", true, .5f);
+                        yield return Announcer.AnnounceCoroutine($"{player.name} were defeated by {opponent.name}...", true, .5f);
                     }
                     else
                     {
