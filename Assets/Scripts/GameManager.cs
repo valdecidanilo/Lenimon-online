@@ -155,16 +155,16 @@ public class GameManager : MonoBehaviour
     private void GenerateHealItems()
     {
         itemsLoaded.AddStep();
-        List<string> itemList = new()
+        List<(string name,int amount)> itemList = new()
         {
-            "potion",
-            "super-potion",
-            "revive",
-            "soda-pop",
-            "lemonade",
-            "moomoo-milk",
-            "hyper-potion",
-            "max-potion"
+            ("revive", player.party.Length),
+            ("potion",6),
+            ("super-potion", 5),
+            ("soda-pop", 4),
+            ("lemonade", 3),
+            ("moomoo-milk", 2),
+            ("hyper-potion", 1),
+            ("max-potion", 1)
         };
 
         Checklist loaded = new(itemList.Count);
@@ -173,10 +173,10 @@ public class GameManager : MonoBehaviour
 
         void LoadHealItem()
         {
-            string route = $"{PokeAPI.baseRoute}item/{itemList[loaded.currentSteps]}";
+            string route = $"{PokeAPI.baseRoute}item/{itemList[loaded.currentSteps].name}";
             PokeAPI.GetItem(route, (item) =>
             {
-                item.amount = 5;
+                item.amount = itemList[loaded.currentSteps].amount;
                 player.bag.items.Add(item);
                 item.battleEffect = ItemEffect.GenerateItemEffect(item);
                 log.Append($"\n{item.name}");
@@ -216,6 +216,7 @@ public class GameManager : MonoBehaviour
             string route = $"{PokeAPI.baseRoute}item/{itemList[loaded.currentSteps]}";
             PokeAPI.GetItem(route, (item) =>
             {
+                item.amount = 10;
                 player.bag.battleItems.Add(item);
                 item.battleEffect = ItemEffect.GenerateItemEffect(item);
                 log.Append($"\n{item.name}");
