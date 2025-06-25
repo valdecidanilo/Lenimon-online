@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Audio
+  m_EditorClassIdentifier: 
+  m_GroupName: Audio
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 383e1f97523701e4cba269451ad08469
+  m_SerializeEntries:
+  - m_GUID: 12165ae92b21f024f953dfac125c25d9
+    m_Address: Assets/Audio/SFX/Select4.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1351dbdf95abae14ba74c8f4ea43fbfa
+    m_Address: Assets/Audio/SFX/Attack_Hit2.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3c6362500f809874d918b527e44b3a97
+    m_Address: Assets/Audio/SFX/Select3.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 533977f40c22ed241a3b52f19a34466f
+    m_Address: Assets/Audio/SFX/Select2.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 551f781d8fa8db147a30c39d686616e9
+    m_Address: Assets/Audio/SFX/Attack_Hit.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6fa02a842cfe94b4ba6525de9cfd37ad
+    m_Address: Assets/Audio/SFX/Attack_Hit4.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7ebdcd0ad00772f4a842912a0241bc48
+    m_Address: Assets/Audio/SFX/Select.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 835057973a2494241a005439fc6faa25
+    m_Address: Assets/Audio/SFX/Debuff.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9ec0f06e5e6eec141ac4d7177061d586
+    m_Address: Assets/Audio/SFX/Attack_Hit3.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a0b1080b7cee55d4e98d4fa4d67e8c8f
+    m_Address: Assets/Audio/SFX/Select5.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f575fb6e200c21b4393963a2d1e57a0e
+    m_Address: Assets/Audio/SFX/Buff.wav
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 62f97c58022ab014cbd3b8d6bd7dc536, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 24351e2d9eb8e054791b4f142f6713a3, type: 2}
+    - {fileID: 11400000, guid: 8ce5db11adeec354c9c856631c0a19e2, type: 2}
