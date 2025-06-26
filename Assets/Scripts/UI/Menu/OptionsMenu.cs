@@ -88,11 +88,15 @@ public class OptionsMenu : ContextMenu<int>
     {
         level = (level + delta + 101) % 101;
         levelText.text = level == 0 ? "Random" : level.ToString();
+        
+        AudioManager.PlaySelectAudio();
     }
     private void ToggleInvertChart()
     {
         invertTypeChart = !invertTypeChart;
         optionText.text = invertTypeChart ? "Yes" : "No";
+        
+        AudioManager.PlaySelectAudio();
     }
 
     private void ResetBattle()

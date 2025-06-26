@@ -51,5 +51,11 @@ public class SelectionItem : MonoBehaviour, IPointerEnterHandler, ISelectHandler
         button.interactable = active;
     }
 
-    private void OnSelected() => onSelected?.Invoke(this);
+    private void OnSelected()
+    {
+        AudioManager.PlaySelectAudio();
+        onSelected?.Invoke(this);
+    }
+
+    private void SelectionSubmit() => onPick?.Invoke();
 }

@@ -12,6 +12,7 @@ public class Announcer : MonoBehaviour
 
     [SerializeField] private TMP_Text field;
     [SerializeField] private Button continueButton;
+    [SerializeField] private GameObject continueVisual;
 
     [Header("Text Typing")]
     // Characters per second.
@@ -57,6 +58,7 @@ public class Announcer : MonoBehaviour
         WaitForSeconds step = new(1f / instance.cps);
         StringBuilder typing = new();
         instance.gameObject.SetActive(true);
+        instance.continueVisual.SetActive(false);
         if (awaitInput)
         {
             instance.continueButton.Select();
@@ -83,6 +85,7 @@ public class Announcer : MonoBehaviour
         }
 
         //hold
+        instance.continueVisual.SetActive(awaitInput);
         if (awaitInput) yield return new WaitUntil(() => instance.pressedInput);
         instance.pressedInput = false;
         yield return new WaitForSeconds(holdTime);

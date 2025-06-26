@@ -73,6 +73,7 @@ public class BagMenu : ContextMenu<Bag>
         int screenId = (currentScreen + screenCount + Mathf.FloorToInt(direction)) % screenCount;
         if(screenId == currentScreen) return;
         UpdateScreen(screenId);
+        AudioManager.PlaySelectAudio();
     }
 
     private void UpdateScreen(int screenId = 0)
