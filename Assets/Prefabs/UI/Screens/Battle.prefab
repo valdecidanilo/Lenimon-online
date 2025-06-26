@@ -3268,6 +3268,11 @@ PrefabInstance:
       propertyPath: m_fontColor32.rgba
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 6077765965703163232, guid: 7efe9d26cd2e11b49a9eed57c97eff6c,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7130877684862168284, guid: 7efe9d26cd2e11b49a9eed57c97eff6c,
         type: 3}
       propertyPath: m_Color.a
