@@ -17,58 +17,58 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 383e1f97523701e4cba269451ad08469
   m_SerializeEntries:
-  - m_GUID: 12165ae92b21f024f953dfac125c25d9
-    m_Address: Assets/Audio/SFX/Select4.wav
+  - m_GUID: 3ea0571b31b9726468e4b3b016752cc8
+    m_Address: Select1
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1351dbdf95abae14ba74c8f4ea43fbfa
-    m_Address: Assets/Audio/SFX/Attack_Hit2.wav
+  - m_GUID: 46ff9d99958712646856073b3060f850
+    m_Address: Select4
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3c6362500f809874d918b527e44b3a97
-    m_Address: Assets/Audio/SFX/Select3.wav
+  - m_GUID: 5f131453377f55a4291e85112f2a6a55
+    m_Address: Attack_Hit4
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 533977f40c22ed241a3b52f19a34466f
-    m_Address: Assets/Audio/SFX/Select2.wav
+  - m_GUID: 7dcca811d585412409ed674c0d384b4c
+    m_Address: Debuff
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 551f781d8fa8db147a30c39d686616e9
-    m_Address: Assets/Audio/SFX/Attack_Hit.wav
+  - m_GUID: 8712990e2785a6c4695911869ff52e72
+    m_Address: Attack_Hit3
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6fa02a842cfe94b4ba6525de9cfd37ad
-    m_Address: Assets/Audio/SFX/Attack_Hit4.wav
+  - m_GUID: 8a20f2056e93e64469a21281590cac94
+    m_Address: Attack_Hit1
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7ebdcd0ad00772f4a842912a0241bc48
-    m_Address: Assets/Audio/SFX/Select.wav
+  - m_GUID: 974c60643e676974a9e918736699b00a
+    m_Address: Select2
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 835057973a2494241a005439fc6faa25
-    m_Address: Assets/Audio/SFX/Debuff.wav
+  - m_GUID: bf25378a64429d84c83fcc6020d4b928
+    m_Address: Attack_Hit2
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9ec0f06e5e6eec141ac4d7177061d586
-    m_Address: Assets/Audio/SFX/Attack_Hit3.wav
+  - m_GUID: ca8711ef373c42c43929145229f894cd
+    m_Address: Select5
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a0b1080b7cee55d4e98d4fa4d67e8c8f
-    m_Address: Assets/Audio/SFX/Select5.wav
+  - m_GUID: f549c5ecda7d2434f965050d34b4b595
+    m_Address: Select3
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f575fb6e200c21b4393963a2d1e57a0e
-    m_Address: Assets/Audio/SFX/Buff.wav
+  - m_GUID: f981bd043e66d1a49b4bb771bd42344f
+    m_Address: Buff
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
