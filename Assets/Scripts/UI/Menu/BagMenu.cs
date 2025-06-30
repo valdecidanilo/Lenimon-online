@@ -14,6 +14,8 @@ public class BagMenu : ContextMenu<Bag>
     [SerializeField] private TMP_Text screenName;
     [SerializeField] private Button nextButton;
     [SerializeField] private Button prevButton;
+    [SerializeField] private Button upButton;
+    [SerializeField] private Button downButton;
     [SerializeField] private Selectable[] screenIndicator;
     [SerializeField] private Image itemIcon;
     [SerializeField] private Announcer itemDescription;
@@ -44,6 +46,9 @@ public class BagMenu : ContextMenu<Bag>
 
         nextButton.onClick.AddListener(() => ShiftScreen(1));
         prevButton.onClick.AddListener(() => ShiftScreen(-1));
+
+        upButton.onClick.AddListener(() => ShiftOffset(-1));
+        downButton.onClick.AddListener(() => ShiftOffset(1));
     }
 
     public override void OpenMenu(Bag data)
@@ -74,6 +79,15 @@ public class BagMenu : ContextMenu<Bag>
         if(screenId == currentScreen) return;
         UpdateScreen(screenId);
         AudioManager.PlaySelectAudio();
+    }
+
+    private void ShiftOffset(int offset)
+    {
+        itemOffset += offset;
+        Logger.Log($"{itemList.Count - contextSelection.itemCount + 1}");
+        downButton.gameObject.SetActive(itemOffset < itemList.Count - contextSelection.itemCount + 1);
+        upButton.gameObject.SetActive(itemOffset > 0);
+        LoadScreenData();
     }
 
     private void UpdateScreen(int screenId = 0)
