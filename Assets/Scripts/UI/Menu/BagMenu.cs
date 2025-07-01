@@ -23,6 +23,8 @@ public class BagMenu : ContextMenu<Bag>
     
     private const int screenCount = 4;
 
+    private int offsetRange => itemList.Count - contextSelection.itemCount + 1;
+
     private Bag bag;
     private BagItem[] bagItems;
     private List<ItemModel> itemList;
@@ -47,8 +49,8 @@ public class BagMenu : ContextMenu<Bag>
         nextButton.onClick.AddListener(() => ShiftScreen(1));
         prevButton.onClick.AddListener(() => ShiftScreen(-1));
 
-        upButton.onClick.AddListener(() => ShiftOffset(-1));
-        downButton.onClick.AddListener(() => ShiftOffset(1));
+        upButton.onClick.AddListener(() => ShiftOffset(1));
+        downButton.onClick.AddListener(() => ShiftOffset(-1));
     }
 
     public override void OpenMenu(Bag data)
@@ -70,8 +72,19 @@ public class BagMenu : ContextMenu<Bag>
         navigateAction.performed -= ChangeScreen;
     }
 
-    private void ChangeScreen(CallbackContext context) =>
-        ShiftScreen(Mathf.FloorToInt(context.ReadValue<Vector2>().x));
+    private void ChangeScreen(CallbackContext context)
+    {
+        Vector2 direction = context.ReadValue<Vector2>();
+        ShiftScreen(Mathf.FloorToInt(direction.x));
+        if (offsetRange < 1) return;
+        if (!context.action.WasPressedThisFrame()) return;
+        int itemChangeDirection = Mathf.FloorToInt(direction.y);
+        int newItemId = contextSelection.selectedId - itemChangeDirection;
+        if (newItemId >= 0 && newItemId < contextSelection.itemCount) return;
+        int newOffset = itemOffset - itemChangeDirection;
+        if(newOffset < 0 || newOffset > offsetRange) return;
+        ShiftOffset(itemChangeDirection);
+    }
 
     private void ShiftScreen(int direction)
     {
@@ -83,10 +96,7 @@ public class BagMenu : ContextMenu<Bag>
 
     private void ShiftOffset(int offset)
     {
-        itemOffset += offset;
-        Logger.Log($"{itemList.Count - contextSelection.itemCount + 1}");
-        downButton.gameObject.SetActive(itemOffset < itemList.Count - contextSelection.itemCount + 1);
-        upButton.gameObject.SetActive(itemOffset > 0);
+        itemOffset -= offset;
         LoadScreenData();
     }
 
@@ -97,13 +107,6 @@ public class BagMenu : ContextMenu<Bag>
         for (int i = 0; i < screenIndicator.Length; i++) screenIndicator[i].interactable = false;
         screenIndicator[currentScreen].interactable = true;
         itemOffset = 0;
-        LoadScreenData();
-        contextSelection.Select(0);
-        ShowItemDetails(0);
-    }
-
-    private void LoadScreenData()
-    {
         itemList = currentScreen switch
         {
             0 => bag.items,
@@ -111,7 +114,17 @@ public class BagMenu : ContextMenu<Bag>
             2 => bag.battleItems,
             _ => bag.TMs,
         };
+        LoadScreenData();
+        contextSelection.Select(0);
+        ShowItemDetails(0);
+    }
+
+    private void LoadScreenData()
+    {
         if(itemList == null) return;
+        
+        downButton.gameObject.SetActive(itemOffset < offsetRange);
+        upButton.gameObject.SetActive(itemOffset > 0);
 
         for (int i = 0; i < contextSelection.itemCount; i++)
         {
@@ -160,10 +173,10 @@ public class BagMenu : ContextMenu<Bag>
 
     private IEnumerator ScrollDelay(int offset)
     {
-        itemOffset += offset;
+        //itemOffset += offset;
         yield return null;
-        contextSelection.Select(contextSelection.selectedId - offset);
-        LoadScreenData();
+        //contextSelection.Select(contextSelection.selectedId - offset);
+        //LoadScreenData();
     }
 
     private void OpenItemOptions(int id)
