@@ -49,8 +49,8 @@ public class BagMenu : ContextMenu<Bag>
         nextButton.onClick.AddListener(() => ShiftScreen(1));
         prevButton.onClick.AddListener(() => ShiftScreen(-1));
 
-        upButton.onClick.AddListener(() => ShiftOffset(1));
-        downButton.onClick.AddListener(() => ShiftOffset(-1));
+        upButton.onClick.AddListener(() => ItemMoveButton(1));
+        downButton.onClick.AddListener(() => ItemMoveButton(-1));
     }
 
     public override void OpenMenu(Bag data)
@@ -76,14 +76,27 @@ public class BagMenu : ContextMenu<Bag>
     {
         Vector2 direction = context.ReadValue<Vector2>();
         ShiftScreen(Mathf.FloorToInt(direction.x));
-        if (offsetRange < 1) return;
         if (!context.action.WasPressedThisFrame()) return;
-        int itemChangeDirection = Mathf.FloorToInt(direction.y);
-        int newItemId = contextSelection.selectedId - itemChangeDirection;
+        ChangeItemSelection(Mathf.FloorToInt(direction.y));
+    }
+
+    private void ItemMoveButton(int delta)
+    {
+        int newItemId = contextSelection.selectedId - delta;
+        if (newItemId >= 0 && newItemId < contextSelection.itemCount)
+            contextSelection.Select(newItemId);
+        else 
+            ChangeItemSelection(delta);
+    }
+
+    private void ChangeItemSelection(int delta)
+    {
+        if (offsetRange < 1) return;
+        int newItemId = contextSelection.selectedId - delta;
         if (newItemId >= 0 && newItemId < contextSelection.itemCount) return;
-        int newOffset = itemOffset - itemChangeDirection;
-        if(newOffset < 0 || newOffset > offsetRange) return;
-        ShiftOffset(itemChangeDirection);
+        int newOffset = itemOffset - delta;
+        if (newOffset < 0 || newOffset > offsetRange) return;
+        ShiftOffset(delta);
     }
 
     private void ShiftScreen(int direction)
@@ -218,8 +231,6 @@ public class BagMenu : ContextMenu<Bag>
                 StartCoroutine(coroutine);
                 break;
             case 1:
-                break;
-            case 2:
                 CloseOptions();
                 break;
         }
