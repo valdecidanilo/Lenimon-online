@@ -77,7 +77,7 @@ public class BagMenu : ContextMenu<Bag>
         Vector2 direction = context.ReadValue<Vector2>();
         ShiftScreen(Mathf.FloorToInt(direction.x));
         if (!context.action.WasPressedThisFrame()) return;
-        ChangeItemSelection(Mathf.FloorToInt(direction.y));
+        ItemOffsetShift(Mathf.FloorToInt(direction.y));
     }
 
     private void ItemMoveButton(int delta)
@@ -86,10 +86,10 @@ public class BagMenu : ContextMenu<Bag>
         if (newItemId >= 0 && newItemId < contextSelection.itemCount)
             contextSelection.Select(newItemId);
         else 
-            ChangeItemSelection(delta);
+            ItemOffsetShift(delta);
     }
 
-    private void ChangeItemSelection(int delta)
+    private void ItemOffsetShift(int delta)
     {
         if (offsetRange < 1) return;
         int newItemId = contextSelection.selectedId - delta;
@@ -110,6 +110,7 @@ public class BagMenu : ContextMenu<Bag>
     private void ShiftOffset(int offset)
     {
         itemOffset -= offset;
+        AudioManager.PlaySelectAudio();
         LoadScreenData();
     }
 
