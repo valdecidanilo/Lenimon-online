@@ -130,6 +130,7 @@ namespace Player
         }
         private void FindedBattle()
         {
+            Logger.Log("Finded Battle in Grass");
             isInBattle = true;
             inputBuffer = Vector2.zero;
             animatorController.SetIdleState(true);
