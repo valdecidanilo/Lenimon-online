@@ -73,9 +73,9 @@ Material:
     - _OutlineWidth: 0
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
-    - _ScaleRatioA: 0.9
-    - _ScaleRatioB: 0.73125
-    - _ScaleRatioC: 0.365625
+    - _ScaleRatioA: 0.85714287
+    - _ScaleRatioB: 0.6964286
+    - _ScaleRatioC: 0.6964286
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -87,9 +87,9 @@ Material:
     - _StencilWriteMask: 255
     - _TextureHeight: 512
     - _TextureWidth: 512
-    - _UnderlayDilate: 1
-    - _UnderlayOffsetX: 1
-    - _UnderlayOffsetY: -1
+    - _UnderlayDilate: 0.27
+    - _UnderlayOffsetX: 0.29
+    - _UnderlayOffsetY: -0.43
     - _UnderlaySoftness: 0
     - _VertexOffsetX: 0
     - _VertexOffsetY: 0
@@ -105,7 +105,7 @@ Material:
     - _ReflectFaceColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectOutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
-    - _UnderlayColor: {r: 0, g: 0, b: 0, a: 0.5803922}
+    - _UnderlayColor: {r: 0.8930817, g: 0.8291531, b: 0.6599817, a: 1}
   m_BuildTextureStacks: []
 --- !u!28 &-1263578188212568040
 Texture2D:
@@ -165,11 +165,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-  m_Name: pokemon-emerald SDF
+  m_Name: pokemon-emerald
   m_EditorClassIdentifier: 
-  hashCode: 1082204663
+  hashCode: -152306746
   material: {fileID: -3009649241749147789}
-  materialHashCode: -554021385
+  materialHashCode: 1567647270
   m_Version: 1.1.0
   m_SourceFontFileGUID: c36732b3d6b6d8c46896bd03b11263ef
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: c36732b3d6b6d8c46896bd03b11263ef,

@@ -9,13 +9,13 @@ using Logger = LenixSO.Logger.Logger;
 
 public class GameManager : MonoBehaviour
 {
-    private const int maxPokemonId = 1025;
+    private const int MaxPokemonId = 1025;
 
     [SerializeField] private BattleSetup battle;
 
     private Trainer player;
     private Opponent opponent;
-    int encounterLevel;
+    private int encounterLevel;
 
     private Checklist itemsLoaded;
 
@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviour
         void SetupParty(Pokemon[] party, Checklist loaded)
         {
             if (loaded.isDone) return;
-            int pokemonId = Random.Range(1, maxPokemonId + 1);
+            int pokemonId = Random.Range(1, MaxPokemonId + 1);
             GetPokemon(pokemonId, partyLevel, (pokemon) =>
             {
                 CheckPokemon(pokemon);
@@ -133,8 +133,8 @@ public class GameManager : MonoBehaviour
         }
 
         finalLog.Append($"{pokemon.gender} {pokemon.name} (no.{pokemon.id}) -> Lv{pokemon.level}");
-        finalLog.Append($"\n{type.ToString()}");
-        finalLog.Append($"\n{abilities.ToString()}");
+        finalLog.Append($"\n{type}");
+        finalLog.Append($"\n{abilities}");
 
         Logger.Log(finalLog.ToString(), LogFlags.DataCheck);
     }
