@@ -11,6 +11,8 @@ namespace Player
         private static readonly int MoveX = Animator.StringToHash("MoveX");
         private static readonly int MoveY = Animator.StringToHash("MoveY");
         private static readonly int IsMoving = Animator.StringToHash("IsMoving");
+        private static readonly int IsRunning = Animator.StringToHash("IsRunning");
+
         private void Awake()
         {
             animator = GetComponent<Animator>();
@@ -33,9 +35,15 @@ namespace Player
                 }
             }
         }
+
         public void SetRunState(bool isRunning)
         {
-            animator.SetBool("IsRunning", isRunning);
+            animator.SetBool(IsRunning, isRunning);
         }
+
+        public void SetIdleState(bool isIdle)
+        {
+            animator.SetBool(IsMoving, !isIdle);
+        } 
     }
 }

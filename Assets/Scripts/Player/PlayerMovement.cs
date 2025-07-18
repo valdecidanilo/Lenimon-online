@@ -132,6 +132,7 @@ namespace Player
         {
             isInBattle = true;
             inputBuffer = Vector2.zero;
+            animatorController.SetIdleState(true);
         }
 
 #if UNITY_EDITOR
