@@ -49,7 +49,8 @@ public class ContextSelection : MonoBehaviour
 
     public void ReleaseSelection()
     {
-        EventSystem.current.SetSelectedGameObject(null);
+        if (EventSystem.current != null)
+            EventSystem.current.SetSelectedGameObject(null);
     }
 
     private void OnItemPick()

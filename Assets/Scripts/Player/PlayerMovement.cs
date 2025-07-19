@@ -134,6 +134,8 @@ namespace Player
             isInBattle = true;
             inputBuffer = Vector2.zero;
             animatorController.SetIdleState(true);
+            GameManager.OnInitializeTest?.Invoke();
+            //FindObjectOfType<GameManager>().BeginBattleEncounter();
         }
 
 #if UNITY_EDITOR

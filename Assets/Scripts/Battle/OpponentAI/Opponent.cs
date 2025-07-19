@@ -2,13 +2,17 @@ using LenixSO.Logger;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Battle;
 using Random = UnityEngine.Random;
 
 public abstract class Opponent : Trainer
 {
-    public virtual void SetupBag(int partyLevel, Action onFinished)
+    
+    public abstract MoveModel ChooseMove(Pokemon pokemon);
+    
+    public override void SetupBag(int partyLevel, Action onFinished)
     {
-        string healItem = partyLevel switch
+        var healItem = partyLevel switch
         {
             < 18 => "potion",
             < 25 => "super-potion",
@@ -20,7 +24,7 @@ public abstract class Opponent : Trainer
         };
 
 
-        string route = $"{PokeAPI.baseRoute}item/{healItem}";
+        var route = $"{PokeAPI.baseRoute}item/{healItem}";
         PokeAPI.GetItem(route, (item) =>
         {
             item.amount = party.Length;
@@ -29,8 +33,7 @@ public abstract class Opponent : Trainer
             onFinished?.Invoke();
         });
     }
-    public abstract MoveModel ChooseMove(Pokemon pokemon);
-
+    
     protected virtual MoveModel UseHealItem()
     {
         ItemModel item = bag.items[0];

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Battle;
+using Battle.OpponentAI;
 using UnityEngine;
 using LenixSO.Logger;
 using Random = UnityEngine.Random;
@@ -12,108 +13,201 @@ public class GameManager : MonoBehaviour
     private const int MaxPokemonId = 1025;
 
     [SerializeField] private BattleSetup battle;
+    [SerializeField] private BattleMode battleMode = BattleMode.WildEncounter;
 
     private Trainer player;
-    private Opponent opponent;
-    private int encounterLevel;
-
+    private Trainer opponent;
     private Checklist itemsLoaded;
+    private int encounterLevel;
+    public static Action OnInitializeTest;
 
-    private void Awake()
+    private void OnEnable()
+    {
+        OnInitializeTest += InitializeBattle;
+    }
+
+    private void InitializeBattle()
     {
         PokeDatabase.PreloadAssets();
-        LoadingScreen.onDoneLoading += Setup;
+        LoadingScreen.onDoneLoading += SetupBattleMode;
+    }
+    
+    private void SetupBattleMode()
+    {
+        LoadingScreen.onDoneLoading -= SetupBattleMode;
+        switch (battleMode)
+        {
+            case BattleMode.WildEncounter:
+                SetupWildBattle();
+                break;
+            case BattleMode.TrainerAI:
+                SetupTrainerBattle(new FullRandomAI());
+                break;
+            case BattleMode.PlayerVsPlayer:
+                SetupPvPBattle();
+                break;
+            default:
+                SetupWildBattle();
+                break;
+        }
+    }
+    
+    private void SetupWildBattle()
+    {
+        player = CreateDefaultPlayer("You"); // tem que fazer o load do usuario
+        opponent = new WildOpponent();
+        Logger.Log("WILD BATTLE");
+        GenerateParties(true);
     }
 
-    private void Setup()
+    private void SetupTrainerBattle(Opponent trainer)
     {
-        player = new()
-        {
-            name = "You",
-            referenceText = "Allied"
-        };
-
-        opponent = new FullRandomAI()
-        {
-            name = "Opponent",
-            referenceText = "Opponent's"
-        };
-
+        player = CreateDefaultPlayer("You"); // tem que fazer o load do usuario
+        opponent = trainer;
         GenerateParties();
-        LoadingScreen.onDoneLoading -= Setup;
         LoadingScreen.onDoneLoading += StartBattle;
     }
-    private void StartBattle()
+
+    private void SetupPvPBattle()
     {
-        battle.SetupBattle(player, opponent);
+        player = CreateDefaultPlayer("You");
+        opponent = MockRemoteOpponentPlayer();
+        LoadingScreen.onDoneLoading += () => battle.SetupBattle(player, (Opponent) opponent);
     }
 
-    #region Pokemon
-    private void GenerateParties()
+    private Trainer CreateDefaultPlayer(string name)
     {
-        //get encounter level
+        return new Trainer()
+        {
+            name = name,
+            referenceText = "Allied"
+        };
+    }
+    
+    private void StartBattle()
+    {
+        if (opponent?.party == null)
+        {
+            Logger.LogError("opponent.party está null! A batalha não será iniciada.");
+            return;
+        }
+
+        if (opponent.party.Length == 0)
+        {
+            Logger.LogError("opponent.party está vazio!");
+            return;
+        }
+        
+        battle.gameObject.SetActive(true);
+        battle.SetupBattle(player, (Opponent) opponent);
+    }
+    #region Online Test
+    
+    private Trainer MockRemoteOpponentPlayer()
+    {
+        
+        var mockOpponent = new MockRemotePlayerAI
+        {
+            party = new Pokemon[3]
+        };
+
+        Checklist loaded = new(mockOpponent.party.Length);
+
+        for (var i = 0; i < mockOpponent.party.Length; i++)
+        {
+            var id = Random.Range(1, 152);
+            var level = Random.Range(10, 30);
+            GetPokemon(id, level, (pokemon) =>
+            {
+                mockOpponent.party[loaded.currentSteps] = pokemon;
+                loaded.FinishStep();
+            });
+        }
+
+        loaded.onCompleted += () =>
+        {
+            mockOpponent.activePokemon = mockOpponent.party[0];
+            battle.SetupBattle(player, mockOpponent);
+        };
+
+        return mockOpponent;
+    }
+    
+    #endregion
+    
+    #region Pokemon
+    private void GenerateParties(bool generateOpponent = true)
+    {
         encounterLevel = Random.Range(1, 101);
 
-        //generate ally party
-        int partySize = Random.Range(1, 7);
-        int partyLevel = OptionsMenu.battleLevel ?? Mathf.Min(100, encounterLevel + (6 - partySize));
-        player.party = new Pokemon[partySize];
-        Checklist alliesLoaded = new(partySize);
+        // ====== Gerar party do PLAYER ======
+        var playerPartySize = Random.Range(1, 7);
+        var playerPartyLevel = OptionsMenu.battleLevel ?? Mathf.Min(100, encounterLevel + (6 - playerPartySize));
+        player.party = new Pokemon[playerPartySize];
+        Checklist alliesLoaded = new(playerPartySize);
 
-        Checklist requiredEnemy = new(1);
-        Logger.Log($"setup ally party ({partySize} pokemons)", LogFlags.Game);
+        Logger.Log($"setup ally party ({playerPartySize} pokemons)", LogFlags.Game);
         LoadingScreen.AddOrChangeQueue(alliesLoaded, $"Loading ally party[1/{alliesLoaded.requiredSteps}]...");
-        LoadingScreen.AddOrChangeQueue(requiredEnemy, $"Loading opponent party...");
 
         alliesLoaded.onProgress += (p) => LoadingScreen.AddOrChangeQueue(alliesLoaded,
             $"Loading ally party[{alliesLoaded.currentSteps + 1}/{alliesLoaded.requiredSteps}]...");
+
         alliesLoaded.onCompleted += () =>
         {
-            //load enemies
-            partySize = Random.Range(1, 7);
-            partyLevel = OptionsMenu.battleLevel ?? Mathf.Min(100, encounterLevel + (6 - partySize));
-            opponent.party = new Pokemon[partySize];
+            Logger.Log($"generateOpponent = {generateOpponent}", LogFlags.Tests);
+            if (!generateOpponent)
+            {
+                LoadingScreen.onDoneLoading += StartBattle;
+                return;
+            }
+            Logger.Log("INICIANDO GERAÇÃO DO OPONENTE!", LogFlags.Tests);
+            var isWild = opponent is WildOpponent;
+            var opponentPartySize = isWild ? 1 : Random.Range(1, 7);
+            var opponentPartyLevel = OptionsMenu.battleLevel ?? Mathf.Min(100, encounterLevel + (6 - opponentPartySize));
+            opponent.party = new Pokemon[opponentPartySize];
 
-            Checklist opponentLoaded = new(partySize);
+            var opponentLoaded = new Checklist(opponentPartySize);
+            LoadingScreen.AddOrChangeQueue(opponentLoaded, "Loading opponent party...");
+
             opponentLoaded.onProgress += (p) =>
             {
-                if (requiredEnemy.isDone) return;
-                opponent.activePokemon = opponent.party[0];
-                GenerateItems();
-                requiredEnemy.FinishStep();
+                opponent.activePokemon ??= opponent.party[0];
+                if (p == 0) GenerateItems();
             };
+
             opponentLoaded.onCompleted += () =>
             {
                 StringBuilder sb = new("Opponent's party:");
-                for (int i = 0; i < opponent.party.Length; i++)
-                {
-                    sb.Append($"\n{opponent.party[i].name}");
-                }
+                foreach (var t in opponent.party)
+                    sb.Append($"\n{t.name}");
                 Logger.Log(sb.ToString(), LogFlags.DataCheck);
+                LoadingScreen.onDoneLoading += StartBattle;
             };
-            Logger.Log($"setup enemy party ({partySize} pokemons)", LogFlags.Game);
-            SetupParty(opponent.party, opponentLoaded);
-        };
-        SetupParty(player.party, alliesLoaded);
 
-        void SetupParty(Pokemon[] party, Checklist loaded)
+            Logger.Log($"setup enemy party ({opponentPartySize} pokemons)", LogFlags.Game);
+            SetupParty(opponent.party, opponentPartyLevel, opponentLoaded);
+        };
+
+        SetupParty(player.party, playerPartyLevel, alliesLoaded);
+
+        void SetupParty(Pokemon[] party, int level, Checklist loaded)
         {
             if (loaded.isDone) return;
-            int pokemonId = Random.Range(1, MaxPokemonId + 1);
-            GetPokemon(pokemonId, partyLevel, (pokemon) =>
+            var pokemonId = Random.Range(1, MaxPokemonId + 1);
+            GetPokemon(pokemonId, level, (pokemon) =>
             {
                 CheckPokemon(pokemon);
                 party[loaded.currentSteps] = pokemon;
                 loaded.FinishStep();
-                SetupParty(party, loaded);
+                SetupParty(party, level, loaded);
             });
         }
     }
-    private void GetPokemon(int pokemonId, int level, Action<Pokemon> onFinished)
+    private static void GetPokemon(int pokemonId, int level, Action<Pokemon> onFinished)
     {
         PokeAPI.GetPokemonData(pokemonId, (data) => { Pokemon.GetLoadedPokemon(data, level, onFinished); });
     }
-    private void CheckPokemon(Pokemon pokemon)
+    private static void CheckPokemon(Pokemon pokemon)
     {
         StringBuilder finalLog = new();
         StringBuilder type = new();
@@ -173,7 +267,7 @@ public class GameManager : MonoBehaviour
 
         void LoadHealItem()
         {
-            string route = $"{PokeAPI.baseRoute}item/{itemList[loaded.currentSteps].name}";
+            var route = $"{PokeAPI.baseRoute}item/{itemList[loaded.currentSteps].name}";
             PokeAPI.GetItem(route, (item) =>
             {
                 item.amount = itemList[loaded.currentSteps].amount;
@@ -213,7 +307,7 @@ public class GameManager : MonoBehaviour
 
         void LoadBattleItem()
         {
-            string route = $"{PokeAPI.baseRoute}item/{itemList[loaded.currentSteps]}";
+            var route = $"{PokeAPI.baseRoute}item/{itemList[loaded.currentSteps]}";
             PokeAPI.GetItem(route, (item) =>
             {
                 item.amount = 10;
@@ -246,18 +340,17 @@ public class GameManager : MonoBehaviour
         //for (int i = 0; i < TMs.Capacity; i++)
         //    TMs.Add(new() { move = new() { url = $"{PokeAPI.baseRoute}move/{itemList[i]}" } });
         
-        for (int i = 0; i < player.party.Length; i++)
+        for (var i = 0; i < player.party.Length; i++)
         {
-            Pokemon pokemon = player.party[i];
+            var pokemon = player.party[i];
             var moves = MoveHelper.GetPossibleMoves(pokemon, new [] { MoveLearnMethod.TM });
             List<MoveReference> learnableMoves = new();
-            for (int j = 0; j < moves.Count; j++)
+            for (var j = 0; j < moves.Count; j++)
             {
                 var moveData = moves[j];
-                //check if tm was already added
                 if (itemList.Contains(moveData.move.name)) continue;
                 //check if pokemon doesn't already know this move
-                for (int k = 0; k < pokemon.moves.Length; k++)
+                for (var k = 0; k < pokemon.moves.Length; k++)
                 {
                     var move = pokemon.moves[k];
                     if (moveData.move.name == 
@@ -266,10 +359,10 @@ public class GameManager : MonoBehaviour
                 }
             }
             //get 2(?) random moves
-            int movesToAdd = Mathf.Min(tmPerPokemon, learnableMoves.Count);
-            for (int j = 0; j < movesToAdd; j++)
+            var movesToAdd = Mathf.Min(tmPerPokemon, learnableMoves.Count);
+            for (var j = 0; j < movesToAdd; j++)
             {
-                int randomId = Random.Range(0, learnableMoves.Count);
+                var randomId = Random.Range(0, learnableMoves.Count);
                 itemList.Add(learnableMoves[randomId].move.name);
                 TMs.Add(learnableMoves[randomId]);
                 learnableMoves.RemoveAt(randomId);

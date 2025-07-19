@@ -25,11 +25,12 @@ public class LoadingScreen : MonoBehaviour
     {
         onDoneLoading = null;
         instance = this;
+        screen.SetActive(false);
     }
 
     public static void AddOrChangeQueue(Checklist checklist, string text)
     {
-        int index = instance.checklists.IndexOf(checklist);
+        var index = instance.checklists.IndexOf(checklist);
         if (index >= 0)
         {
             instance.texts[index] = text;
@@ -50,7 +51,7 @@ public class LoadingScreen : MonoBehaviour
 
     private static void NextChecklist()
     {
-        Checklist current = instance.checklists[0];
+        var current = instance.checklists[0];
         current.onCompleted -= NextChecklist;
         instance.checklists.RemoveAt(0);
         instance.texts.RemoveAt(0);
@@ -64,7 +65,7 @@ public class LoadingScreen : MonoBehaviour
             DoneLoading();
             yield break;
         }
-        Checklist current = instance.checklists[0];
+        var current = instance.checklists[0];
         instance.loadDescription.text = instance.texts[0];
         yield return instance.nextDelay;
         if (!current.isDone) current.onCompleted += NextChecklist;

@@ -38,7 +38,8 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         for (int i = 0; i < instances.Length; i++)
         {
             PartyPokemon item = instances[i];
-            item.SetupPokemon(i < party.Length ? party[i] : null);
+            if (item != null)
+                item.SetupPokemon(i < party.Length ? party[i] : null);
 
             if (i >= party.Length) continue;
 
@@ -97,8 +98,12 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     private void GetPartyPokemon()
     {
         instances = new PartyPokemon[contextSelection.itemCount - 1];
-        for (int i = 0; i < instances.Length; i++)
+        for (var i = 0; i < instances.Length; i++)
+        {
             instances[i] = contextSelection[i].GetComponent<PartyPokemon>();
+            if (instances[i] == null)
+                Debug.LogError($"[PartyMenu] contextSelection[{i}] não tem PartyPokemon!", contextSelection[i]);
+        }
     }
     
     public override void OpenMenu(Pokemon[] pokemons)

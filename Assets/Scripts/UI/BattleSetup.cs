@@ -1,10 +1,7 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using LenixSO.Logger;
-using Logger = LenixSO.Logger.Logger;
-using System.Text;
+using Battle;
 using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
 public class BattleSetup : MonoBehaviour
