@@ -20,19 +20,24 @@ namespace Player
 
         public void SetMoveDirection(Vector2 input, bool isMoving)
         {
-            if (input != lastDirection || isMoving != isCurrentlyMoving)
+            var directionChanged = input != Vector2.zero && input != lastDirection;
+            var movementChanged = isMoving != isCurrentlyMoving;
+
+            if (directionChanged || movementChanged)
             {
-                lastDirection = input != Vector2.zero ? input : lastDirection;
+                if (input != Vector2.zero)
+                    lastDirection = input;
+
                 isCurrentlyMoving = isMoving;
 
                 animator.SetFloat(MoveX, lastDirection.x);
                 animator.SetFloat(MoveY, lastDirection.y);
                 animator.SetBool(IsMoving, isCurrentlyMoving);
+            }
 
-                if (input.x != 0 && input != Vector2.zero)
-                {
-                    spriteRenderer.flipX = input.x < 0;
-                }
+            if (input.x != 0)
+            {
+                spriteRenderer.flipX = input.x < 0;
             }
         }
 
