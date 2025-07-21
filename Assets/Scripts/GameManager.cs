@@ -5,6 +5,7 @@ using Battle;
 using Battle.OpponentAI;
 using UnityEngine;
 using LenixSO.Logger;
+using Player;
 using Random = UnityEngine.Random;
 using Logger = LenixSO.Logger.Logger;
 
@@ -15,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private BattleSetup battle;
     [SerializeField] private BattleMode battleMode = BattleMode.WildEncounter;
 
+    [SerializeField] private PlayerEntity currentPlayer;
     private Trainer player;
     private Trainer opponent;
     private Checklist itemsLoaded;
@@ -26,15 +28,25 @@ public class GameManager : MonoBehaviour
         OnInitializeTest += InitializeBattle;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            InitializeBattle();
+        }
+    }
+
     private void InitializeBattle()
     {
         PokeDatabase.PreloadAssets();
         LoadingScreen.onDoneLoading += SetupBattleMode;
+        LoadingScreen.onDoneLoading += battle.OpenBattleScene;
     }
     
     private void SetupBattleMode()
     {
         LoadingScreen.onDoneLoading -= SetupBattleMode;
+        LoadingScreen.onDoneLoading -= battle.OpenBattleScene;
         switch (battleMode)
         {
             case BattleMode.WildEncounter:
@@ -55,6 +67,7 @@ public class GameManager : MonoBehaviour
     private void SetupWildBattle()
     {
         player = CreateDefaultPlayer("You"); // tem que fazer o load do usuario
+        battle.currentPlayer = currentPlayer;
         opponent = new WildOpponent();
         Logger.Log("WILD BATTLE");
         GenerateParties(true);

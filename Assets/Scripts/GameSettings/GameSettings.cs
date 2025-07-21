@@ -8,6 +8,7 @@ namespace GameSettings
         [Header("Player")]
         public float moveSpeed = .5f;
         public float radiusPlayer = 0.16f;
+        public float originY = 0.2f;
         
         [Header("Battle and Move Settings")]
         [Range(0f, 1f)]public float encounterBattleChance = 0.1f;
@@ -17,7 +18,6 @@ namespace GameSettings
         [Header("Grid Settings")]
         public float gridSize = 0.16f;
         public float radiusGrass = 0.16f;
-        public float originY = 0.2f;
 
         private static GameSettings _instance;
         public static GameSettings Instance
