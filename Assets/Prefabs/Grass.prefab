@@ -5056,5 +5056,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grassRenderer: {fileID: 700290328816119683}
-  yThreshold: 0.16
+  yThreshold: 0.08
   grassParticles: {fileID: 586886445812833001}
