@@ -61,7 +61,7 @@ public static class BattleVFX
         overlay.type = Image.Type.Tiled;
         overlay.pixelsPerUnitMultiplier = .1f;
 
-        AudioManager.PlayStatusChangeAudio(buff);
+        AudioManager.Instance.PlayStatusChangeAudio(buff);
         //movement
         Vector2 origin = rect.localPosition;
         Vector2 destination = origin + Vector2.up * (newSize.y * multiplier);
@@ -148,7 +148,7 @@ public static class BattleVFX
         }
 
         //return
-        AudioManager.PlayHitAudio();
+        AudioManager.Instance.PlayHitAudio();
         const float backUpDistance = .1f;
         Vector2 backUpDirection = new Vector2(1f, .2f) * -finalScale * directionMultiplier;
         Vector2 backUpPosition = targetOriginalPosition - (targetRect.rect.size * (backUpDirection * finalScale * backUpDistance));
@@ -211,7 +211,7 @@ public static class BattleVFX
         }
 
         //return
-        AudioManager.PlayHitAudio();
+        AudioManager.Instance.PlayHitAudio();
         const float backUpDistance = .1f;
         Vector2 backUpDirection = new Vector2(1f, .2f) * finalScale * directionMultiplier;
         Vector2 backUpPosition = targetOriginalPosition - (targetRect.rect.size * (backUpDirection * finalScale * backUpDistance));

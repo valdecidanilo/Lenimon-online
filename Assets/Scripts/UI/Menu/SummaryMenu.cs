@@ -10,6 +10,7 @@ using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
 {
     [Header("Screens")]
+    [SerializeField] private GameObject summaryScene;
     [SerializeField] private GameObject[] screens;
     [SerializeField] private Button backButton;
     [SerializeField] private Announcer announcer;
@@ -80,6 +81,8 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
         moveSelection.onSelect += OnMoveSelect;
         moveSelection.onItemPick += OnMovePick;
         backButton.onClick.AddListener(BaseReturnCall);
+        //gameObject.SetActive(false);
+        summaryScene.SetActive(false);
     }
 
     private void OnDestroy()
@@ -137,7 +140,8 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
         for (int i = 0; i < moves.Length; i++)
             moves[i].SetupMove(pokemon.moves[i]);
 
-        gameObject.SetActive(true);
+        //gameObject.SetActive(true);
+        summaryScene.SetActive(true);
         //contextSelection.Select(currentScreen);
         contextSelection.Focus();
         //UpdateScreen(currentScreen);
@@ -215,6 +219,7 @@ public class SummaryMenu : ContextMenu<(bool showHp, Pokemon pokemon)>
         currentScreen = 0;
         selectMove.SetActive(false);
         gameObject.SetActive(false);
+        summaryScene.SetActive(false);
         base.CloseMenu();
     }
 

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 [DefaultExecutionOrder(-1)]
 public class LoadingScreen : MonoBehaviour
@@ -18,14 +20,17 @@ public class LoadingScreen : MonoBehaviour
 
     private List<Checklist> checklists = new();
     private List<string> texts = new();
-
+    
+    [SerializeField] private Image background;
+    [SerializeField] private Sprite[] loadingBackground;
     public static Checklist lastOnList => instance.checklists[^1];
 
     private void Awake()
     {
         onDoneLoading = null;
         instance = this;
-        screen.SetActive(false);
+        gameObject.SetActive(false);
+        ChangeBackground();
     }
 
     public static void AddOrChangeQueue(Checklist checklist, string text)
@@ -49,6 +54,10 @@ public class LoadingScreen : MonoBehaviour
         }
     }
 
+    private void ChangeBackground()
+    {
+        background.sprite = loadingBackground[Random.Range(0, loadingBackground.Length)];
+    }
     private static void NextChecklist()
     {
         var current = instance.checklists[0];

@@ -1,12 +1,15 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Battle;
+using Player;
 using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
 public class BattleSetup : MonoBehaviour
 {
-    [Header("Battle Menu")]
+    [Header("Battle Menu")] 
+    [SerializeField] private GameObject battleScene;
     [SerializeField] private GameObject battleMenu;
     [SerializeField] private ContextSelection battleChoice;
     [SerializeField] private Button enemySummaryButton;
@@ -23,6 +26,7 @@ public class BattleSetup : MonoBehaviour
     private int summaryPokemonId;
     private InputAction detailsAction;
 
+    [HideInInspector] public PlayerEntity currentPlayer;
     private Trainer player;
     private Opponent opponent;
 
@@ -39,6 +43,7 @@ public class BattleSetup : MonoBehaviour
         fightMenu.onReturn += OpenChoiceMenu;
         bag.onReturn += OpenChoiceMenu;
         options.onReturn += OpenChoiceMenu;
+        battleScene.SetActive(false);
     }
 
     private void OnDestroy()
@@ -54,11 +59,10 @@ public class BattleSetup : MonoBehaviour
         player.activePokemon = player.party[0];
         opponent.activePokemon = opponent.party[0];
         fightMenu.SetupBattle(player, opponent);
-        OpenParty();
-        OpenBag();
+        //OpenParty();
+        //OpenBag();
         OpenChoiceMenu();
     }
-
     #region Summary
     private void OnPokemonSummaryRequest(int id)
     {
@@ -84,8 +88,15 @@ public class BattleSetup : MonoBehaviour
         summaryFromParty = false;
     }
 
+    private void CloseBattle()
+    {
+        battleScene.SetActive(false);
+        currentPlayer.SetBattleState(false);
+        AudioManager.Instance.PlayGame();
+    }
     private void EnableEnemySummary(bool disable)
     {
+        if (enemySummaryButton == null) return;
         enemySummaryButton.interactable = !disable;
         if (!disable)
         {
@@ -109,7 +120,7 @@ public class BattleSetup : MonoBehaviour
         switch (choice)
         {
             case 0:
-                OpenBattleScene();
+                OpenBattleMenu();
                 break;
             case 1:
                 OpenBag();
@@ -139,10 +150,14 @@ public class BattleSetup : MonoBehaviour
         battleMenu.SetActive(true);
         battleChoice.Focus();
         Announcer.ChangeAnnouncer(choiceAnnouncer);
-        StartCoroutine(Announcer.AnnounceCoroutine($"What will {player.activePokemon.name} do?"));
+        StartCoroutine(Announcer.AnnounceCoroutine($"What will {player.activePokemon.name.ToUpper()} do?"));
     }
 
-    private void OpenBattleScene()
+    public void OpenBattleScene()
+    {
+        battleScene.SetActive(true);
+    }
+    private void OpenBattleMenu()
     {
         battleMenu.SetActive(false);
         fightMenu.OpenMenu(player.activePokemon);
@@ -171,7 +186,42 @@ public class BattleSetup : MonoBehaviour
 
     private void Run()
     {
-        options.OpenMenu(0);
+        //options.OpenMenu(0);
+        StartCoroutine(TryRun());
+    }
+
+    private void BattleWin()
+    {
+        AudioManager.Instance.PlayWin();
+    }
+    private IEnumerator TryRun()
+    {
+        var percent = Random.Range(0, 100);
+        var success = percent > 50;
+        
+        if(success)
+        {
+            yield return Announcer.AnnounceCoroutine($"Escaped safely.");
+            
+            /*  Fazer a transição de tela e volta pro jogo.
+             
+             yield return playerUI.TransitionEndBattle(onComplete =>
+            {
+                if (!onComplete) return;
+                uI.ResetBattleUI();
+                Destroy(opponentPokeData.gameObject);
+            });
+            
+            */
+            yield return null;
+            CloseBattle();
+        }
+        else
+        {
+            yield return Announcer.AnnounceCoroutine($"I couldn't escape");
+            yield return new WaitForSeconds(1.5f);
+            yield return Announcer.AnnounceCoroutine($"What will {player.activePokemon.name.ToUpper()} do?");
+        }
     }
     #endregion
 }

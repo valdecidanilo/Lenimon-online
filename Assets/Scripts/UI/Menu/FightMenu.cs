@@ -96,14 +96,14 @@ public class FightMenu : ContextMenu<Pokemon>
     private void UpdateMoveData(MoveModel move)
     {
         moveType.text = move?.moveTypeName ?? "-";
-        string currentPP = move?.pp.ToString() ?? "-";
-        string maxPP = move?.maxPP.ToString() ?? "-";
+        var currentPP = move?.pp.ToString() ?? "-";
+        var maxPP = move?.maxPP.ToString() ?? "-";
         movePp.text = $"{currentPP}/{maxPP}";
     }
     private void OnMovePick(int id)
     {
         if(movesData[id] == null) return;
-        Logger.Log($"{player.name} will use {movesData[id].name}", LogFlags.Game);
+        Logger.Log($"{player.name.ToUpper()} will use {movesData[id].name}", LogFlags.Game);
         //onPickMove?.Invoke(id);
         BeginBattle(movesData[id]);
     }
@@ -229,7 +229,7 @@ public class FightMenu : ContextMenu<Pokemon>
         {
             if (evtBattle.flinchTarget)
             {
-                yield return Announcer.AnnounceCoroutine($"{evtBattle.origin.name} flinched!", holdTime: .6f);
+                yield return Announcer.AnnounceCoroutine($"{evtBattle.origin.name.ToUpper()} flinched!", holdTime: .6f);
                 yield break;
             }
 
@@ -250,7 +250,7 @@ public class FightMenu : ContextMenu<Pokemon>
                 1 => string.Empty,
                 > 1 => "It's super effective!",
                 < 1 and > 0 => "It's not very effective...",
-                _ => $"It doesn't affect {defender.name}..."
+                _ => $"It doesn't affect {defender.name.ToUpper()}..."
             };
 
             //STAB
@@ -311,9 +311,9 @@ public class FightMenu : ContextMenu<Pokemon>
             {
                 //missed/evaded text
                 if (missed)
-                    yield return Announcer.AnnounceCoroutine($"{evtBattle.origin.name} attack missed.", holdTime: 1f);
+                    yield return Announcer.AnnounceCoroutine($"{evtBattle.origin.name.ToUpper()} attack missed.", holdTime: 1f);
                 else
-                    yield return Announcer.AnnounceCoroutine($"{evtBattle.target.name} avoided the attack.", holdTime: 1f);
+                    yield return Announcer.AnnounceCoroutine($"{evtBattle.target.name.ToUpper()} avoided the attack.", holdTime: 1f);
             }
         }
 
@@ -340,12 +340,12 @@ public class FightMenu : ContextMenu<Pokemon>
                     if (trainer == player)
                     {
                         //reload scene
-                        yield return Announcer.AnnounceCoroutine($"{player.name} were defeated by {opponent.name}...", true, .5f);
+                        yield return Announcer.AnnounceCoroutine($"{player.name.ToUpper()} were defeated by {opponent.name.ToUpper()}...", true, .5f);
                     }
                     else
                     {
                         //TODO: load new enemy
-                        yield return Announcer.AnnounceCoroutine($"{player.name} defeated {opponent.name}!", true, .5f);
+                        yield return Announcer.AnnounceCoroutine($"{player.name.ToUpper()} defeated {opponent.name.ToUpper()}!", true, .5f);
                     }
                     UnityEngine.SceneManagement.SceneManager.LoadScene(0);
                 }
@@ -392,7 +392,7 @@ public class FightMenu : ContextMenu<Pokemon>
     {
         var pokemon = ally;
         SetupAllySprite(pokemon);
-        pokemonName.text = pokemon.name;
+        pokemonName.text = pokemon.name.ToUpper();
         level.text = $"Lv{pokemon.level}";
         BattleVFX.ChangeHpBar(pokemon, hp, pokemon.battleStats[StatType.hp], hpValue);
         xp.fillAmount = Random.Range(0, 1);
@@ -409,7 +409,7 @@ public class FightMenu : ContextMenu<Pokemon>
     {
         var pokemon = newPokemon;
         enemyImage.image.sprite = pokemon.frontSprite;
-        enemyName.text = pokemon.name;
+        enemyName.text = pokemon.name.ToUpper();
         enemyLevel.text = $"Lv{pokemon.level}";
         BattleVFX.ChangeHpBar(pokemon, enemyHp, pokemon.battleStats[StatType.hp]);
 
@@ -433,7 +433,7 @@ public class FightMenu : ContextMenu<Pokemon>
         if (!skipSwitchOut)
             yield return battlePokemon.SwitchOutAnimation(side);
         yield return new WaitForSeconds(.6f);
-        yield return Announcer.AnnounceCoroutine($"{trainer.name} sent out {newPokemon.name}.", holdTime: .6f);
+        yield return Announcer.AnnounceCoroutine($"{trainer.name.ToUpper()} sent out {newPokemon.name.ToUpper()}.", holdTime: .6f);
         Sprite sprite;
         if (side == 1)
         {

@@ -11,6 +11,7 @@ using Battle;
 
 public class BagMenu : ContextMenu<Bag>
 {
+    [SerializeField] private GameObject bagScene;
     [SerializeField] private TMP_Text screenName;
     [SerializeField] private Button nextButton;
     [SerializeField] private Button prevButton;
@@ -51,6 +52,8 @@ public class BagMenu : ContextMenu<Bag>
 
         upButton.onClick.AddListener(() => ItemMoveButton(1));
         downButton.onClick.AddListener(() => ItemMoveButton(-1));
+        //gameObject.SetActive(false);
+        bagScene.SetActive(false);
     }
 
     public override void OpenMenu(Bag data)
@@ -58,7 +61,8 @@ public class BagMenu : ContextMenu<Bag>
         Announcer.ChangeAnnouncer(itemDescription);
         contextSelection.MouseSelection(true);
         bag = data;
-        gameObject.SetActive(true);
+        //gameObject.SetActive(true);
+        bagScene.SetActive(true);
         optionsContext.gameObject.SetActive(false);
         UpdateScreen(currentScreen);
         base.OpenMenu(data);
@@ -67,7 +71,8 @@ public class BagMenu : ContextMenu<Bag>
 
     public override void CloseMenu()
     {
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
+        bagScene.SetActive(false);
         base.CloseMenu();
         navigateAction.performed -= ChangeScreen;
     }
@@ -104,13 +109,13 @@ public class BagMenu : ContextMenu<Bag>
         int screenId = (currentScreen + screenCount + Mathf.FloorToInt(direction)) % screenCount;
         if(screenId == currentScreen) return;
         UpdateScreen(screenId);
-        AudioManager.PlaySelectAudio();
+        AudioManager.Instance.PlaySelectAudio();
     }
 
     private void ShiftOffset(int offset)
     {
         itemOffset -= offset;
-        AudioManager.PlaySelectAudio();
+        AudioManager.Instance.PlaySelectAudio();
         LoadScreenData();
     }
 

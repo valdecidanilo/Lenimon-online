@@ -37,6 +37,7 @@ public class OptionsMenu : ContextMenu<int>
         rightButton.performed += ToggleInvertChart;
 
         contextSelection.onItemPick += OnPickItem;
+        gameObject.SetActive(false);
     }
 
     protected override void OnDestroy()
@@ -89,14 +90,14 @@ public class OptionsMenu : ContextMenu<int>
         level = (level + delta + 101) % 101;
         levelText.text = level == 0 ? "Random" : level.ToString();
         
-        AudioManager.PlaySelectAudio();
+        AudioManager.Instance.PlaySelectAudio();
     }
     private void ToggleInvertChart()
     {
         invertTypeChart = !invertTypeChart;
         optionText.text = invertTypeChart ? "Yes" : "No";
         
-        AudioManager.PlaySelectAudio();
+        AudioManager.Instance.PlaySelectAudio();
     }
 
     private void ResetBattle()

@@ -53,7 +53,7 @@ public class SelectionItem : MonoBehaviour, IPointerEnterHandler, ISelectHandler
 
     private void OnSelected()
     {
-        AudioManager.PlaySelectAudio();
+        AudioManager.Instance.PlaySelectAudio();
         onSelected?.Invoke(this);
     }
 
