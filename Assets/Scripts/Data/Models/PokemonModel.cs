@@ -16,6 +16,7 @@ public class Pokemon : ApiData
     #region Stats
     //stats
     public int level { get; private set; }
+    public int experience { get; private set; }
     public Stats stats { get; private set; }
     public Stats iv{ get; private set; }
     public Stats ev{ get; private set; }
