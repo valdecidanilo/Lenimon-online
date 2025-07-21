@@ -5,18 +5,20 @@ using LenixSO.Logger;
 using Logger = LenixSO.Logger.Logger;
 using System.Globalization;
 using System.Collections;
+using Utils;
 
 public class Pokemon : ApiData
 {
     public PokemonData data { get; private set; }
     public Gender gender { get; private set; }
-
+    public GrowthRate growthRate { get; private set; }
     public bool fainted => battleStats[StatType.hp] <= 0;
 
     #region Stats
     //stats
     public int level { get; private set; }
     public int experience { get; private set; }
+    public int experienceMax { get; private set; }
     public Stats stats { get; private set; }
     public Stats iv{ get; private set; }
     public Stats ev{ get; private set; }
@@ -47,10 +49,10 @@ public class Pokemon : ApiData
         name = name.Replace('-', ' ');
         id = pokemonData.id;
         types = new TypeChartEntry[data.types.Count];
-        for (int i = 0; i < types.Length; i++)
+        for (var i = 0; i < types.Length; i++)
             types[i] = PokeDatabase.GetType(data.types[i].type.name);
 
-        stats = new(
+        stats = new Stats(
             pokemonData.hpStat,
             pokemonData.atkStat,
             pokemonData.defStat,
@@ -59,7 +61,7 @@ public class Pokemon : ApiData
             pokemonData.spdStat
         );
 
-        iv = new(
+        iv = new Stats(
             Random.Range(0, 32),
             Random.Range(0, 32),
             Random.Range(0, 32),
@@ -67,18 +69,33 @@ public class Pokemon : ApiData
             Random.Range(0, 32),
             Random.Range(0, 32)
         );
-        ev = new(0, 0, 0, 0, 0, 0, 0, 0);
+        ev = new Stats(0, 0, 0, 0, 0, 0, 0, 0);
         nature = PokeDatabase.GetRandomNature(ref natureName);
 
+        growthRate = GetRandomGrowthRate();
+        
         moves = new MoveModel[4];
         LevelUp(Mathf.Max(lv, 1));//minimum level is 1
 
-        battleStats = new(stats.hp, 0, 0, 0, 0, 0, 0, 0);
+        battleStats = new Stats(stats.hp, 0, 0, 0, 0, 0, 0, 0);
 
-        dataChecklist = new(0);
+        dataChecklist = new Checklist(0);
         dataChecklist.onCompleted += () => onDoneLoading?.Invoke();
     }
 
+    private static GrowthRate GetRandomGrowthRate()
+    {
+        var random = Random.Range(0, 6);
+        return random switch
+        {
+            0 => GrowthRate.Erratic,
+            1 => GrowthRate.Fast,
+            2 => GrowthRate.MediumFast,
+            3 => GrowthRate.MediumSlow,
+            4 => GrowthRate.Slow,
+            _ => GrowthRate.Fluctuating
+        };
+    }
     public static void GetLoadedPokemon(PokemonData pokemonData, int level = 1, Action<Pokemon> onPokemonLoaded = null)
     {
         Pokemon pokemon = new(pokemonData, level);

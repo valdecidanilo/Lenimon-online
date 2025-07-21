@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Battle;
 using LenixSO.Logger;
 using TMPro;
+using UI;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = LenixSO.Logger.Logger;
@@ -62,18 +64,10 @@ public class FightMenu : ContextMenu<Pokemon>
         gameObject.SetActive(true);
 
         //check if any move has pp
-        bool canOnlyStruggle = true;
-        for (int i = 0; i < data.moves.Length; i++)
-        {
-            if (data.moves[i] != null && data.moves[i].pp > 0)
-            {
-                canOnlyStruggle = false; 
-                break;
-            }
-        }
-        movesData = canOnlyStruggle ? new MoveModel[4] { MoveHelper.Struggle(), null, null, null } : data.moves;
+        var canOnlyStruggle = data.moves.All(currentMove => currentMove == null || currentMove.pp <= 0);
+        movesData = canOnlyStruggle ? new [] { MoveHelper.Struggle(), null, null, null } : data.moves;
 
-        for (int i = 0; i < moves.Length; i++)
+        for (var i = 0; i < moves.Length; i++)
             moves[i].text = movesData[i]?.name ?? "-";
 
         //first selected
@@ -103,7 +97,7 @@ public class FightMenu : ContextMenu<Pokemon>
     private void OnMovePick(int id)
     {
         if(movesData[id] == null) return;
-        Logger.Log($"{player.name.ToUpper()} will use {movesData[id].name}", LogFlags.Game);
+        Logger.Log($"{player.name.ToUpper()} will use {movesData[id].name.ToUpper()}", LogFlags.Game);
         //onPickMove?.Invoke(id);
         BeginBattle(movesData[id]);
     }
@@ -171,7 +165,7 @@ public class FightMenu : ContextMenu<Pokemon>
         opponent.pickedMove ??= opponentMove;
         //calculate witch one goes first
         List<Trainer> trainerOrder = new(2) { player };
-        bool opponentFirst = false;
+        var opponentFirst = false;
         if (opponentMove.priority >= allyMove.priority)
         {
             if (opponentMove.priority == allyMove.priority)
@@ -190,10 +184,10 @@ public class FightMenu : ContextMenu<Pokemon>
         trainerOrder.Insert(opponentFirst ? 0 : 1, opponent);
 
         //each take its turns
-        bool flinchNext = false;
-        for (int i = 0; i < trainerOrder.Count; i++)
+        var flinchNext = false;
+        for (var i = 0; i < trainerOrder.Count; i++)
         {
-            Trainer otherTrainer = trainerOrder[(i + 1) % trainerOrder.Count];
+            var otherTrainer = trainerOrder[(i + 1) % trainerOrder.Count];
 
             BattleEvent evt = new();
             evt.flinchTarget = flinchNext;
@@ -205,8 +199,7 @@ public class FightMenu : ContextMenu<Pokemon>
             evt.attackEvent = new(evt.origin, evt.target, evt.move);
             yield return TurnSequence(evt);
             flinchNext = evt.flinchTarget;
-            for (int j = 0; j < trainerOrder.Count; j++)
-                if (trainerOrder[j].activePokemon.fainted) yield return ReplaceFaintedPokemon(trainerOrder[j]);
+            foreach (var t in trainerOrder.Where(t => t.activePokemon.fainted)) yield return ReplaceFaintedPokemon(t);
 
             if (evt.user != evt.targetTrainer && 
                 evt.target != evt.targetTrainer.activePokemon) break;
@@ -264,14 +257,14 @@ public class FightMenu : ContextMenu<Pokemon>
             evtBattle.attackEvent.modifier *= typeMod;
             #endregion
 
-            bool hit = evtBattle.attackEvent.CheckHit(out bool missed);
+            var hit = evtBattle.attackEvent.CheckHit(out bool missed);
 
             contextSelection.ReleaseSelection();
             yield return evtBattle.move.effectMessage?.Invoke(evtBattle);
             evtBattle.move.pp--;
             if (hit)
             {
-                bool targetSelf = evtBattle.target == evtBattle.origin;
+                var targetSelf = evtBattle.target == evtBattle.origin;
                 if (typeMod != 0 || targetSelf)
                 {
                     yield return GetBattlePokemon(evtBattle.origin)
@@ -280,7 +273,7 @@ public class FightMenu : ContextMenu<Pokemon>
                 }
 
                 typeMod = evtBattle.attackEvent.modifier;//resultant modifier
-                bool attackHits = (typeMod != 0 && evtBattle.attackEvent.damageDealt >= 0) ||
+                var attackHits = (typeMod != 0 && evtBattle.attackEvent.damageDealt >= 0) ||
                                   (typeMod == 0 && evtBattle.attackEvent.damageDealt < 0);
                 if (attackHits && !string.IsNullOrEmpty(typeEffectMessage) && !targetSelf)
                     yield return Announcer.AnnounceCoroutine(typeEffectMessage, holdTime: 1);
@@ -293,7 +286,7 @@ public class FightMenu : ContextMenu<Pokemon>
                 {
                     if (effect.subEffect == null) yield break;
                     //check chance
-                    int r = Random.Range(1, 101);
+                    var r = Random.Range(1, 101);
                     if (r > effect.subEffectChance) yield break;
                     effect.subEffectSetup?.Invoke(evtBattle);
                     if (evtBattle.target.fainted) yield break;

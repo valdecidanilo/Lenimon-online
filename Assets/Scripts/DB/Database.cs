@@ -9,23 +9,25 @@ using Logger = LenixSO.Logger.Logger;
 
 namespace DB
 {
-    public class Database
+    public abstract class Database
     {
         private SQLiteConnection db;
-        //Local : C:/Users/valde/AppData/LocalLow/
-        public Database()
+        private const string RegexEmail = @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$";
+        
+        //Local do .sqlite: C:/Users/valde/AppData/LocalLow/
+        protected Database()
         {
             var dbPath = Path.Combine(Application.persistentDataPath, "splicemon.db");
             db = new SQLiteConnection(dbPath);
-            db.CreateTable<SplicemonData>();
+            db.CreateTable<PokemonModel>();
             db.CreateTable<UserData>();
         }
-        string regexEmail = @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$";
+
         public (bool, string, UserData) RegisterUser(string email, string password, string nickname)
         {
             if (password.Length < 6) return (false, "Senha muito curta", null);
             if(nickname.Length < 3) return (false, "Nickname muito curto", null);
-            if(!System.Text.RegularExpressions.Regex.IsMatch(email, regexEmail)) return (false, "Email inválido", null);
+            if(!System.Text.RegularExpressions.Regex.IsMatch(email, RegexEmail)) return (false, "Email inválido", null);
             if (db.Table<UserData>().Any(u => u.Email == email))
             {
                 return (false, "Usuário já existe", null);
@@ -41,6 +43,7 @@ namespace DB
                 Salt = salt,
                 Nickname = nickname
             };
+            // criar primeiro pokemon ou escolher entre 3.
 
             db.Insert(newUser);
             return (true, "Usuário registrado com sucesso", newUser);
@@ -51,7 +54,7 @@ namespace DB
             var user = db.Table<UserData>().FirstOrDefault(u => u.Email == email);
             if (user == null) return null;
 
-            string hash = PasswordHasher.HashPassword(password, user.Salt);
+            var hash = PasswordHasher.HashPassword(password, user.Salt);
             if (hash == user.PasswordHash)
             {
                 Logger.Log("Login bem-sucedido.");
@@ -62,44 +65,46 @@ namespace DB
             return null;
         }
 
-        public void SaveSplicemonForUser(SplicemonData mon, int userId)
+        public void SaveSplicemonForUser(PokemonModel mon, int userId)
         {
             db.Insert(mon);
         }
 
-        public SplicemonData GetFirstSplicemon(int userId)
+        public PokemonModel GetFirstSplicemon(int userId)
         {
-            return db.Table<SplicemonData>().FirstOrDefault(x => x.UserId == userId);
+            return db.Table<PokemonModel>().FirstOrDefault(x => x.UserId == userId);
         }
         
-        public List<SplicemonData> GetSplicemonsByUser(int userId)
+        public List<PokemonModel> GetSplicemonsByUser(int userId)
         {
-            return db.Table<SplicemonData>().Where(x => x.UserId == userId).ToList();
+            return db.Table<PokemonModel>().Where(x => x.UserId == userId).ToList();
         }
 
         public void DeleteAll()
         {
-            db.DeleteAll<SplicemonData>();
+            db.DeleteAll<PokemonModel>();
         }
-        public SplicemonData SaveData(Pokemon poke)
+        public PokemonModel SaveData(Pokemon poke)
         {
-            return new SplicemonData
+            return new PokemonModel
             {
                 Name = poke.name,
                 Level = poke.level,
-                Nature = poke.natureName,
+                NatureName = poke.natureName,
+                Fainted = poke.fainted,
                 Hp = poke.stats.hp,
-                Attack = poke.stats.atk,
-                Defense = poke.stats.def,
-                SpAttack = poke.stats.sAtk,
-                SpDefense = poke.stats.sDef,
-                Speed = poke.stats.spd,
+                Atk = poke.stats.atk,
+                Def = poke.stats.def,
+                SpAtk = poke.stats.sAtk,
+                SpDef = poke.stats.sDef,
+                Spd = poke.stats.spd,
                 Experience = poke.experience,
+                ExperienceMax = poke.experienceMax,
                 BaseExperience = poke.data.base_experience,
-                FrontSprite = poke.frontSprite,
-                BackSprite = poke.backSprite,
+                FrontSpriteName = poke.data.sprites.front_default,
+                BackSpriteName = poke.data.sprites.back_default,
                 CrySound = poke.data.cries.latest,
-                GrowthRate = "replace here",
+                GrowthRate = poke.growthRate.ToString(),
 
                 MovesJson = JsonConvert.SerializeObject(new MoveListWrapper { Move = poke.moves.ToList() }),
             };

@@ -167,13 +167,11 @@ public class GameManager : MonoBehaviour
 
         alliesLoaded.onCompleted += () =>
         {
-            Logger.Log($"generateOpponent = {generateOpponent}", LogFlags.Tests);
             if (!generateOpponent)
             {
                 LoadingScreen.onDoneLoading += StartBattle;
                 return;
             }
-            Logger.Log("INICIANDO GERAÇÃO DO OPONENTE!", LogFlags.Tests);
             var isWild = opponent is WildOpponent;
             var opponentPartySize = isWild ? 1 : Random.Range(1, 7);
             var opponentPartyLevel = OptionsMenu.battleLevel ?? Mathf.Min(100, encounterLevel + (6 - opponentPartySize));
@@ -197,7 +195,6 @@ public class GameManager : MonoBehaviour
                 LoadingScreen.onDoneLoading += StartBattle;
             };
 
-            Logger.Log($"setup enemy party ({opponentPartySize} pokemons)", LogFlags.Game);
             SetupParty(opponent.party, opponentPartyLevel, opponentLoaded);
         };
 

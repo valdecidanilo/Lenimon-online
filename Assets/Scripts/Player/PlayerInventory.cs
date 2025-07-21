@@ -1,7 +1,10 @@
 using Inventory;
 using UnityEngine;
 
-public class PlayerInventory : MonoBehaviour
+namespace Player
 {
-    public InventoryObject inventory;
+    public class PlayerInventory : MonoBehaviour
+    {
+        public InventoryObject inventory;
+    }
 }
