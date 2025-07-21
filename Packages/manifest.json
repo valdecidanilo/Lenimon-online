@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.gilzoide.sqlite-net": "https://github.com/gilzoide/unity-sqlite-net.git#1.2.3",
     "com.lenix.logger": "https://github.com/LenixSO/LenixSO-Logger.git",
     "com.lenix.numberutils": "https://github.com/LenixSO/NumberUtilities.git",
     "com.unity.2d.pixel-perfect": "5.1.0",
