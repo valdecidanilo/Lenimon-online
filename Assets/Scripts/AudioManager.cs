@@ -1,72 +1,79 @@
-using System.Collections.Generic;
-using AddressableAsyncInstances;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    private const int MusicChannel = 0;
-    private const int SfxChannel = 1;
-    private const float MusicVolume = 1;
-    private const float SfxVolume = 1;
+    private float MusicVolume = 1;
+    private float SfxVolume = 1;
     
     //audio data
-    private static AudioClip[] hitAudios;
-    private static AudioClip[] selectAudios;
-    private static AudioClip buffAudio;
-    private static AudioClip debuffAudio;
+    [SerializeField] private AudioClip[] hitAudios;
+    [SerializeField] private AudioClip[] selectAudios;
+    [SerializeField] private AudioClip buffAudio;
+    [SerializeField] private AudioClip debuffAudio;
+
+    public AudioClip battleMusic;
+    public AudioClip winSfx;
+    public AudioClip gameMusic;
+    public AudioClip lobyMusic;
     
-    private static AudioManager instance;
-    private List<AudioSource> sources;
+    public static AudioManager Instance;
+    public AudioSource musicSource;
+    public AudioSource sfxSource;
     
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    private static void Setup()
+    private void Start()
     {
-        instance = new GameObject("AudioManager").AddComponent<AudioManager>();
-        
-        instance.sources = new(2);
-        instance.sources.Add(instance.gameObject.AddComponent<AudioSource>());
-        instance.sources.Add(instance.gameObject.AddComponent<AudioSource>());
-        instance.sources[MusicChannel].volume = MusicVolume;
-        instance.sources[SfxChannel].volume = SfxVolume;
-        
-        selectAudios = new AudioClip[2];
-        for (int i = 0; i < selectAudios.Length; i++)
+        if (Instance == null)
         {
-            int id = i;
-            AAAsset<AudioClip>.LoadAsset($"Select{id + 1}",
-                clip => { selectAudios[id] = clip; });
+            Instance = this;
+            Instance.musicSource.volume = MusicVolume;
+            Instance.sfxSource.volume = SfxVolume;
         }
-
-        hitAudios = new AudioClip[4];
-        for (int i = 0; i < hitAudios.Length; i++)
-        {
-            int id = i;
-            AAAsset<AudioClip>.LoadAsset($"Attack_Hit{id + 1}",
-                clip => { hitAudios[id] = clip; });
-        }
-
-        AAAsset<AudioClip>.LoadAsset("Buff", clip => buffAudio = clip);
-        AAAsset<AudioClip>.LoadAsset("Debuff", clip => debuffAudio = clip);
+        else if(Instance != this)
+            Destroy(gameObject);
     }
 
-    public static void PlayHitAudio()
+    public void PlayHitAudio()
     {
-        if (ReferenceEquals(instance, null)) return;
-        int id = Random.Range(0, hitAudios.Length);
-        instance.sources[SfxChannel].PlayOneShot(hitAudios[id]);
-    }
-    
-    public static void PlaySelectAudio()
-    {
-        if (ReferenceEquals(instance, null)) return;
-        int id = Random.Range(0, selectAudios.Length);
-        instance.sources[SfxChannel].clip = selectAudios[id];
-        instance.sources[SfxChannel].Play();
+        if (ReferenceEquals(Instance, null)) return;
+        int id = Random.Range(0, hitAudios.Length-1);
+        Instance.sfxSource.PlayOneShot(hitAudios[id]);
     }
 
-    public static void PlayStatusChangeAudio(bool buff)
+    public void PlayBattle()
     {
-        if (ReferenceEquals(instance, null)) return;
-        instance.sources[SfxChannel].PlayOneShot(buff ? buffAudio : debuffAudio);
+        if (ReferenceEquals(Instance, null)) return;
+        musicSource.clip = battleMusic;
+        musicSource.Play();
+    }
+    public void PlayLobby()
+    {
+        if (ReferenceEquals(Instance, null)) return;
+        musicSource.clip = lobyMusic;
+        musicSource.Play();
+    }
+
+    public void PlayWin()
+    {
+        musicSource.Stop();
+        musicSource.PlayOneShot(winSfx);
+    }
+    public void PlayGame()
+    {
+        if (ReferenceEquals(Instance, null)) return;
+        musicSource.clip = gameMusic;
+        musicSource.Play();
+    }
+    public void PlaySelectAudio()
+    {
+        if (ReferenceEquals(Instance, null)) return;
+        int id = Random.Range(0, selectAudios.Length-1);
+        sfxSource.clip = selectAudios[id];
+        sfxSource.Play();
+    }
+
+    public void PlayStatusChangeAudio(bool buff)
+    {
+        if (ReferenceEquals(Instance, null)) return;
+        sfxSource.PlayOneShot(buff ? buffAudio : debuffAudio);
     }
 }
