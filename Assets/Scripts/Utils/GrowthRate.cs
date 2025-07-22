@@ -1,12 +1,12 @@
 namespace Utils
 {
-    public enum GrowthRate
+    public enum GrowthRateEnum
     {
-        Erratic, 
-        Fast, 
-        MediumFast, 
-        MediumSlow, 
-        Slow, 
-        Fluctuating
+        Slow,
+        Medium,
+        Fast,
+        MediumSlow,
+        SlowFast,
+        FastSlow
     }
 }

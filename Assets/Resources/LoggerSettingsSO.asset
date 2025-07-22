@@ -12,14 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f0eae7c824f5cd42bd8cbd7d36b9e0c, type: 3}
   m_Name: LoggerSettingsSO
   m_EditorClassIdentifier: 
-  restoreLogsOnChange: 1
-  ignoreLoggerOnStackTrace: 1
-  activeFlags: 64
+  restoreLogsOnChange: 0
+  ignoreLoggerOnStackTrace: 0
+  activeFlags: 0
   flags:
-  - Request
-  - Response
-  - API
-  - Game
-  - DataCheck
-  - PokemonBuild
-  - Tests
+  - Flag1

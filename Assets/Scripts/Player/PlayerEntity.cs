@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Inventory;
 using UnityEngine;
 using Utils;
 
@@ -10,6 +12,7 @@ namespace Player
         
         private Collider2D[] grassResults = new Collider2D[10];
         public LayerMask grassLayer;
+        [SerializeField] public List<Pokemon> party;
         [SerializeField] private PlayerView view;
 
         private void Awake()

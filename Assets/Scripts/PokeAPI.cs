@@ -91,6 +91,28 @@ public static class PokeAPI
             }
         }
     }
+    public static void GetMoveData(int id, Action<MoveData> onSuccess)
+    {
+        string route = $"{baseRoute}/move/{id}";
+        Logger.Log($"move route: {route}", LogFlags.API);
+        if (PokeDatabase.moves.TryGetValue(route, out var move)) SetMoveType(move);
+        else WebConnection.GetRequest<MoveData>(route, SetMoveType);
+
+        void SetMoveType(MoveData move)
+        {
+            PokeDatabase.moves[route] = move;
+            Logger.Log($"move type route: {move.typeOfMove.url}", LogFlags.API);
+            if (PokeDatabase.moveTypes.TryGetValue(move.typeOfMove.url, out var moveType)) ReturnMove(moveType);
+            else WebConnection.GetRequest<MoveTypeData>(move.typeOfMove.url, ReturnMove);
+
+            void ReturnMove(MoveTypeData moveType)
+            {
+                PokeDatabase.moveTypes[move.typeOfMove.url] = moveType;
+                move.moveTypeData = moveType;
+                onSuccess?.Invoke(move);
+            }
+        }
+    }
 
     public static void GetAbility(string route, Action<AbilityData> onSuccess)
     {

@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Auth;
 using Battle;
 using Battle.OpponentAI;
+using DB;
+using DB.Data;
 using UnityEngine;
 using LenixSO.Logger;
+using Newtonsoft.Json;
 using Player;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 using Logger = LenixSO.Logger.Logger;
 
@@ -23,30 +28,50 @@ public class GameManager : MonoBehaviour
     private int encounterLevel;
     public static Action OnInitializeTest;
 
+    public Button testeRegister;
+    public Button testeLogin;
+    public AuthController auth;
     private void OnEnable()
     {
         OnInitializeTest += InitializeBattle;
+        testeRegister.onClick.AddListener(RegisterFake);
+        testeLogin.onClick.AddListener(LoginFake);
     }
 
-    private void Update()
+    private void Awake()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        auth.Database = new Database();
+        PokeDatabase.PreloadAssets();
+    }
+
+    private void RegisterFake()
+    {
+        var user = auth.Database.RegisterUser("valdecidanilo1@live.com", "danilo285", "chupivaru", 4);
+        Debug.Log(JsonConvert.SerializeObject(user));
+    }
+    private void LoginFake()
+    {
+        var userdata = auth.Database.LoginUser("valdecidanilo@live.com", "danilo285");
+        Debug.Log(JsonConvert.SerializeObject(userdata));
+        var pokemons = auth.Database.GetSplicemonsByUser(userdata.Id);
+        currentPlayer.party = new ();
+        foreach (var p in pokemons)
         {
-            InitializeBattle();
+            Pokemon.GetLoadedPokemon(p, (pokemon) =>
+            {
+                currentPlayer.party.Add(pokemon);
+            });
         }
     }
 
     private void InitializeBattle()
     {
-        PokeDatabase.PreloadAssets();
-        LoadingScreen.onDoneLoading += SetupBattleMode;
-        LoadingScreen.onDoneLoading += battle.OpenBattleScene;
+        SetupBattleMode();
+        battle.OpenBattleScene();
     }
     
     private void SetupBattleMode()
     {
-        LoadingScreen.onDoneLoading -= SetupBattleMode;
-        LoadingScreen.onDoneLoading -= battle.OpenBattleScene;
         switch (battleMode)
         {
             case BattleMode.WildEncounter:

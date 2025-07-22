@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Utils;
 
 public class AbilityReference
 {
@@ -94,6 +95,17 @@ public class Species
     public ApiReference habitat;
 }
 
+public class GrowthRate : ApiData
+{
+    [JsonProperty("levels")] public List<Levels> levels;
+    public GrowthRateEnum growthRate => (GrowthRateEnum)(id + 1);
+}
+
+public class Levels
+{
+    [JsonProperty("experience")] public int experience { get; set; }
+    [JsonProperty("level")] public int level { get; set; }
+}
 public class EvolutionChain
 {
 

@@ -47,65 +47,8 @@ namespace UI
             var percentage = Mathf.Clamp(xpGainValue, 0, pokemon.experience) / pokemon.experienceMax;
             xpImage.fillAmount = percentage;
         }
-
-        private static int CalculateErraticExp(int level)
-        {
-            return level switch
-            {
-                <= 50 => Mathf.FloorToInt(Mathf.Pow(level, 3) * (100 - level) / 50f),
-                <= 68 => Mathf.FloorToInt(Mathf.Pow(level, 3) * (150 - level) / 100f),
-                <= 98 => Mathf.FloorToInt(Mathf.Pow(level, 3) * (1911 - 10 * level) / 500f),
-                _ => Mathf.FloorToInt(Mathf.Pow(level, 3) * (160 - level) / 100f)
-            };
-        }
-
-        private static int CalculateFluctuatingExp(int level)
-        {
-            return level switch
-            {
-                <= 15 => Mathf.FloorToInt(Mathf.Pow(level, 3) * (24 + (level + 1) / 3) / 50f),
-                <= 36 => Mathf.FloorToInt(Mathf.Pow(level, 3) * (14 + level) / 50f),
-                _ => Mathf.FloorToInt(Mathf.Pow(level, 3) * (32 + level / 2) / 50f)
-            };
-        }
-        public static int GainExperience(int opponentLevel, int baseAllyExperience, int experience, int experienceMax, bool isTrainerPokemon = false, bool hasLuckyEgg = false)
-        {
-            var modifier = 1.0f;
-            if (isTrainerPokemon) modifier *= 1.5f;
-            if (hasLuckyEgg) modifier *= 1.5f;
-
-            var expGained = Mathf.FloorToInt((baseAllyExperience * opponentLevel * modifier) / 7);
-
-            experience += expGained;
-            if (experience >= experienceMax)
-            {
-                //LevelUp();
-            }
-            return expGained;
-        }
-        public static int GetExperienceForLevel(int targetLevel, GrowthRate currentGrowthRate)
-        {
-            return currentGrowthRate switch
-            {
-                GrowthRate.Fast => Mathf.FloorToInt((4f * Mathf.Pow(targetLevel, 3)) / 5f),
-                GrowthRate.MediumFast => Mathf.FloorToInt(Mathf.Pow(targetLevel, 3)),
-                GrowthRate.MediumSlow => Mathf.FloorToInt((6f / 5f * Mathf.Pow(targetLevel, 3)) -
-                    (15f * Mathf.Pow(targetLevel, 2)) + (100f * targetLevel) - 140f),
-                GrowthRate.Slow => Mathf.FloorToInt((5f * Mathf.Pow(targetLevel, 3)) / 4f),
-                GrowthRate.Erratic => CalculateErraticExp(targetLevel),
-                GrowthRate.Fluctuating => CalculateFluctuatingExp(targetLevel),
-                _ => Mathf.FloorToInt(Mathf.Pow(targetLevel, 3))
-            };
-        }
-        private static void LevelUp(int currentLevel, int levelMax, int levelsGained = 1, string natureIncreasedStat = "", string natureDecreasedStat = "")
-        {
-            currentLevel += levelsGained;
-
-            if (currentLevel > levelMax)
-                currentLevel = levelMax;
-            //stats.hpStats.currentStat = CalculateHp(stats.hpStats.baseStat, stats.hpStats.iv, stats.hpStats.effort, currentLevel);
-            //RecalculateStats(stats, currentLevel, natureIncreasedStat, natureDecreasedStat);
-        }
+        
+        
         public static IEnumerator StatChangeAnimation(this BattlePokemon pokemon, bool buff = false)
         {
             var multiplier = buff ? 1 : -1;
@@ -120,7 +63,7 @@ namespace UI
             Vector2 newSize = originalSize;
             newSize.y += rect.rect.size.y;
             rect.sizeDelta = newSize;
-            rect.localPosition -= Vector3.up * (newSize.y / 2f) * multiplier;
+            rect.localPosition -= Vector3.up * ((newSize.y / 2f) * multiplier);
 
             const float baseAlpha = .4f;
             var color = buff ? Color.green : Color.red;

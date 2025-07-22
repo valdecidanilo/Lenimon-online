@@ -5,6 +5,9 @@ using LenixSO.Logger;
 using Logger = LenixSO.Logger.Logger;
 using System.Globalization;
 using System.Collections;
+using Data.Models;
+using DB.Data;
+using Newtonsoft.Json;
 using Utils;
 
 public class Pokemon : ApiData
@@ -72,8 +75,6 @@ public class Pokemon : ApiData
         ev = new Stats(0, 0, 0, 0, 0, 0, 0, 0);
         nature = PokeDatabase.GetRandomNature(ref natureName);
 
-        growthRate = GetRandomGrowthRate();
-        
         moves = new MoveModel[4];
         LevelUp(Mathf.Max(lv, 1));//minimum level is 1
 
@@ -81,20 +82,6 @@ public class Pokemon : ApiData
 
         dataChecklist = new Checklist(0);
         dataChecklist.onCompleted += () => onDoneLoading?.Invoke();
-    }
-
-    private static GrowthRate GetRandomGrowthRate()
-    {
-        var random = Random.Range(0, 6);
-        return random switch
-        {
-            0 => GrowthRate.Erratic,
-            1 => GrowthRate.Fast,
-            2 => GrowthRate.MediumFast,
-            3 => GrowthRate.MediumSlow,
-            4 => GrowthRate.Slow,
-            _ => GrowthRate.Fluctuating
-        };
     }
     public static void GetLoadedPokemon(PokemonData pokemonData, int level = 1, Action<Pokemon> onPokemonLoaded = null)
     {
@@ -108,11 +95,59 @@ public class Pokemon : ApiData
             onPokemonLoaded?.Invoke(pokemon);
         }
     }
+    
+    public static void GetLoadedPokemon(PokemonModel pokemonData, Action<Pokemon> onPokemonLoaded = null)
+    {
+        PokeAPI.GetPokemonData(pokemonData.Id, (data) =>
+        {
+            Pokemon pokemon = new(data);
+            pokemon.LoadSprites();
+            pokemon.GetSpecieData();
+            pokemon.GetAbility();
+            pokemon.GetHeldItem();
+            
+            pokemon.onDoneLoading += PokemonLoaded;
+            void PokemonLoaded()
+            {
+                pokemon.name = pokemonData.Name;
+                pokemon.nature = PokeDatabase.GetNature(pokemonData.NatureName);
+                pokemon.gender = pokemonData.Gender;
+                pokemon.battleStats.hp = pokemonData.CurrentHp;
+                pokemon.level = pokemonData.Level;
+                pokemon.experience = pokemonData.Experience;
+                
+                //iv
+                pokemon.iv = JsonConvert.DeserializeObject<Stats>(pokemonData.IvJson);
+                //ev
+                pokemon.ev = JsonConvert.DeserializeObject<Stats>(pokemonData.EvJson);
+
+                MoveListWrapper moveList = JsonConvert.DeserializeObject<MoveListWrapper>(pokemonData.MovesJson);
+                Checklist movesLoader = new(pokemon.moves.Length);
+                for (int i = 0; i < pokemon.moves.Length; i++)
+                {
+                    int id = i;
+                    PokeAPI.GetMoveData(moveList.id[id], (move) =>
+                    {
+                        pokemon.moves[id] = new(move);
+                        pokemon.moves[id].pp = moveList.currentPP[id];
+                        movesLoader.FinishStep();
+                    });
+                }
+                
+                movesLoader.onCompleted += () =>
+                {
+                    Logger.Log($"pokemon carregado :  {pokemon.name}");
+                    pokemon.onDoneLoading -= PokemonLoaded;
+                    onPokemonLoaded?.Invoke(pokemon);
+                };
+            }
+        });
+    }
 
     public void LoadRequiredData()
     {
         LoadSprites();
-        GetGender();
+        GetSpecieData();
         GetAbility();
         GetRandomMoves();
         GetHeldItem();
@@ -128,22 +163,12 @@ public class Pokemon : ApiData
 
     private void UpdateStats()
     {
-        stats.hp = data.name != "shedinja" ? BasicStatCalculation(data.hpStat, iv[StatType.hp], ev[StatType.hp], level) + level + 10 : 1;
-        stats.atk = NonHpCalculation(StatType.atk);
-        stats.def = NonHpCalculation(StatType.def);
-        stats.sAtk = NonHpCalculation(StatType.sAtk);
-        stats.sDef = NonHpCalculation(StatType.sDef);
-        stats.spd = NonHpCalculation(StatType.spd);
-
-        int BasicStatCalculation(int baseStat, int iv, int ev, int level)
-        {
-            return Mathf.Max(0, (((2 * baseStat) + iv + (ev / 4)) * level) / 100);
-        }
-
-        int NonHpCalculation(StatType type)
-        {
-            return Mathf.FloorToInt((BasicStatCalculation(data.stats[(int)type].base_stat, iv[type], ev[type], level) + 5) * (nature[type] / 100f));
-        }
+        stats.hp = data.name != "shedinja" ? PokeMath.BasicStatCalculation(data.hpStat, iv[StatType.hp], ev[StatType.hp], level) + level + 10 : 1;
+        stats.atk = PokeMath.NonHpCalculation(this, StatType.atk);
+        stats.def = PokeMath.NonHpCalculation(this, StatType.def);
+        stats.sAtk = PokeMath.NonHpCalculation(this, StatType.sAtk);
+        stats.sDef = PokeMath.NonHpCalculation(this, StatType.sDef);
+        stats.spd = PokeMath.NonHpCalculation(this, StatType.spd);
     }
 
     public void ResetBattleStats()
@@ -206,7 +231,7 @@ public class Pokemon : ApiData
         dataChecklist.AddStep();
         MoveHelper.GetRandomMoves(this, new[] { MoveLearnMethod.LevelUp }, () => dataChecklist.FinishStep());
     }
-    private void GetGender()
+    private void GetSpecieData()
     {
         dataChecklist.AddStep();
         WebConnection.GetRequest<Species>(data.species.url, (data) =>
@@ -218,15 +243,19 @@ public class Pokemon : ApiData
                 float randomGender = Random.Range(0, 8);
                 gender = randomGender < data.genderRate ? Gender.Female : Gender.Male;
             }
-
             Logger.Log($"{name} Gender done loading: {gender}", LogFlags.PokemonBuild);
-            dataChecklist.FinishStep();
+            WebConnection.GetRequest<GrowthRate>(data.growthRate.url, (gRate) =>
+            {
+                growthRate = gRate;
+                Logger.Log($"{name} Growth rate done loading: {growthRate.growthRate}", LogFlags.PokemonBuild);
+                dataChecklist.FinishStep();
+            });
         });
     }
     private void GetAbility()
     {
         dataChecklist.AddStep();
-        int abilityId = Random.Range(0, data.abilities.Count);
+        var abilityId = Random.Range(0, data.abilities.Count);
         PokeAPI.GetAbility(data.abilities[abilityId].reference.url, (abilityData) =>
         {
             ability = abilityData;
