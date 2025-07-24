@@ -80,7 +80,29 @@ namespace Player
             }
             transform.position = destination;
             isMoving = false;
-            playerEntity.CheckGrass();
+            playerEntity.CheckGrass(() =>
+            {
+                StartCoroutine(StepBack());
+            });
         }
+        private IEnumerator StepBack()
+        {
+            Vector3 backward = -currentDirection.normalized * GameSettings.GameSettings.Instance.gridSize;
+            var destination = transform.position + backward;
+
+            while (Vector3.Distance(transform.position, destination) > 0.001f)
+            {
+                transform.position = Vector3.MoveTowards(
+                    transform.position,
+                    destination,
+                    GameSettings.GameSettings.Instance.moveSpeed * Time.deltaTime
+                );
+                yield return null;
+            }
+            
+            transform.position = destination;
+            isMoving = false;
+        }
+
     }
 }

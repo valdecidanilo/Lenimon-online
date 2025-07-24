@@ -52,7 +52,6 @@ public class BagMenu : ContextMenu<Bag>
 
         upButton.onClick.AddListener(() => ItemMoveButton(1));
         downButton.onClick.AddListener(() => ItemMoveButton(-1));
-        //gameObject.SetActive(false);
         bagScene.SetActive(false);
     }
 
@@ -61,6 +60,9 @@ public class BagMenu : ContextMenu<Bag>
         Announcer.ChangeAnnouncer(itemDescription);
         contextSelection.MouseSelection(true);
         bag = data;
+        Debug.Log(bag.battleItems.Count);
+        Debug.Log(bag.items.Count);
+        Debug.Log(bag.TMs.Count);
         //gameObject.SetActive(true);
         bagScene.SetActive(true);
         optionsContext.gameObject.SetActive(false);

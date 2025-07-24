@@ -1,8 +1,8 @@
-using System.Collections.Generic;
+using System;
 using Battle;
-using Inventory;
 using UnityEngine;
 using Utils;
+using Random = UnityEngine.Random;
 
 namespace Player
 {
@@ -42,13 +42,20 @@ namespace Player
             view?.SetIdleState(true);
             AudioManager.Instance.PlayBattle();
         }
-        public void CheckGrass()
+        public void CheckGrass(Action denied = null)
         {
             Vector2 position = new(transform.position.x, transform.position.y - GameSettings.GameSettings.Instance.originY);
             var grass = Physics2D.OverlapCircle(position,
                 GameSettings.GameSettings.Instance.radiusGrass, grassLayer);
 
             if (grass == null) return;
+            if (trainer.party.Count == 0) return;
+            if (trainer.party[0].fainted)
+            {
+                Debug.Log("Todos os pokémons estão desmaiados");
+                denied?.Invoke();
+                return;
+            }
             grass.GetComponent<GrassOverlayLayer>().PlayParticles();
             var roll = Random.Range(0f, 1f);
             if (!(roll < GameSettings.GameSettings.Instance.encounterBattleChance)) return;
