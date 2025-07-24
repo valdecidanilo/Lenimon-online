@@ -20,19 +20,11 @@ namespace Battle.OpponentAI
         public override MoveModel ChooseMove(Pokemon pokemon)
         {
             List<int> options = new(4);
-            for (var i = 0; i < pokemon.moves.Length; i++)
-            {
-                if (pokemon.moves[i] != null && pokemon.moves[i].pp > 0)
+            for (var i = 0; i < options.Capacity; i++)
+                if (activePokemon.moves[i] != null && activePokemon.moves[i].pp > 0)
                     options.Add(i);
-            }
-
-            MoveModel pickedMove;
-            if (options.Count > 0)
-                pickedMove = pokemon.moves[options[Random.Range(0, options.Count)]];
-            else
-                pickedMove = MoveHelper.Struggle();
-
-            return pickedMove;
+            var moveModel = options.Count > 0 ? activePokemon.moves[options[Random.Range(0, options.Count)]] : MoveHelper.Struggle();
+            return moveModel;
         }
 
         public override IEnumerator PickPokemon(PickPokemonEvent evt)

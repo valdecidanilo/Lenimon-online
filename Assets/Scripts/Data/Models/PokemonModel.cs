@@ -34,7 +34,7 @@ public class Pokemon : ApiData
     public Sprite backSprite { get; private set; }
     public Sprite icon { get; private set; }
     public AbilityData ability;
-    public MoveModel[] moves;
+    public MoveModel[] moves = new MoveModel[4];
     public ItemModel heldItem;
     public string natureName;
     public TypeChartEntry[] types;
@@ -98,7 +98,7 @@ public class Pokemon : ApiData
     
     public static void GetLoadedPokemon(PokemonModel pokemonData, Action<Pokemon> onPokemonLoaded = null)
     {
-        PokeAPI.GetPokemonData(pokemonData.Id, (data) =>
+        PokeAPI.GetPokemonData(pokemonData.PokeApiId, (data) =>
         {
             Pokemon pokemon = new(data);
             pokemon.LoadSprites();
@@ -116,27 +116,31 @@ public class Pokemon : ApiData
                 pokemon.level = pokemonData.Level;
                 pokemon.experience = pokemonData.Experience;
                 
-                //iv
                 pokemon.iv = JsonConvert.DeserializeObject<Stats>(pokemonData.IvJson);
-                //ev
                 pokemon.ev = JsonConvert.DeserializeObject<Stats>(pokemonData.EvJson);
-
-                MoveListWrapper moveList = JsonConvert.DeserializeObject<MoveListWrapper>(pokemonData.MovesJson);
+                
+                var moveList = JsonConvert.DeserializeObject<MoveListWrapper>(pokemonData.MovesJson);
                 Checklist movesLoader = new(pokemon.moves.Length);
-                for (int i = 0; i < pokemon.moves.Length; i++)
+                for (var i = 0; i < pokemon.moves.Length; i++)
                 {
-                    int id = i;
+                    var id = i;
+                    if (id >= moveList.id.Length || moveList.id[id] == 0)
+                    {
+                        movesLoader.FinishStep();
+                        continue;
+                    }
                     PokeAPI.GetMoveData(moveList.id[id], (move) =>
                     {
-                        pokemon.moves[id] = new(move);
-                        pokemon.moves[id].pp = moveList.currentPP[id];
+                        pokemon.moves[id] = new MoveModel(move)
+                        {
+                            pp = moveList.currentPP[id]
+                        };
                         movesLoader.FinishStep();
                     });
                 }
                 
                 movesLoader.onCompleted += () =>
                 {
-                    Logger.Log($"pokemon carregado :  {pokemon.name}");
                     pokemon.onDoneLoading -= PokemonLoaded;
                     onPokemonLoaded?.Invoke(pokemon);
                 };

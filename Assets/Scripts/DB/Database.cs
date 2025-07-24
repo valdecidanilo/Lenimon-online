@@ -64,7 +64,6 @@ namespace DB
                 {
                     Pokemon.GetLoadedPokemon(data,5, poke =>
                     {
-                        Debug.Log(poke.name);
                         var model = SaveData(poke);
                         model.UserId = newUser.Id;
                         db.Insert(model);
@@ -74,7 +73,7 @@ namespace DB
 
             return (true, "Usuário registrado com sucesso", newUser);
         }
-
+        
         public UserData LoginUser(string email, string password)
         {
             var user = db.Table<UserData>().FirstOrDefault(u => u.Email == email);
@@ -89,7 +88,36 @@ namespace DB
             Logger.Log("Senha incorreta.");
             return null;
         }
+        public void AddPokemonToUser(int userId, int pokemonId, Action<List<Pokemon>> onFinished)
+        {
+            PokeAPI.GetPokemonData(pokemonId, data =>
+            {
+                Pokemon.GetLoadedPokemon(data, 5, poke =>
+                {
+                    var model = SaveData(poke);
+                    model.UserId = userId;
+                    db.Insert(model);
 
+                    var pokemonsModel = GetSplicemonsByUser(userId);
+                    List<Pokemon> party = new();
+                    Checklist loader = new(pokemonsModel.Count);
+
+                    foreach (var p in pokemonsModel)
+                    {
+                        Pokemon.GetLoadedPokemon(p, loaded =>
+                        {
+                            party.Add(loaded);
+                            loader.FinishStep();
+                        });
+                    }
+
+                    loader.onCompleted += () =>
+                    {
+                        onFinished?.Invoke(party);
+                    };
+                });
+            });
+        }
         public PokemonModel GetFirstSplicemon(int userId)
         {
             return db.Table<PokemonModel>().FirstOrDefault(x => x.UserId == userId);
@@ -111,6 +139,7 @@ namespace DB
                 Level = poke.level,
                 PokeApiId = poke.data.id,
                 NatureName = poke.natureName,
+                Gender = poke.gender,
                 CurrentHp = poke.battleStats.hp,
                 Experience = poke.experience,
                 ExperienceMax = poke.experienceMax,

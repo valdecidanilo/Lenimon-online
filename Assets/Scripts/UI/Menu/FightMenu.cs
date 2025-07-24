@@ -14,12 +14,13 @@ using Random = UnityEngine.Random;
 
 public class FightMenu : ContextMenu<Pokemon>
 {
+    [SerializeField] private GameObject fightMenu;
     [Space(5), SerializeField] private TMP_Text moveType;
     [SerializeField] private TMP_Text movePp;
     [SerializeField] private TMP_Text[] moves;
     [SerializeField] private Announcer battleAnnouncer;
     [SerializeField] private Button backButton;
-
+    public Action OnEndBattle;
     #region Battle Visuals
     [Header("Battle Visuals")]
     [SerializeField] Sprite[] healthStates;
@@ -61,7 +62,7 @@ public class FightMenu : ContextMenu<Pokemon>
     {
         base.OpenMenu(data);
         Announcer.ChangeAnnouncer(battleAnnouncer);
-        gameObject.SetActive(true);
+        fightMenu.SetActive(true);
 
         //check if any move has pp
         var canOnlyStruggle = data.moves.All(currentMove => currentMove == null || currentMove.pp <= 0);
@@ -77,7 +78,7 @@ public class FightMenu : ContextMenu<Pokemon>
 
     public override void CloseMenu()
     {
-        gameObject.SetActive(false);
+        fightMenu.SetActive(false);
         base.CloseMenu();
     }
 
@@ -97,7 +98,7 @@ public class FightMenu : ContextMenu<Pokemon>
     private void OnMovePick(int id)
     {
         if(movesData[id] == null) return;
-        Logger.Log($"{player.name.ToUpper()} will use {movesData[id].name.ToUpper()}", LogFlags.Game);
+        
         //onPickMove?.Invoke(id);
         BeginBattle(movesData[id]);
     }
@@ -106,8 +107,8 @@ public class FightMenu : ContextMenu<Pokemon>
     #region Static Methods
     public static void BeginBattle(MoveModel playerMove)
     {
-        if (!instance.gameObject.activeSelf) instance.OpenMenu(instance.player.activePokemon);
-        //Logger.Log($"{instance.gameObject.activeSelf}");
+        if (!instance.fightMenu.activeSelf) instance.OpenMenu(instance.player.activePokemon);
+        
         if (playerMove.pp <= 0)
         {
             Announcer.Announce("You don't have pp for this move!!", awaitInput: true, onDone: () =>
@@ -159,7 +160,7 @@ public class FightMenu : ContextMenu<Pokemon>
     {
         //remove callbacks
         cancelAction.performed -= ReturnCall;
-        
+        Debug.Log($"{allyMove.name} | {opponentMove.name}");
         onBattleStateChanged?.Invoke(true);
         player.pickedMove ??= allyMove;
         opponent.pickedMove ??= opponentMove;
@@ -340,7 +341,7 @@ public class FightMenu : ContextMenu<Pokemon>
                         //TODO: load new enemy
                         yield return Announcer.AnnounceCoroutine($"{player.name.ToUpper()} defeated {opponent.name.ToUpper()}!", true, .5f);
                     }
-                    UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+                    OnEndBattle?.Invoke();
                 }
             }
         }
@@ -381,6 +382,12 @@ public class FightMenu : ContextMenu<Pokemon>
         pokemonImage.SaveAsDefaultValues();
         player.activePokemon.onHpChanged.RegisterCallback(AllyHpChanged);
     }
+
+    public void ExitBattle()
+    {
+        opponent.activePokemon.onHpChanged.RemoveCallback(OpponentHpChanged);
+        player.activePokemon.onHpChanged.RemoveCallback(AllyHpChanged);
+    }
     private void SetupAlly(Pokemon ally)
     {
         var pokemon = ally;
@@ -392,7 +399,6 @@ public class FightMenu : ContextMenu<Pokemon>
 
         PokeDatabase.SetGenderSprite(gender, pokemon.gender);
     }
-
     private void SetupAllySprite(Pokemon pokemon)
     {
         pokemonImage.image.sprite = pokemon.backSprite ?? pokemon.frontSprite;
@@ -408,7 +414,6 @@ public class FightMenu : ContextMenu<Pokemon>
 
         PokeDatabase.SetGenderSprite(gender, pokemon.gender);
     }
-
     private IEnumerator AllyHpChanged(int initialValue, int currentValue)
     {
         yield return BattleVFX.LerpHpBar(player.activePokemon, initialValue, currentValue, hp, hpValue);

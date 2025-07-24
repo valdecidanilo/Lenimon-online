@@ -15,7 +15,7 @@ MonoBehaviour:
   moveSpeed: 0.5
   radiusPlayer: 0.18
   originY: 0.05
-  encounterBattleChance: 0.1
+  encounterBattleChance: 1
   radiusBattle: 0.2
   moveTurnDelay: 0.15
   gridSize: 0.16

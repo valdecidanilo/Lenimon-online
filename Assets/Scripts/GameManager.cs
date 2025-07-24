@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private BattleMode battleMode = BattleMode.WildEncounter;
 
     [SerializeField] private PlayerEntity currentPlayer;
-    private Trainer player;
+    [SerializeField] private UserData userData;
     private Trainer opponent;
     private Checklist itemsLoaded;
     private int encounterLevel;
@@ -44,22 +44,36 @@ public class GameManager : MonoBehaviour
         PokeDatabase.PreloadAssets();
     }
 
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.P)) AddPokemonToUser();
+    }
+
     private void RegisterFake()
     {
         var user = auth.Database.RegisterUser("valdecidanilo1@live.com", "danilo285", "chupivaru", 4);
         Debug.Log(JsonConvert.SerializeObject(user));
     }
+
+    public void AddPokemonToUser()
+    {
+        auth.Database.AddPokemonToUser(userData.Id, 25, updatedParty =>
+        {
+            currentPlayer.trainer.party = updatedParty;
+            Debug.Log("Novo Pokémon adicionado e party atualizada!");
+            battle.currentPlayer.trainer.party = updatedParty;
+        });
+    }
     private void LoginFake()
     {
-        var userdata = auth.Database.LoginUser("valdecidanilo@live.com", "danilo285");
-        Debug.Log(JsonConvert.SerializeObject(userdata));
-        var pokemons = auth.Database.GetSplicemonsByUser(userdata.Id);
-        currentPlayer.party = new ();
+        userData = auth.Database.LoginUser("valdecidanilo1@live.com", "danilo285");
+        var pokemons = auth.Database.GetSplicemonsByUser(userData.Id);
+        currentPlayer.trainer.name = userData.Nickname;
         foreach (var p in pokemons)
         {
             Pokemon.GetLoadedPokemon(p, (pokemon) =>
             {
-                currentPlayer.party.Add(pokemon);
+                currentPlayer.trainer.party.Add(pokemon);
             });
         }
     }
@@ -91,16 +105,13 @@ public class GameManager : MonoBehaviour
     
     private void SetupWildBattle()
     {
-        player = CreateDefaultPlayer("You"); // tem que fazer o load do usuario
         battle.currentPlayer = currentPlayer;
         opponent = new WildOpponent();
-        Logger.Log("WILD BATTLE");
         GenerateParties(true);
     }
 
     private void SetupTrainerBattle(Opponent trainer)
     {
-        player = CreateDefaultPlayer("You"); // tem que fazer o load do usuario
         opponent = trainer;
         GenerateParties();
         LoadingScreen.onDoneLoading += StartBattle;
@@ -108,36 +119,14 @@ public class GameManager : MonoBehaviour
 
     private void SetupPvPBattle()
     {
-        player = CreateDefaultPlayer("You");
         opponent = MockRemoteOpponentPlayer();
-        LoadingScreen.onDoneLoading += () => battle.SetupBattle(player, (Opponent) opponent);
-    }
-
-    private Trainer CreateDefaultPlayer(string name)
-    {
-        return new Trainer()
-        {
-            name = name,
-            referenceText = "Allied"
-        };
+        LoadingScreen.onDoneLoading += () => battle.SetupBattle(currentPlayer.trainer, (Opponent) opponent);
     }
     
     private void StartBattle()
     {
-        if (opponent?.party == null)
-        {
-            Logger.LogError("opponent.party está null! A batalha não será iniciada.");
-            return;
-        }
-
-        if (opponent.party.Length == 0)
-        {
-            Logger.LogError("opponent.party está vazio!");
-            return;
-        }
-        
         battle.gameObject.SetActive(true);
-        battle.SetupBattle(player, (Opponent) opponent);
+        battle.SetupBattle(currentPlayer.trainer, (Opponent) opponent);
     }
     #region Online Test
     
@@ -146,12 +135,12 @@ public class GameManager : MonoBehaviour
         
         var mockOpponent = new MockRemotePlayerAI
         {
-            party = new Pokemon[3]
+            party = new List<Pokemon>()
         };
 
-        Checklist loaded = new(mockOpponent.party.Length);
+        Checklist loaded = new(mockOpponent.party.Count);
 
-        for (var i = 0; i < mockOpponent.party.Length; i++)
+        for (var i = 0; i < mockOpponent.party.Count; i++)
         {
             var id = Random.Range(1, 152);
             var level = Random.Range(10, 30);
@@ -165,7 +154,7 @@ public class GameManager : MonoBehaviour
         loaded.onCompleted += () =>
         {
             mockOpponent.activePokemon = mockOpponent.party[0];
-            battle.SetupBattle(player, mockOpponent);
+            battle.SetupBattle(currentPlayer.trainer, mockOpponent);
         };
 
         return mockOpponent;
@@ -176,63 +165,46 @@ public class GameManager : MonoBehaviour
     #region Pokemon
     private void GenerateParties(bool generateOpponent = true)
     {
-        encounterLevel = Random.Range(1, 101);
+        encounterLevel = Random.Range(5, 7);
 
-        // ====== Gerar party do PLAYER ======
-        var playerPartySize = Random.Range(1, 7);
-        var playerPartyLevel = OptionsMenu.battleLevel ?? Mathf.Min(100, encounterLevel + (6 - playerPartySize));
-        player.party = new Pokemon[playerPartySize];
-        Checklist alliesLoaded = new(playerPartySize);
-
-        Logger.Log($"setup ally party ({playerPartySize} pokemons)", LogFlags.Game);
-        LoadingScreen.AddOrChangeQueue(alliesLoaded, $"Loading ally party[1/{alliesLoaded.requiredSteps}]...");
-
-        alliesLoaded.onProgress += (p) => LoadingScreen.AddOrChangeQueue(alliesLoaded,
-            $"Loading ally party[{alliesLoaded.currentSteps + 1}/{alliesLoaded.requiredSteps}]...");
-
-        alliesLoaded.onCompleted += () =>
+        if (!generateOpponent)
         {
-            if (!generateOpponent)
-            {
-                LoadingScreen.onDoneLoading += StartBattle;
-                return;
-            }
-            var isWild = opponent is WildOpponent;
-            var opponentPartySize = isWild ? 1 : Random.Range(1, 7);
-            var opponentPartyLevel = OptionsMenu.battleLevel ?? Mathf.Min(100, encounterLevel + (6 - opponentPartySize));
-            opponent.party = new Pokemon[opponentPartySize];
+            LoadingScreen.onDoneLoading += StartBattle;
+            return;
+        }
+        var isWild = opponent is WildOpponent;
+        var opponentPartySize = isWild ? 1 : Random.Range(1, 7);
+        var opponentPartyLevel = OptionsMenu.battleLevel ?? Mathf.Min(100, encounterLevel + (6 - opponentPartySize));
+        opponent.party = new List<Pokemon>();
 
-            var opponentLoaded = new Checklist(opponentPartySize);
-            LoadingScreen.AddOrChangeQueue(opponentLoaded, "Loading opponent party...");
+        var opponentLoaded = new Checklist(opponentPartySize);
+        LoadingScreen.AddOrChangeQueue(opponentLoaded, "Loading opponent party...");
 
-            opponentLoaded.onProgress += (p) =>
-            {
-                opponent.activePokemon ??= opponent.party[0];
-                if (p == 0) GenerateItems();
-            };
-
-            opponentLoaded.onCompleted += () =>
-            {
-                StringBuilder sb = new("Opponent's party:");
-                foreach (var t in opponent.party)
-                    sb.Append($"\n{t.name}");
-                Logger.Log(sb.ToString(), LogFlags.DataCheck);
-                LoadingScreen.onDoneLoading += StartBattle;
-            };
-
-            SetupParty(opponent.party, opponentPartyLevel, opponentLoaded);
+        opponentLoaded.onProgress += (p) =>
+        {
+            opponent.activePokemon ??= opponent.party[0];
+            if (p == 0) GenerateItems();
         };
 
-        SetupParty(player.party, playerPartyLevel, alliesLoaded);
+        opponentLoaded.onCompleted += () =>
+        {
+            StringBuilder sb = new("Opponent's party:");
+            foreach (var t in opponent.party)
+                sb.Append($"\n{t.name}");
+            Logger.Log(sb.ToString(), LogFlags.DataCheck);
+            LoadingScreen.onDoneLoading += StartBattle;
+        };
 
-        void SetupParty(Pokemon[] party, int level, Checklist loaded)
+        SetupParty(opponent.party, opponentPartyLevel, opponentLoaded);
+
+        void SetupParty(List<Pokemon> party, int level, Checklist loaded)
         {
             if (loaded.isDone) return;
             var pokemonId = Random.Range(1, MaxPokemonId + 1);
             GetPokemon(pokemonId, level, (pokemon) =>
             {
                 CheckPokemon(pokemon);
-                party[loaded.currentSteps] = pokemon;
+                party.Add(pokemon);
                 loaded.FinishStep();
                 SetupParty(party, level, loaded);
             });
@@ -246,16 +218,16 @@ public class GameManager : MonoBehaviour
     {
         StringBuilder finalLog = new();
         StringBuilder type = new();
-        for (int i = 0; i < pokemon.data.types.Count; i++)
+        for (var i = 0; i < pokemon.data.types.Count; i++)
         {
             type.Append(pokemon.data.types[i].type.name);
             if (i < pokemon.data.types.Count - 1) type.Append("\\");
         }
 
         StringBuilder abilities = new();
-        for (int i = 0; i < pokemon.data.abilities.Count; i++)
+        for (var i = 0; i < pokemon.data.abilities.Count; i++)
         {
-            AbilityReference ability = pokemon.data.abilities[i];
+            var ability = pokemon.data.abilities[i];
             abilities.Append($"{ability.reference.name}");
             if (ability.hidden) abilities.Append("(H)");
             if (i < pokemon.data.abilities.Count - 1) abilities.Append(" | ");
@@ -272,7 +244,7 @@ public class GameManager : MonoBehaviour
     #region Items
     private void GenerateItems()
     {
-        itemsLoaded = new(0);
+        itemsLoaded = new Checklist(0);
         GenerateHealItems();
         GenerateBattleItems();
         GenerateTMs();
@@ -286,7 +258,7 @@ public class GameManager : MonoBehaviour
         itemsLoaded.AddStep();
         List<(string name,int amount)> itemList = new()
         {
-            ("revive", player.party.Length),
+            ("revive", currentPlayer.trainer.party.Count),
             ("potion",6),
             ("super-potion", 5),
             ("soda-pop", 4),
@@ -306,7 +278,7 @@ public class GameManager : MonoBehaviour
             PokeAPI.GetItem(route, (item) =>
             {
                 item.amount = itemList[loaded.currentSteps].amount;
-                player.bag.items.Add(item);
+                currentPlayer.trainer.bag.items.Add(item);
                 item.battleEffect = ItemEffect.GenerateItemEffect(item);
                 log.Append($"\n{item.name}");
                 loaded.FinishStep();
@@ -346,7 +318,7 @@ public class GameManager : MonoBehaviour
             PokeAPI.GetItem(route, (item) =>
             {
                 item.amount = 10;
-                player.bag.battleItems.Add(item);
+                currentPlayer.trainer.bag.battleItems.Add(item);
                 item.battleEffect = ItemEffect.GenerateItemEffect(item);
                 log.Append($"\n{item.name}");
                 loaded.FinishStep();
@@ -365,7 +337,7 @@ public class GameManager : MonoBehaviour
     {
         itemsLoaded.AddStep();
         const int tmPerPokemon = 2;
-        List<string> itemList = new(player.party.Length * tmPerPokemon);
+        List<string> itemList = new(currentPlayer.trainer.party.Count * tmPerPokemon);
         //{
         //    "solar-beam",
         //    "earthquake",
@@ -375,9 +347,9 @@ public class GameManager : MonoBehaviour
         //for (int i = 0; i < TMs.Capacity; i++)
         //    TMs.Add(new() { move = new() { url = $"{PokeAPI.baseRoute}move/{itemList[i]}" } });
         
-        for (var i = 0; i < player.party.Length; i++)
+        for (var i = 0; i < currentPlayer.trainer.party.Count; i++)
         {
-            var pokemon = player.party[i];
+            var pokemon = currentPlayer.trainer.party[i];
             var moves = MoveHelper.GetPossibleMoves(pokemon, new [] { MoveLearnMethod.TM });
             List<MoveReference> learnableMoves = new();
             for (var j = 0; j < moves.Count; j++)
@@ -416,7 +388,7 @@ public class GameManager : MonoBehaviour
             {
                 PokeAPI.GetTM(moveData, (tm) =>
                 {
-                    player.bag.TMs.Add(tm);
+                    currentPlayer.trainer.bag.TMs.Add(tm);
                     tm.battleEffect = MoveEffectCreator.EmptyEffect();
                     log.Append($"\n{tm.name} => {tm.data.moveData.name}");
                     loadedTMs.FinishStep();

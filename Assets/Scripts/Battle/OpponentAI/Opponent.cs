@@ -27,7 +27,7 @@ public abstract class Opponent : Trainer
         var route = $"{PokeAPI.baseRoute}item/{healItem}";
         PokeAPI.GetItem(route, (item) =>
         {
-            item.amount = party.Length;
+            item.amount = party.Count;
             bag.items.Add(item);
             item.battleEffect = ItemEffect.GenerateItemEffect(item);
             onFinished?.Invoke();
@@ -46,8 +46,8 @@ public abstract class Opponent : Trainer
 
     public override IEnumerator PickPokemon(PickPokemonEvent evt)
     {
-        List<int> possiblePokemons = new(party.Length);
-        for (int i = 0; i < party.Length; i++)
+        List<int> possiblePokemons = new(party.Count);
+        for (int i = 0; i < party.Count; i++)
         {
             if(party[i].fainted || party[i] == activePokemon) continue;
             possiblePokemons.Add(i);

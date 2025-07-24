@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using CallbackContext = UnityEngine.InputSystem.InputAction.CallbackContext;
 
-public class PartyMenu : ContextMenu<Pokemon[]>
+public class PartyMenu : ContextMenu<List<Pokemon>>
 {
     [SerializeField] private GameObject partyScene;
     [SerializeField] private Announcer partyAnnouncer;
@@ -16,7 +16,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     [SerializeField] private GameObject optionsWindow;
     [SerializeField] private ContextSelection pokemonOptions;
 
-    private Pokemon[] party;
+    private List<Pokemon> party;
     private PartyPokemon[] instances;
     public event Action<int> onSummaryCall;
 
@@ -29,7 +29,6 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         GetPartyPokemon();
         contextSelection.onItemPick += OnPickPokemon;
         pokemonOptions.onItemPick += OnPickOption;
-        //gameObject.SetActive(false);
         partyScene.SetActive(false);
     }
 
@@ -37,14 +36,14 @@ public class PartyMenu : ContextMenu<Pokemon[]>
     {
         #region Pokemon Navigation
         Selectable backButton = contextSelection[contextSelection.itemCount-1].selectable;
-        List<Selectable> navigationItems = new(party.Length);
+        List<Selectable> navigationItems = new(party.Count);
         for (int i = 0; i < instances.Length; i++)
         {
             PartyPokemon item = instances[i];
             if (item != null)
-                item.SetupPokemon(i < party.Length ? party[i] : null);
+                item.SetupPokemon(i < party.Count ? party[i] : null);
 
-            if (i >= party.Length) continue;
+            if (i >= party.Count) continue;
 
             Selectable selectable = contextSelection[i].selectable;
             navigationItems.Add(selectable);
@@ -109,16 +108,16 @@ public class PartyMenu : ContextMenu<Pokemon[]>
         }
     }
     
-    public override void OpenMenu(Pokemon[] pokemons)
+    public override void OpenMenu(List<Pokemon> pokemons)
     {
         Announcer.ChangeAnnouncer(partyAnnouncer);
         party = pokemons;
         SetupNavigation();
-        gameObject.SetActive(true);
         partyScene.SetActive(true);
         contextSelection.MouseSelection(true);
         contextSelection.Select(0);
         base.OpenMenu(party);
+        Debug.Log("Abri party");
     }
 
     private void OnPickPokemon(int id)
@@ -187,24 +186,29 @@ public class PartyMenu : ContextMenu<Pokemon[]>
             evt.partyId = 0;
             evt.pickedPokemon = instance.party[0];
             evt.isCurrent = true;
+            Debug.Log("Só tem ele");
             yield break;
         }
 
-        bool validPokemonExists = false;
-        for (int i = 0; i < instance.party.Length; i++)
+        var validPokemonExists = false;
+        foreach (var poke in instance.party)
         {
-            evt.pickedPokemon = instance.party[i];
+            evt.pickedPokemon = poke;
             validPokemonExists |= evt.CheckPokemon();
         }
         evt.noValidPokemon = !validPokemonExists;
-        if (!validPokemonExists) yield break;
+        if (!validPokemonExists)
+        {
+            Debug.Log("não existe mais pokemons");
+            yield break;
+        }
         evt.pickedPokemon = null;
         
         //setup
-        bool selected = false;
-        bool cancel = false;
-        List<bool> moveLearnability = new(instance.party.Length);
-        if (!instance.gameObject.activeSelf) instance.OpenMenu(instance.party);
+        var selected = false;
+        var cancel = false;
+        List<bool> moveLearnability = new(instance.party.Count);
+        if (!instance.partyScene.activeSelf) instance.OpenMenu(instance.party);
         else instance.contextSelection.Focus();
         instance.contextSelection.onItemPick -= instance.OnPickPokemon;
         instance.contextSelection.onItemPick += SelectPokemon;
@@ -213,7 +217,7 @@ public class PartyMenu : ContextMenu<Pokemon[]>
 
         if (evt.move != null)
         {
-            for (int i = 0; i < instance.party.Length; i++)
+            for (int i = 0; i < instance.party.Count; i++)
                 moveLearnability.Add(instance.instances[i].LearnMoveMode(evt.move.data.moveData));
         }
 

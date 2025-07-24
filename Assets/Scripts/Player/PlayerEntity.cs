@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Battle;
 using Inventory;
 using UnityEngine;
 using Utils;
@@ -12,7 +13,7 @@ namespace Player
         
         private Collider2D[] grassResults = new Collider2D[10];
         public LayerMask grassLayer;
-        [SerializeField] public List<Pokemon> party;
+        [SerializeField] public Trainer trainer = new ();
         [SerializeField] private PlayerView view;
 
         private void Awake()
