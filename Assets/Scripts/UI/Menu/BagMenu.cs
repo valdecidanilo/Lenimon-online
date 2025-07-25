@@ -60,10 +60,6 @@ public class BagMenu : ContextMenu<Bag>
         Announcer.ChangeAnnouncer(itemDescription);
         contextSelection.MouseSelection(true);
         bag = data;
-        Debug.Log(bag.battleItems.Count);
-        Debug.Log(bag.items.Count);
-        Debug.Log(bag.TMs.Count);
-        //gameObject.SetActive(true);
         bagScene.SetActive(true);
         optionsContext.gameObject.SetActive(false);
         UpdateScreen(currentScreen);

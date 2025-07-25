@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Auth;
 using Battle;
@@ -51,33 +53,60 @@ public class GameManager : MonoBehaviour
 
     private void RegisterFake()
     {
-        var user = auth.Database.RegisterUser("valdecidanilo1@live.com", "danilo285", "chupivaru", 4);
-        Debug.Log(JsonConvert.SerializeObject(user));
+        userData = auth.Database.RegisterUser(
+            "valdecidanilo1@live.com", 
+            "danilo285", 
+            "chupivaru", Random.Range(0, 152)).Item3;
+        StartCoroutine(TestTime());
+    }
+
+    private IEnumerator TestTime()
+    {
+        yield return new WaitForSeconds(1f);
+        LoginFake();
+    }
+
+    private void LoginFake()
+    {
+        userData = auth.Database.LoginUser("valdecidanilo1@live.com", "danilo285");
+        var pokemons = auth.Database.GetSplicemonsByUser(userData.Id)
+            .OrderBy(p => p.PartyIndex)
+            .ToList();
+
+        currentPlayer.trainer.name = userData.Nickname;
+
+        var party = new Pokemon[pokemons.Count];
+        Checklist checklist = new(pokemons.Count);
+
+        for (var i = 0; i < pokemons.Count; i++)
+        {
+            var partyIndex = pokemons[i].PartyIndex;
+            var model = pokemons[i];
+
+            Pokemon.GetLoadedPokemon(model, (poke) =>
+            {
+                party[partyIndex] = poke;
+                checklist.FinishStep();
+            });
+        }
+
+        checklist.onCompleted += () =>
+        {
+            currentPlayer.trainer.party = party.ToList();
+            Debug.Log("Party carregada com sucesso em ordem!");
+        };
     }
 
     public void AddPokemonToUser()
     {
-        auth.Database.AddPokemonToUser(userData.Id, 25, updatedParty =>
+        Debug.Log("adding pokemon to user");
+        auth.Database.AddPokemonToUser(userData.Id, Random.Range(0, 152), updatedParty =>
         {
-            currentPlayer.trainer.party = updatedParty;
-            Debug.Log("Novo Pokémon adicionado e party atualizada!");
-            battle.currentPlayer.trainer.party = updatedParty;
+            var newPoke = updatedParty[^1];
+            Debug.Log($"Novo Pokémon {newPoke.name.ToUpper()} adicionado e party atualizada!");
+            PartyMenu.OnUpdateParty?.Invoke(updatedParty);
         });
     }
-    private void LoginFake()
-    {
-        userData = auth.Database.LoginUser("valdecidanilo1@live.com", "danilo285");
-        var pokemons = auth.Database.GetSplicemonsByUser(userData.Id);
-        currentPlayer.trainer.name = userData.Nickname;
-        foreach (var p in pokemons)
-        {
-            Pokemon.GetLoadedPokemon(p, (pokemon) =>
-            {
-                currentPlayer.trainer.party.Add(pokemon);
-            });
-        }
-    }
-
     private void InitializeBattle()
     {
         SetupBattleMode();

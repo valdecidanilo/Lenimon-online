@@ -21,12 +21,14 @@ public class PartyMenu : ContextMenu<List<Pokemon>>
     public event Action<int> onSummaryCall;
 
     private static PartyMenu instance;
+    public static Action<List<Pokemon>> OnUpdateParty;
 
     protected override void Awake()
     {
         instance = this;
         base.Awake();
         GetPartyPokemon();
+        OnUpdateParty += RefreshPartyUI;
         contextSelection.onItemPick += OnPickPokemon;
         pokemonOptions.onItemPick += OnPickOption;
         partyScene.SetActive(false);
@@ -106,6 +108,7 @@ public class PartyMenu : ContextMenu<List<Pokemon>>
             if (instances[i] == null)
                 Debug.LogError($"[PartyMenu] contextSelection[{i}] não tem PartyPokemon!", contextSelection[i]);
         }
+
     }
     
     public override void OpenMenu(List<Pokemon> pokemons)
@@ -117,9 +120,19 @@ public class PartyMenu : ContextMenu<List<Pokemon>>
         contextSelection.MouseSelection(true);
         contextSelection.Select(0);
         base.OpenMenu(party);
-        Debug.Log("Abri party");
     }
-
+    private void RefreshPartyUI(List<Pokemon> pokemons)
+    {
+        Debug.Log("Refresh Party UI");
+        party = pokemons;
+        for (var i = 0; i < instances.Length; i++)
+        {
+            var poke = i < party.Count ? party[i] : null;
+            instances[i].SetupPokemon(poke);
+        }
+        SetupNavigation();
+        GetPartyPokemon();
+    }
     private void OnPickPokemon(int id)
     {
         if (id == contextSelection.itemCount - 1)

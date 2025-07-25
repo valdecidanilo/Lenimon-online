@@ -57,16 +57,16 @@ namespace DB
             };
 
             db.Insert(newUser);
-            Debug.Log(newUser.Id);
             if (idSlicemon > 0)
             {
                 PokeAPI.GetPokemonData(idSlicemon, data =>
                 {
                     Pokemon.GetLoadedPokemon(data,5, poke =>
                     {
-                        var model = SaveData(poke);
-                        model.UserId = newUser.Id;
-                        db.Insert(model);
+                        var pokemonModel = SaveData(poke);
+                        pokemonModel.UserId = newUser.Id;
+                        pokemonModel.PartyIndex = 0;
+                        db.Insert(pokemonModel);
                     });
                 });
             }
@@ -88,23 +88,28 @@ namespace DB
             Logger.Log("Senha incorreta.");
             return null;
         }
-        public void AddPokemonToUser(int userId, int pokemonId, Action<List<Pokemon>> onFinished)
+        public void AddPokemonToUser(int userId, int pokeId, Action<List<Pokemon>> onComplete)
         {
-            PokeAPI.GetPokemonData(pokemonId, data =>
+            PokeAPI.GetPokemonData(pokeId, data =>
             {
                 Pokemon.GetLoadedPokemon(data, 5, poke =>
                 {
                     var model = SaveData(poke);
+
+                    var existing = GetSplicemonsByUser(userId);
+                    model.PartyIndex = existing.Count > 0 ? existing.Max(p => p.PartyIndex) + 1 : 0;
                     model.UserId = userId;
                     db.Insert(model);
 
-                    var pokemonsModel = GetSplicemonsByUser(userId);
+                    var models = GetSplicemonsByUser(userId).OrderBy(p => p.PartyIndex).ToList();
                     List<Pokemon> party = new();
-                    Checklist loader = new(pokemonsModel.Count);
-
-                    foreach (var p in pokemonsModel)
+                    
+                    //Nao ta funcionando 
+                    Checklist loader = new(models.Count);
+                    
+                    foreach (var m in models)
                     {
-                        Pokemon.GetLoadedPokemon(p, loaded =>
+                        Pokemon.GetLoadedPokemon(m, loaded =>
                         {
                             party.Add(loaded);
                             loader.FinishStep();
@@ -113,11 +118,12 @@ namespace DB
 
                     loader.onCompleted += () =>
                     {
-                        onFinished?.Invoke(party);
+                        onComplete?.Invoke(party);
                     };
                 });
             });
         }
+        
         public PokemonModel GetFirstSplicemon(int userId)
         {
             return db.Table<PokemonModel>().FirstOrDefault(x => x.UserId == userId);
@@ -132,7 +138,6 @@ namespace DB
         }
         public PokemonModel SaveData(Pokemon poke)
         {
-            Logger.Log($"{poke.moves}");
             return new PokemonModel
             {
                 Name = poke.name,
